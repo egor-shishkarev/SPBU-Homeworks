@@ -2,8 +2,10 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <locale.h>
 
-int bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
+long double bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
+	clock_t startBubbleSort = clock();
 	for (int i = 0; i < lengthOfArray; ++i) {
 		bool flagOfChanged = false;
 		for (int j = lengthOfArray - 1; j > i; --j) {
@@ -18,7 +20,8 @@ int bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
 			break;
 		}
 	}
-	return arrayOfNumbers;
+	clock_t endBubbleSort = clock();
+	return (endBubbleSort - startBubbleSort);
 }
 
 /*int countSort() {
@@ -26,22 +29,16 @@ int bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
 }*/
 
 int main() {
-	/*clock_t startBubbleSort = clock();
-	clock_t endBubbleSort = clock();
-	clock_t startCountSort = clock();
+	setlocale(LC_ALL, ".1251");
+	/*clock_t startCountSort = clock();
 	clock_t endCountSort = clock();*/
-	int arrayOfNumbers[5] = {0};
 	srand(clock());
-	for (int i = 0; i < 5; ++i) {
+	int arrayOfNumbers[100000] = {0};
+	for (int i = 0; i < 100000; ++i) {
 		arrayOfNumbers[i] = rand();
 	}
-	for (int i = 0; i < 5; ++i) {
-		printf("%d ", arrayOfNumbers[i]);
-	}
-	bubbleSort(arrayOfNumbers, 5);
+	long double timeForBubble = bubbleSort(arrayOfNumbers, 100000);
 	printf("\n");
-	for (int i = 0; i < 5; ++i) {
-		printf("%d ", arrayOfNumbers[i]);
-	}
+	printf("\nВремя работы сортировки пузырьком => %5.2Lf мс", timeForBubble);
 	return 0;
 }
