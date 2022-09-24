@@ -4,8 +4,11 @@
 #include <stdbool.h>
 #include <locale.h>
 
-long double bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
-	clock_t startBubbleSort = clock();
+#define lengthArray 100000
+#define maxInt 32768
+
+unsigned int bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
+	unsigned int startBubbleSort = clock();
 	for (int i = 0; i < lengthOfArray; ++i) {
 		bool flagOfChanged = false;
 		for (int j = lengthOfArray - 1; j > i; --j) {
@@ -20,25 +23,50 @@ long double bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
 			break;
 		}
 	}
-	clock_t endBubbleSort = clock();
+	unsigned int endBubbleSort = clock();
 	return (endBubbleSort - startBubbleSort);
 }
 
-/*int countSort() {
+unsigned int countSort(int arrayOfNumbers[], const int lengthOfArray) {
+	unsigned int startCountSort = clock();
+	int arrayForCount[maxInt] = {0};
+	int pointerForCountMin = lengthArray;
+	int pointerForCountMax = 0;
+	for (int i = 0; i < lengthOfArray; ++i) {
+		++arrayForCount[arrayOfNumbers[i]];
+		pointerForCountMin = min(pointerForCountMin, arrayOfNumbers[i]);
+		pointerForCountMax = max(pointerForCountMax, arrayOfNumbers[i]);
+	}
+	int currentElement = 0;
+	for (int i = pointerForCountMin; i <= pointerForCountMax; ++i) {
+		while (arrayForCount[i]) {
+			arrayOfNumbers[currentElement] = i;
+			++currentElement;
+			--arrayForCount[i];
+		}
+	}
+	unsigned int endCountSort = clock();
+	return (endCountSort - startCountSort);
+}
 
-}*/
+void copyArray(int firstArray[], const int lengthOfArray, int secondArray[]) {
+	for (int i = 0; i < lengthOfArray; ++i) {
+		secondArray[i] = firstArray[i];
+	}
+}
 
 int main() {
 	setlocale(LC_ALL, ".1251");
-	/*clock_t startCountSort = clock();
-	clock_t endCountSort = clock();*/
 	srand(clock());
-	int arrayOfNumbers[100000] = {0};
-	for (int i = 0; i < 100000; ++i) {
-		arrayOfNumbers[i] = rand();
+	int arrayOfNumbersForBubble[lengthArray] = { 0 };
+	for (int i = 0; i < lengthArray; ++i) {
+		arrayOfNumbersForBubble[i] = rand();
 	}
-	long double timeForBubble = bubbleSort(arrayOfNumbers, 100000);
-	printf("\n");
-	printf("\nВремя работы сортировки пузырьком => %5.2Lf мс", timeForBubble);
+	int arrayOfNumbersForCount[lengthArray] = {0};
+	copyArray(arrayOfNumbersForBubble, lengthArray, arrayOfNumbersForCount);
+	unsigned int timeForBubble = bubbleSort(arrayOfNumbersForBubble, lengthArray);
+	printf("\nВремя работы алгоритма сортировки пузырьком => %u мс", timeForBubble);
+	unsigned int timeForCount = countSort(arrayOfNumbersForCount, lengthArray);
+	printf("\nВремя работы алгоритма сортировки подсчетом => %u мс", timeForCount);
 	return 0;
 }
