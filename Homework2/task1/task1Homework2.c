@@ -86,6 +86,7 @@ int main() {
 	setlocale(LC_ALL, ".1251");
 	if (!(testCorrectCase() && testIncorrectCase() && testEdgeCase())) {
 		printf("Тест провален!");
+		return 1;
 	}
 	printf("Тесты пройдены успешно!\n");
 	printf("Предупреждение! \nРекурсивный алгоритм работает долго: после 38 числа время выполнения больше одной секунды.\n");

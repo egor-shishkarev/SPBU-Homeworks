@@ -3,7 +3,6 @@
 #include <math.h>
 #include <locale.h>
 
-
 int verificationIntScanf() {
 	int readValues = 0;
 	while (true) {
@@ -13,9 +12,7 @@ int verificationIntScanf() {
 		if (correctlyReadValues == 1) {
 			break;
 		}
-		else {
-			printf("Ошибка ввода. Введите целочисленное значение!\n");
-		}
+		printf("Ошибка ввода. Введите целочисленное значение!\n");
 	}
 	return readValues;
 }
@@ -29,9 +26,7 @@ long double verificationLongDoubleScanf() {
 		if (correctlyReadValues == 1) {
 			break;
 		}
-		else {
-			printf("Ошибка ввода. Введите число!\n");
-		}
+		printf("Ошибка ввода. Введите число!\n");
 	}
 	return readValues;
 }
@@ -57,7 +52,7 @@ long double exponentiationLogarithm(const long double number, const int power) {
 	while (additionalPower != 0) {
 		if (additionalPower % 2 == 1) {
 			result *= buffer;
-			additionalPower -= 1;
+			--additionalPower;
 		}
 		else {
 			buffer *= buffer;
@@ -70,7 +65,7 @@ long double exponentiationLogarithm(const long double number, const int power) {
 
 bool testExpanentiation(const long double number, const int power) {
 	if (number == 0 && power <= 0) {
-		return (exponentiationLinear(number, power) == 0 && exponentiationLogarithm(number, power) == 0);
+		return exponentiationLinear(number, power) == 0 && exponentiationLogarithm(number, power) == 0;
 	}
 	return exponentiationLinear(number, power) == pow(number, power) && exponentiationLogarithm(number, power) == pow(number, power);
 }
@@ -86,10 +81,12 @@ bool incorrectCase() {
 bool edgeCase() {
 	return testExpanentiation(45, 0) && testExpanentiation(98, 1) && testExpanentiation(0, 5);
 }
+
 int main() {
 	setlocale(LC_ALL, ".1251");
 	if (!(correctCase() && incorrectCase() && edgeCase())) {
 		printf("Тесты были провалены, найдите ошибку!");
+		return 1;
 	}
 	printf("Тесты успешно пройдены!\n");
 	printf("Введите число, которое хотите возвести в степень => ");
