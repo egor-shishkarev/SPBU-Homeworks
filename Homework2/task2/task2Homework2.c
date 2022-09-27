@@ -53,8 +53,7 @@ long double exponentiationLogarithm(const long double number, const int power) {
 		if (additionalPower % 2 == 1) {
 			result *= buffer;
 			--additionalPower;
-		}
-		else {
+		} else {
 			buffer *= buffer;
 			additionalPower /= 2;
 		}
@@ -62,8 +61,7 @@ long double exponentiationLogarithm(const long double number, const int power) {
 	return power < 0 ? 1 / result : result;
 }
 
-
-bool testExpanentiation(const long double number, const int power) {
+bool testExponentiation(const long double number, const int power) {
 	if (number == 0 && power <= 0) {
 		return exponentiationLinear(number, power) == 0 && exponentiationLogarithm(number, power) == 0;
 	}
@@ -71,15 +69,15 @@ bool testExpanentiation(const long double number, const int power) {
 }
 
 bool correctCase() {
-	return testExpanentiation(13, 4) && testExpanentiation(-3, 3) && testExpanentiation(2, 6);
+	return testExponentiation(13, 4) && testExponentiation(-3, 3) && testExponentiation(2, 6);
 }
 
 bool incorrectCase() {
-	return testExpanentiation(0, -3) && testExpanentiation(0, 0);
+	return testExponentiation(0, -3) && testExponentiation(0, 0);
 }
 
 bool edgeCase() {
-	return testExpanentiation(45, 0) && testExpanentiation(98, 1) && testExpanentiation(0, 5);
+	return testExponentiation(45, 0) && testExponentiation(98, 1) && testExponentiation(0, 5);
 }
 
 int main() {
