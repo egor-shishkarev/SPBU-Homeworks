@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define lengthOfArray 15
+#define lengthOfArray 20
 
 int quickSort(int* arrayOfNumbers, int firstIndex, int lastIndex) {
 	if (firstIndex < lastIndex) {

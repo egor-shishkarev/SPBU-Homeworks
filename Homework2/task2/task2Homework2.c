@@ -91,7 +91,7 @@ int main() {
 	const long double number = verificationLongDoubleScanf();
 	printf("Введите степень => ");
 	const int power = verificationIntScanf();
-	printf("Число полученное с помощью алгоритма сложностью O(n) => %lf\n", exponentiationLinear(number, power));
-	printf("Число полученное с помощью алгоритма сложностью O(log n) => %lf", exponentiationLogarithm(number, power));
+	printf("Число, полученное с помощью алгоритма сложностью O(n) => %lf\n", exponentiationLinear(number, power));
+	printf("Число, полученное с помощью алгоритма сложностью O(log n) => %lf", exponentiationLogarithm(number, power));
 	return 0;
 }

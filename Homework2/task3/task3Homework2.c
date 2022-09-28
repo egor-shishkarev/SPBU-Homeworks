@@ -1,8 +1,9 @@
 ﻿#include <stdio.h>
-#include <time.h>
 #include <stdlib.h>
+#include <time.h>
 #include <stdbool.h>
 #include <locale.h>
+
 
 #define lengthArray 100000
 #define maxInt 32768
