@@ -60,22 +60,24 @@ int smartQuickSort(int* arrayOfNumbers, int firstIndex, int lastIndex) {
 	}
 }
 
-bool searchElement(int* arrayOfNumbers, int lengthOfArray, int elementToSearch) {
-	bool result = false;
-	int i = 0;
-	while (arrayOfNumbers[i] <= elementToSearch && i < lengthOfArray - 1) {
-		if (arrayOfNumbers[i] == elementToSearch) {
-			result = true;
-			break;
+bool binarySearch(int* arrayOfNumbers, int lengthOfArray, int elementToSearch) {
+	int left = 0;
+	int right = lengthOfArray - 1;
+	int middle = (left + right) / 2;
+	while (left + 1 != right) {
+		if (elementToSearch < arrayOfNumbers[middle]) {
+			right = middle;
+		} else {
+			left = middle;
 		}
-		++i;
+		middle = (left + right) / 2;
 	}
-	return result;
+	return arrayOfNumbers[left] == elementToSearch || arrayOfNumbers[lengthOfArray - 1] == elementToSearch;
 }
 
 int main() {
 	setlocale(LC_ALL, ".1251");
-	printf("Введите два числа через Enter. \nПервое - количество элементов массива, второе - количество случайных чисел, для которых вы хотите проверить - содержатся они в сгенерированном массиве или нет => ");
+	printf("Введите два числа через Enter. \nПервое - количество элементов массива, \nвторое - количество случайных чисел, для которых вы хотите проверить - содержатся они в сгенерированном массиве или нет => ");
 	int numberOfElements = verificationIntScanf() + 1;
 	int *arrayOfNumbers = (int*)calloc(numberOfElements, sizeof(int));
 	--numberOfElements;
@@ -117,7 +119,7 @@ int main() {
 			++i;
 			continue;
 		}
-		const bool result = searchElement(arrayOfNumbers, numberOfElements, arrayToSearch[i]);
+		const bool result = binarySearch(arrayOfNumbers, numberOfElements, arrayToSearch[i]);
 		printf("\n%d - %s", arrayToSearch[i], result ? "true" : "false");
 		++i;
 	}
