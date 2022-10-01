@@ -18,13 +18,6 @@ int verificationIntScanf() {
 	}
 	return readValues;
 }
-int sumOfArray(int* arrayOfNumbers, const int lengthOfArray) {
-	int result = 0;
-	for (int i = 0; i < lengthOfArray; ++i) {
-		result += arrayOfNumbers[i];
-	}
-	return result;
-}
 
 void insertionSort(int* arrayOfNumbers, int firstIndex, int lastIndex) {
 	int currentElement = 1;
@@ -66,6 +59,7 @@ int smartQuickSort(int* arrayOfNumbers, int firstIndex, int lastIndex) {
 		insertionSort(arrayOfNumbers, firstIndex, lastIndex);
 	}
 }
+
 bool searchElement(int* arrayOfNumbers, int lengthOfArray, int elementToSearch) {
 	bool result = false;
 	int i = 0;
@@ -78,6 +72,7 @@ bool searchElement(int* arrayOfNumbers, int lengthOfArray, int elementToSearch) 
 	}
 	return result;
 }
+
 int main() {
 	setlocale(LC_ALL, ".1251");
 	printf("Введите два числа через Enter. \nПервое - количество элементов массива, второе - количество случайных чисел, для которых вы хотите проверить - содержатся они в сгенерированном массиве или нет => ");
