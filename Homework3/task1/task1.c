@@ -55,8 +55,7 @@ int smartQuickSort(int* arrayOfNumbers, int firstIndex, int lastIndex) {
 		} while (left <= right);
 		smartQuickSort(arrayOfNumbers, firstIndex, right);
 		smartQuickSort(arrayOfNumbers, left, lastIndex);
-	}
-	else {
+	} else {
 		insertionSort(arrayOfNumbers, firstIndex, lastIndex);
 	}
 }
