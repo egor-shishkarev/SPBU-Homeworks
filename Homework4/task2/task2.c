@@ -6,20 +6,6 @@
 #include <time.h>
 #include <stdlib.h>
 
-int verificationIntScanf() {
-	int readValues = 0;
-	while (true) {
-		int correctlyReadValues = scanf("%d", &readValues);
-		while (getchar() != '\n') {
-		}
-		if (correctlyReadValues == 1) {
-			break;
-		}
-		printf("Ошибка ввода. Введите целочисленное значение!\n");
-	}
-	return readValues;
-}
-
 int maxCountInSortArray(int* arrayOfNumbers, const int lengthOfArray) {
 	int element = arrayOfNumbers[0];
 	int countOfElements = 1;
@@ -46,43 +32,39 @@ int maxCountInSortArray(int* arrayOfNumbers, const int lengthOfArray) {
 
 int main() {
 	setlocale(LC_ALL, ".1251");
-	printf("Данная программа находит наиболее часто встречающийся элемент в массиве.\nЕсли хотите ввести свой массив - введите 1. \nЕсли хотите увидеть пример - введите 0. => ");
-	int flagOfMode = verificationIntScanf();
-	if (flagOfMode != 1 && flagOfMode != 0) {
-		printf("Значение не было распознано, работа программы завершена.");
+	printf("Данная программа находит наиболее часто встречающийся элемент в массиве.\n");
+	FILE* file = fopen("array.txt", "r");
+	if (file == NULL) {
+		printf("Файл не найден.");
 		return 1;
 	}
-	printf("Введите длину массива => ");
-	int numberOfElements = verificationIntScanf();
-	int* arrayOfNumbers = (int*)calloc(numberOfElements, sizeof(int));
-	if (arrayOfNumbers == NULL) {
-		printf("Произошла ошибка, массив не был создан.");
-		return -1;
-	}
-	switch (flagOfMode) {
-	case 0:
-		srand(clock());
-		for (int i = 0; i < numberOfElements; ++i) {
-			arrayOfNumbers[i] = rand() % (10) + 1;
+	int data[150] = {0};
+	int linesRead = 0;
+	int numberOfElements = 0;
+	while (!feof(file)) {
+		int buffer = 0;
+		const int readBytes = fscanf(file, "%d", &buffer);
+		if (readBytes < 0) {
+			break;
 		}
-		break;
-	case 1:
-		printf("Вводите элементы через enter => ");
-		for (int i = 0; i < numberOfElements; ++i) {
-			arrayOfNumbers[i] = verificationIntScanf();
+		if (linesRead == 0) {
+			numberOfElements = buffer;
+			++linesRead;
+			continue;
 		}
-		break;
+		data[linesRead-1] = buffer;
+		++linesRead;
 	}
+	fclose(file);
 	printf("Созданный массив: \n");
 	for (int i = 0; i < numberOfElements; ++i) {
-		printf("%d ", arrayOfNumbers[i]);
+		printf("%d ", data[i]);
 	}
-	smartQuickSort(arrayOfNumbers, 0, numberOfElements - 1);
+	smartQuickSort(data, 0, numberOfElements - 1);
 	printf("\nОтсортированный массив: \n");
 	for (int i = 0; i < numberOfElements; ++i) {
-		printf("%d ", arrayOfNumbers[i]);
+		printf("%d ", data[i]);
 	}
-	printf("\nНаиболее часто встречающийся элемент в массиве => %d", maxCountInSortArray(arrayOfNumbers, numberOfElements));
-	free(arrayOfNumbers);
+	printf("\nНаиболее часто встречающийся элемент в массиве => %d", maxCountInSortArray(data, numberOfElements));
 	return 0;
 }
