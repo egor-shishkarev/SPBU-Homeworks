@@ -76,7 +76,7 @@ bool testQuickSort(int* rightArray, int* arrayOfNumbers, const int lengthOfArray
 	return allIsTrue * (result + 1);
 }
 
-bool incorectCase() {
+bool incorrectCase() {
 	int arrayOfNumbers[2] = { 0, 0 };
 	int rightArray[2] = { 0, 0 };
 	return testQuickSort(rightArray, arrayOfNumbers, -4);
@@ -102,7 +102,7 @@ bool test3() {
 
 int main() {
 	setlocale(LC_ALL, ".1251");
-	if (!(test1() && test2() && test3() && !incorectCase())) {
+	if (!(test1() && test2() && test3() && !incorrectCase())) {
 		printf("Тесты не пройдены!");
 		return 1;
 	}
