@@ -34,6 +34,9 @@ void insertionSort(int* arrayOfNumbers, int firstIndex, int lastIndex) {
 }
 
 int smartQuickSort(int* arrayOfNumbers, int firstIndex, int lastIndex) {
+	if (arrayOfNumbers == NULL || firstIndex > lastIndex || firstIndex < 0 || lastIndex < 0) {
+		return -1;
+	}
 	if ((firstIndex < lastIndex) && (lastIndex - firstIndex + 1) < 10) {
 		int left = firstIndex;
 		int right = lastIndex;
@@ -58,10 +61,53 @@ int smartQuickSort(int* arrayOfNumbers, int firstIndex, int lastIndex) {
 	} else {
 		insertionSort(arrayOfNumbers, firstIndex, lastIndex);
 	}
+	return 0;
+}
+
+bool testQuickSort(int* rightArray, int* arrayOfNumbers, const int lengthOfArray) {
+	const int result = smartQuickSort(arrayOfNumbers, 0, lengthOfArray - 1);
+	bool allIsTrue = true;
+	for (int i = 0; i < lengthOfArray - 1; ++i) {
+		if (rightArray[i] != arrayOfNumbers[i]) {
+			allIsTrue = false;
+			break;
+		}
+	}
+	return allIsTrue * (result + 1);
+}
+
+bool incorectCase() {
+	int arrayOfNumbers[2] = { 0, 0 };
+	int rightArray[2] = { 0, 0 };
+	return testQuickSort(rightArray, arrayOfNumbers, -4);
+}
+
+bool test1() {
+	int arrayOfNumbers[5] = { 5,4,3,2,1 };
+	int rightArray[5] = { 1,2,3,4,5 };
+	return testQuickSort(rightArray, arrayOfNumbers, 5);
+}
+
+bool test2() {
+	int arrayOfNumbers[8] = { 5342, 5436, 164, 547, 2751, 63634, 7457, 789 };
+	int rightArray[8] = { 164, 547, 789, 2751, 5342, 5436, 7457, 63634};
+	return testQuickSort(rightArray, arrayOfNumbers, 8);
+}
+
+bool test3() {
+	int arrayOfNumbers[10] = { 4, 5, 9, 2, 1, 8, 10, 4, 7, 3};
+	int rightArray[10] = { 1, 2, 3, 4, 4, 5, 7, 8, 9, 10 };
+	return testQuickSort(rightArray, arrayOfNumbers, 10);
 }
 
 int main() {
 	setlocale(LC_ALL, ".1251");
+	if (!(test1() && test2() && test3() && !incorectCase())) {
+		printf("Тесты не пройдены!");
+		return 1;
+	}
+	printf("Тесты были пройдены успешно!\n");
+	printf("%d", incorectCase());
 	printf("Данная программа позволяет продемонстрировать сортировку qsort с элементами алгоритма сортировки вставками\nЕсли хотите отсортировать свой массив - введите 1. \nЕсли хотите увидеть пример сортировки - введите 0. => ");
 	int flagOfMode = verificationIntScanf();
 	if (flagOfMode != 1 && flagOfMode != 0) {
