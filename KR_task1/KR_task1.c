@@ -2,8 +2,6 @@
 #include <locale.h>
 #include <stdbool.h>
 
-//Посчитать сумму всех чётных чисел Фибоначчи, не превосходящих миллиона. 
-
 unsigned long long iterativeFibonacci(unsigned long long number) {
 	if (number > 93 || number < 1) {
 		return 0;
@@ -74,7 +72,7 @@ int main() {
 		if (currentNumber % 2 == 0) {
 			result += currentNumber;
 		}
-		i += 3; // так как в ряде чисел Фибоначчи каждое четное число встречается через два нечетных
+		i += 3; 
 		currentNumber = iterativeFibonacci(i);
 	}
 	printf("Сумма всех четных чисел Фибоначчи = %llu", result);
