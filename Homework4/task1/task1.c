@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <malloc.h>
 #include <math.h>
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
 int verificationIntScanf() {
 	int readValues = 0;
@@ -18,11 +19,15 @@ int verificationIntScanf() {
 	return readValues;
 }
 
-void summaryOfTwoBinary(const int first, const int second) {
-	int mask = 1;
-	int result[9] = { 0 };
+void summaryOfTwoBinary(const long long int first, const long long int second, const maxBite) {
+	long long int mask = 1;
+	int *result = (int*)malloc((8 * maxBite) * sizeof(int));
+	if (result == NULL) {
+		printf("Массив не был создан.");
+		return -1;
+	}
 	int buffer = 0;
-	for (int i = 8; i >= 0; --i) {
+	for (int i = 8 * maxBite - 1; i >= 0; --i) {
 		const int digitFirst = first & mask ? 1 : 0;
 		const int digitSecond = second & mask ? 1 : 0;
 		if (digitFirst + digitSecond + buffer >= 2) {
@@ -34,51 +39,60 @@ void summaryOfTwoBinary(const int first, const int second) {
 		result[i] = (digitFirst + digitSecond + buffer) % 2;
 		buffer = 0;
 		mask <<= 1;
-	}
-	printf(" ");
-	for (int i = 1; i < 9; ++i) {
+	} 
+	for (int i = 0; i < 8 * maxBite; ++i) {
+		if (i != 0 && i % 8 == 0) {
+			printf(" ");
+		}
 		printf("%d", result[i]);
 	}
 	printf("\nСумма в десятичной системе счисления: ");
-	int sumDecimal = 0;
-	for (int i = 1; i < 9; ++i) {
-		sumDecimal += pow(2, 8 - i) * result[i];
+	long long int sumDecimal = -*(result + 7) * pow(2, (maxBite - 1) * 8);
+	for (int i = 8; i < 8 * maxBite + 1; ++i) {
+		sumDecimal += (int)pow(2, 8 * maxBite - 1  - i) * result[i];
 	}
 	printf("%d", sumDecimal);
+	free(result);
 }
+
 int main() {
 	setlocale(LC_ALL, ".1251");
-	printf("Введите два целых числа в диапазоне от -128 до 127 => ");
-	int firstNumber = verificationIntScanf();
-	while (firstNumber < -128 || firstNumber > 127) {
-		printf("Введено значение, находящееся за пределами допустимого.\nВведите верное значение (от -128 до 127) => ");
-		firstNumber = verificationIntScanf();
-	}
+	printf("Введите два целых числа в диапазоне от -1073741823 до 1073741823 => ");
+	long long int firstNumber = verificationIntScanf();
+	long long int secondNumber = verificationIntScanf();
+	long long int biteToFirst = (int)floor(log2(2 * abs(firstNumber) + (firstNumber == 0)) / 8) + 2;
+	long long int biteToSecond = (int)floor(log2(2 * abs(secondNumber) + (secondNumber == 0)) / 8) + 2;
+	long long int maxBite = MAX(biteToFirst, biteToSecond);
 	if (firstNumber < 0) {
-		firstNumber += 256;
-	}
-	int secondNumber = verificationIntScanf();
-	while (secondNumber < -128 || secondNumber > 127) {
-		printf("Введено значение, находящееся за пределами допустимого.\nВведите верное значение (от -128 до 127) => ");
-		secondNumber = verificationIntScanf();
+		firstNumber += pow(256, maxBite);
 	}
 	if (secondNumber < 0) {
-		secondNumber += 256;
+		secondNumber += pow(256, maxBite);
 	}
-	int firstMask = 128;
-	int secondMask = firstMask;
-	printf(" ");
-	for (int i = 0; i < 8; ++i) {
+	long long int firstMask = pow(256, maxBite) / 2;
+	long long int secondMask = firstMask;
+	printf(" \n");
+	for (int i = 0; i < 8 * maxBite; ++i) {
+		if (i != 0 && i % 8 == 0) {
+			printf(" ");
+		}
 		printf("%s", firstNumber & firstMask ? "1" : "0");
 		firstMask >>= 1;
 	}
-	printf("\n ");
-	for (int i = 0; i < 8; ++i) {
+	printf("\n");
+	for (int i = 0; i < 8 * maxBite; ++i) {
+		if (i != 0 && i % 8 == 0) {
+			printf(" ");
+		}
 		printf("%s", secondNumber & secondMask ? "1" : "0");
 		secondMask >>= 1;
 	}
-	printf("\n --------\n");
-	summaryOfTwoBinary(firstNumber, secondNumber);
+	printf("\n");
+	for (int i = 0; i < 9 * maxBite; ++i) {
+		printf("-");
+	}
+	printf("\n");
+	summaryOfTwoBinary(firstNumber, secondNumber, maxBite);
 	return 0;
 }
 
