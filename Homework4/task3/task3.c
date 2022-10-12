@@ -1,13 +1,9 @@
-﻿#include <stdio.h>
+﻿#include "functions.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <locale.h>
 #include <stdbool.h>
-
-typedef struct {
-	char name[20];
-	char phone[20];
-} phonebook;
-
 /*Написать программу — телефонный справочник. Она должна уметь хранить имена и номера телефонов, в интерактивном режиме осуществлять следующие операции:
 
 0 - выйти
@@ -18,55 +14,6 @@ typedef struct {
 5 - сохранить текущие данные в файл
 При запуске программа должна читать данные из файла (того самого, в который сохраняет данные), 
 	если файла нет — начинать с пустой базы номеров. Размер базы ограничен сотней записей.*/
-
-int addNote() {
-	FILE* file = fopen("phonebook.txt", "a");
-	printf("Введите имя => ");
-	phonebook note;
-	gets(&note.name);
-	printf("Введите номер => ");
-	gets(&note.phone);
-	fprintf(file, "%s", "\n");
-	fprintf(file, "%s", note.name);
-	fprintf(file, "%s", " ");
-	fprintf(file, "%s", note.phone);
-	fprintf(file, "%s", "\0");
-	fclose(file);
-}
-
-int printNotes() {
-	FILE* file = fopen("phonebook.txt", "r"); 
-	while (!feof(file)) { 
-		char *buffer = (char*)malloc(sizeof(char) * 100); 
-		if (buffer == NULL) {
-			printf("Массив не был создан!");
-			return -1;
-		}
-		fgets(buffer, 100, file);
-		printf(buffer);
-		free(buffer);
-	} 
-	printf("\n");
-	fclose(file);
-}
-
-int searchPhone() {
-	FILE* file = fopen("phonebook.txt", "r");
-	printf("Введите имя для поиска номера => ");
-	while (!feof(file)) {
-		char* buffer = (char*)malloc(sizeof(char) * 100);
-		if (buffer == NULL) {
-			printf("Массив не был создан!");
-			return -1;
-		}
-		fgets(buffer, 100, file);
-		for (int i = 0; i < 100; ++i) {
-			printf("%c", buffer[i]);
-		}
-		free(buffer);
-	}
-	fclose(file);
-}
 
 int workingMode(int mode) {
 	switch (mode) {
@@ -125,3 +72,27 @@ int main() {
 	}
 	return 0;
 }
+/*PhoneBookEntry entry;
+const char* name = "Ivan Ivanov";
+entry.name = malloc(sizeof(char) * (strlen(name) + 1));
+if (entry.name == NULL) {
+return -1;
+}
+strcpy(entry.name, name);
+strcpy(entry.phone, "+7 (911) 123-45-67");
+printf("%s - %s", entry.name, entry.phone);
+free(entry.name);
+return 0;
+*/
+
+/*int main() {
+PhoneBookEntry entry;
+entry.name = malloc(sizeof(char) * 30);
+if (entry.name == NULL) {
+return -1;
+}
+scanf("%s", entry.name);
+scanf("%[^\n]", entry.phone);
+printf("%s - %s", entry.name, entry.phone);
+free(entry.name);
+return 0;*/

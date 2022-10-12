@@ -18,10 +18,18 @@
     <ClCompile Include="task3.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="functions.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="phonebook.txt">
       <Filter>Исходные файлы</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="functions.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
