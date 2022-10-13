@@ -23,6 +23,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="tests.txt">
+      <Filter>Исходные файлы</Filter>
+    </Text>
     <Text Include="phonebook.txt">
       <Filter>Исходные файлы</Filter>
     </Text>

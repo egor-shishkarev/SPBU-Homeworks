@@ -5,8 +5,7 @@
 #include <locale.h>
 #include <stdbool.h>
 
-int workingMode(int mode, Phonebook *data) {
-	int pointer = 0;
+int workingMode(int mode, Phonebook *data, const char *phoneDirectory) {
 	switch (mode) {
 	case 0:
 		printf("Работа закончена.");
@@ -16,26 +15,32 @@ int workingMode(int mode, Phonebook *data) {
 		addNote(data);
 		break;
 	case 2:
-		printNotes();
+		printNotes(phoneDirectory);
 		break;
 	case 3:
-		searchPhone(data);
+		searchPhone(phoneDirectory, true, "", "");
 		break;
 	case 4:
-		searchName(data);
+		searchName(phoneDirectory, true, "", "");
 		break;
 	case 5:
-		saveNotes(data);
+		saveNotes(data, phoneDirectory, true);
 		break;
 	default:
 		printf("Введено неверное значение, повторите ввод => ");
 		int currentMode = verificationIntScanf();
-		workingMode(currentMode, data);
+		workingMode(currentMode, data, phoneDirectory);
 	}
 }
 
 int main() {
 	setlocale(LC_ALL, ".1251");
+	if (!correctTests() && incorrectCase()) {
+		printf("Тесты не пройдены!");
+		return -1;
+	}
+	printf("Тесты успешно пройдены.\n");
+	const char *phoneDirectory = "phonebook.txt";
 	printf("Добро пожаловать в программу-телефонный справочник!\nВводите имена на английском языке!\nДлина номера и имени ограничена 20 символами.\nВыберите действие:\n");
 	printf("0 - выйти\n1 - добавить запись(имя и телефон)\n2 - распечатать все имеющиеся записи\n\
 3 - найти телефон по имени\n4 - найти имя по телефону\n5 - сохранить текущие данные в файл");
@@ -47,7 +52,7 @@ int main() {
 		return -1;
 	}
 	while (true) {
-		workingMode(mode, data);
+		workingMode(mode, data, phoneDirectory);
 		if (mode == 0) {
 			break;
 		}
