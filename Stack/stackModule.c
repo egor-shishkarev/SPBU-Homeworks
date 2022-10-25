@@ -3,7 +3,7 @@
 #include <malloc.h>
 
 typedef struct Node {
-    int value;
+    char value;
     struct Node* next;
 } Node;
 
@@ -11,7 +11,7 @@ typedef struct Stack {
     Node* head;
 } Stack;
 
-int push(Stack* stack, int value) {
+int push(Stack* stack, char value) {
     Node* temp = malloc(sizeof(Node));
     if (temp == NULL) {
         printf("Память не была выделена.");
@@ -36,7 +36,7 @@ int pop(Stack* stack, int* errorCode) {
         *errorCode = 0;
     }
 
-    int value = stack->head->value;
+    char value = stack->head->value;
 
     Node* next = stack->head->next;
     free(stack->head);
