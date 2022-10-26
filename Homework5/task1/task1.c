@@ -84,7 +84,6 @@ int main() {
 		++currentElement;
 		currentChar = getchar();
 	}
-	printf("[%d]", atoi("4"));
 	printf("%d", expressionEvaluation(postfixExpression, currentElement));
 	return 0;
 }
