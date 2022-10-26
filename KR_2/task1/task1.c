@@ -3,11 +3,10 @@
 #include <locale.h>
 #include <stdbool.h>
 
-bool searchTest(int *numberOfSymbols, char* arrayOfRightSymbols, int* arrayOfCountSymbols, const int count) {
+bool searchTest(const int *numberOfSymbols, const int* arrayOfCountSymbols, const char* arrayOfRightSymbols, const int count) {
 	for (int i = 0; i < count; ++i) {
 		char symbol = arrayOfRightSymbols[i];
 		int countOfSymbol = arrayOfCountSymbols[i];
-		printf("%c - %d - %d\n", symbol, countOfSymbol, numberOfSymbols[(int)symbol]);
 		if (numberOfSymbols[(int)symbol] != countOfSymbol) {
 			return false;
 		}
@@ -17,9 +16,9 @@ bool searchTest(int *numberOfSymbols, char* arrayOfRightSymbols, int* arrayOfCou
 
 bool test1(void) {
 	int numberOfSymbols[257] = {0};
-	int maxCode = findSymbols("test1.txt", numberOfSymbols);
-	char arrayOfRightSymbols[4] = { 'A', 'B', 'C' };
-	int arrayOfCountSymbols[4] = { 3, 3, 3 };
+	const int maxCode = findSymbols("test1.txt", numberOfSymbols);
+	const char arrayOfRightSymbols[4] = { 'A', 'B', 'C'};
+	const int arrayOfCountSymbols[4] = { 3, 3, 3 };
 	return searchTest(numberOfSymbols, arrayOfCountSymbols, arrayOfRightSymbols, 3);
 }
 
@@ -47,6 +46,11 @@ int findSymbols(const char *fileName, int *arrayOfSymbols) {
 
 int main() {
 	setlocale(LC_ALL, ".1251");
+	if (!test1()) {
+		printf("Тесты не пройдены.");
+		return -1;
+	}
+	printf("Тесты успешно пройдены.\n");
 	int numberOfSymbols[257] = {0};
 	int maxCode = findSymbols("text.txt", numberOfSymbols);
 	for (int i = 0; i < maxCode + 1; ++i) {
