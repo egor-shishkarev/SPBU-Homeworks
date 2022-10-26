@@ -4,6 +4,7 @@
 #include <malloc.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #define MaxExpressionLength 50
 
 bool isDigit(char symbol) {
@@ -36,7 +37,7 @@ int operationPriority(const char symbol) {
 }
 
 char *conversionFromInfixToPostfix(const char *infixExpression, const int lengthOfString, int *errorCode) {
-	char postfixExpression[MaxExpressionLength] = { "" };
+	char *postfixExpression = calloc(MaxExpressionLength + 1, sizeof(char)); // char *outputExpressionInPrefixForm = calloc(maxLineSize + 1, sizeof(char));
 	Stack* stackForDigits = createStack();
 	Stack* stackForOperations = createStack();
 	if (stackForDigits == NULL || stackForOperations == NULL) {
@@ -44,32 +45,21 @@ char *conversionFromInfixToPostfix(const char *infixExpression, const int length
 		return;
 	}
 	int currentPosition = 0;
+	bool firstOperation = false;
 	for (int i = 0; i < lengthOfString; ++i) {
 		const char currentElement = infixExpression[i];
 		if (isDigit(currentElement)) { // Если символ - цифра, просто добавляем в стек для цифр
-			*errorCode = push(stackForDigits, (int)currentElement - 48);
-			if (errorCode) {
-				deleteStack(stackForDigits);
-				return;
-			}
+			*errorCode = push(stackForDigits, currentElement);
 		} else if (isOperation(currentElement) || currentElement == '(') { // Если символ - операция, начинаем смотреть варианты
 			if (isEmpty(stackForOperations)) { // Если стек пустой - просто добавляем его туда
 				*errorCode = push(stackForOperations, currentElement);
-				if (errorCode) {
-					deleteStack(stackForDigits);
-					return;
-				}
 				continue;
 			}
 			char topStack = top(stackForOperations);
 			if (operationPriority(currentElement) > operationPriority(topStack) || topStack == '(' || currentElement == '(') { // Если приоритет текущей операции выше чем операции из стека, вершина стека ( или текущая операция ( добавляем его
 				*errorCode = push(stackForOperations, currentElement);
-				if (errorCode) {
-					deleteStack(stackForDigits);
-					return;
-				}
 			} else { // Если же приоритет ниже, рассматриваем случаи
-				bool firstOperation = false;
+				firstOperation = false;
 				if (currentElement == ')') { // Случай с закрывающей скобкой
 					while (topStack != '(') {
 						if (!firstOperation) { // Если операция сразу же после скобки, то достаем два числа и одну операцию
@@ -104,7 +94,7 @@ char *conversionFromInfixToPostfix(const char *infixExpression, const int length
 				}
 			}
 		} else if (currentElement == ')') { // Случай с закрывающей скобкой
-			bool firstOperation = false;
+			firstOperation = false;
 			char topStack = top(stackForOperations);
 			while (topStack != '(') {
 				if (!firstOperation) { // Если операция сразу же после скобки, то достаем два числа и одну операцию
@@ -129,7 +119,6 @@ char *conversionFromInfixToPostfix(const char *infixExpression, const int length
 			return NULL;
 		}
 	}
-	bool firstOperation = false;
 	if (!isEmpty(stackForOperations)) {
 		if (!firstOperation) { // Если операция сразу же после скобки, то достаем два числа и одну операцию
 			postfixExpression[currentPosition + 1] = pop(stackForDigits, errorCode);
@@ -144,11 +133,23 @@ char *conversionFromInfixToPostfix(const char *infixExpression, const int length
 			currentPosition += 2;
 		}
 	}
+	deleteStack(stackForDigits);
+	deleteStack(stackForOperations);
 	return postfixExpression;
+}
+
+bool test(void) {
+	int errorCode = 0;
+	return !strcmp(conversionFromInfixToPostfix("(1+1)*2", 7, &errorCode), "11+2*");
 }
 
 int main() {
 	setlocale(LC_ALL, ".1251");
+	if (!test()) {
+		printf("Тесты не пройдены.");
+		return -1;
+	}
+	printf("Тесты успешно пройдены.\n");
 	printf("Введите выражение длиной максимум в %d символов для перевода из инфиксной в постфиксную форму записи =>", MaxExpressionLength);
 	char infixExpression[MaxExpressionLength] = { "" };
 	int currentElement = 0;
@@ -164,8 +165,6 @@ int main() {
 	}
 	int errorCode = 0;
 	char *postfixExpression = conversionFromInfixToPostfix(infixExpression, currentElement, &errorCode);
-	for (int i = 0; i < currentElement; ++i) {
-		printf("%c ", postfixExpression[i]);
-	}
+	printf("%s", postfixExpression);
 	return 0;
 }
