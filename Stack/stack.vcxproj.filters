@@ -26,5 +26,8 @@
     <ClInclude Include="stackModule.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="stackType.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

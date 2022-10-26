@@ -3,7 +3,7 @@
 #include <malloc.h>
 
 typedef struct Node {
-    int value;
+    uncertainType value;
     struct Node* next;
 } Node;
 
@@ -11,7 +11,7 @@ typedef struct Stack {
     Node* head;
 } Stack;
 
-int push(Stack* stack, int value) {
+int push(Stack* stack, uncertainType value) {
     Node* temp = malloc(sizeof(Node));
     if (temp == NULL) {
         printf("Память не была выделена.");
@@ -25,7 +25,7 @@ int push(Stack* stack, int value) {
 }
 
 int pop(Stack* stack, int* errorCode) {
-    if (stack == NULL) {
+    if (isEmpty(stack)) {
         if (errorCode != NULL) {
             *errorCode = -1;
         }
@@ -36,7 +36,7 @@ int pop(Stack* stack, int* errorCode) {
         *errorCode = 0;
     }
 
-    int value = stack->head->value;
+    uncertainType value = stack->head->value;
 
     Node* next = stack->head->next;
     free(stack->head);
@@ -59,6 +59,7 @@ void deleteStack(Stack* stack) {
 
 Stack* createStack() {
     Stack* stack = malloc(sizeof(Stack));
+    stack->head = NULL;
     return stack;
 }
 

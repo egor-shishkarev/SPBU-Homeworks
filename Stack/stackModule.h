@@ -1,9 +1,10 @@
 #pragma once
+#include "stackType.h"
 #include <stdbool.h>
 // Структура, содержащая другую структуру - Node, которая в свою очередь содержит два поля: значение и адрес следующего элемента в "стеке".
 typedef struct Stack Stack;
 // Функция для заполнения стека. Элемент добавляется в верх стека.
-int push(Stack* stack, int element);
+int push(Stack* stack, uncertainType element);
 // Функция, позволяющая "вытащить" элемент с верха стека.
 int pop(Stack* stack, int* errorCode);
 // Функция проверки стека на отсутствие элементов.
