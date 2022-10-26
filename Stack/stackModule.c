@@ -25,7 +25,7 @@ int push(Stack* stack, char value) {
 }
 
 int pop(Stack* stack, int* errorCode) {
-    if (stack == NULL) {
+    if (isEmpty(stack)) {
         if (errorCode != NULL) {
             *errorCode = -1;
         }
@@ -59,6 +59,7 @@ void deleteStack(Stack* stack) {
 
 Stack* createStack() {
     Stack* stack = malloc(sizeof(Stack));
+    stack->head = NULL;
     return stack;
 }
 
