@@ -7,12 +7,13 @@
 #include <stdlib.h>
 #define MaxExpressionLength 50
 
-bool isDigit(char symbol) {
-	char allDigits[10] = { "0123456789" };
+bool isDigit(int symbol) {
+	int allDigits = 9876543210;
 	for (int i = 0; i < 11; ++i) {
-		if (symbol == allDigits[i]) {
+		if (symbol == allDigits % 10) {
 			return true;
 		}
+		allDigits /= 10;
 	}
 	return false;
 }
@@ -30,6 +31,8 @@ bool isOperation(char symbol) {
 int expressionEvaluation(const char postfixExpression[], const int lengthOfExpression) {
 	int* errorCode = 0;
 	Stack* stack = createStack();
+	push(stack, 100);
+	printf("%d\n", top(stack));
 	for (int i = 0; i < lengthOfExpression; ++i) {
 		const char currentElement = postfixExpression[i];
 		if (isDigit(currentElement)) {
@@ -40,19 +43,23 @@ int expressionEvaluation(const char postfixExpression[], const int lengthOfExpre
 			const char secondNumber = pop(stack, errorCode);
 			switch (currentElement) {
 			case '-': {
-				push(stack, (char)(atoi(firstNumber) - atoi(secondNumber)));
+				push(stack, firstNumber - secondNumber);
+				printf("%d", firstNumber - secondNumber);
 				break;
 			}
 			case '+': {
-				push(stack, (char)(atoi(firstNumber) + atoi(secondNumber)));
+				push(stack, firstNumber + secondNumber);
+				printf("%d", firstNumber - secondNumber);
 				break;
 			}
 			case '*': {
-				push(stack, (char)(atoi(firstNumber) * atoi(secondNumber)));
+				push(stack, firstNumber * secondNumber);
+				printf("%d", top(stack));
 				break;
 			}
 			case '/':
-				push(stack, (char)(atoi(firstNumber) / atoi(secondNumber)));
+				push(stack, firstNumber / secondNumber);
+				printf("%d", top(stack));
 				break;
 			}
 		}
@@ -77,6 +84,7 @@ int main() {
 		++currentElement;
 		currentChar = getchar();
 	}
+	printf("[%d]", atoi("4"));
 	printf("%d", expressionEvaluation(postfixExpression, currentElement));
 	return 0;
 }
