@@ -16,19 +16,37 @@ int verificationIntScanf() {
 	}
 	return readValues;
 }
+bool test(void) {
+	List* testList = createList();
+	const int arrayForValues[4] = { 0, -10, 999, 51 };
+	for (int i = 0; i < 4; ++i) {
+		insert(testList, arrayForValues[i]);
+	}
+	bool allValuesAreTrue = true;
+	int errorCode = 0;
+	const int rightArrayForValues[4] = { -10, 0, 51, 999 };
+	for (int i = 0; i < 4; ++i) {
+		if (topElement(testList, &errorCode) != rightArrayForValues[i]) {
+			allValuesAreTrue = false;
+			break;
+		}
+		deleteElement(testList, rightArrayForValues[i]);
+	}
+	return allValuesAreTrue;
+}
 
-void workingMode(const int mode, List *list) {
+int workingMode(const int mode, List *list) {
 	switch (mode) {
 	case 0: {
 		printf("Работа окончена!");
 		deleteList(&list);
-		break;
+		return;
 	}
 	case 1: {
 		printf("Введите целочисленное значение для добавления в список => ");
 		const int value = verificationIntScanf();
 		insert(list, value);
-		break;
+		return;
 	}
 	case 2: {
 		printf("Введите значение элемента, который хотите удалить => ");
@@ -36,26 +54,30 @@ void workingMode(const int mode, List *list) {
 		const bool isElementInList = deleteElement(list, valueToDelete);
 		if (!isElementInList) {
 			printf("Элемент успешно удалён!\n");
-			break;
+			return;
 		} else {
 			printf("Данного элемента нет в списке! Проверьте наличие элементов командой номер 3.\n");
-			break;
+			return;
 		}
-		break;
 	}
 	case 3: {
 		printList(list);
-		break;
+		return;
 	}
 	default: {
 		printf("Введенной команды нет в списке, повторите ввод!\n");
-		break;
+		return;
 	}
 	}
 }
 
 int main() {
 	setlocale(LC_ALL, ".1251");
+	if (!test()) {
+		printf("Тесты не были пройдены!");
+		return -1;
+	}
+	printf("Тесты успешно пройдены!\n");
 	printf("Добро пожаловать в программу 'сортированный список'!\n");
 	printf("Введите следующие значения для продолжения или выхода из программы:\n0 – выйти\n1 – добавить значение в \
 сортированный список\n2 – удалить значение из списка\n3 – распечатать список\n");

@@ -4,7 +4,7 @@ typedef struct List List;
 // ‘ункци€, помещающа€ элемент в список. 
 int insert(List* list, int value);
 // ‘ункци€, вовзращающа€ элемент из "верха" списка.
-int getValue(List* list, int* errorCode);
+int topElement(List* list, int* errorCode);
 // ‘ункци€, удал€юща€ элемент из списка.
 int deleteElement(List* list, int value);
 // ‘ункци€, удал€юща€ список. 

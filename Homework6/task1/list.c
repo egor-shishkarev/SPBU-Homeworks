@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <malloc.h>
 
 typedef struct Node {
     int value;
@@ -60,7 +61,7 @@ int insert(List* list, int value) {
     return 0;
 }
 
-int getValue(List* list, int* errorCode) {
+int topElement(List* list, int* errorCode) {
     if (list == NULL || list->head == NULL) {
         *errorCode = -1;
         return 0;
