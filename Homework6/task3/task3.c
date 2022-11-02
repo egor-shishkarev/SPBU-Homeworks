@@ -3,14 +3,13 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <malloc.h>
+#include <string.h>
 
 int main() {
 	setlocale(LC_ALL, ".1251");
 	List* list = createList();
 	int errorCode = 0;
 	int position = 1;
-	/*insert(list, "Egor", "89116175014", position, &errorCode);
-	printf("%s", getName(list, position));*/
 	FILE* file = fopen("phonebook.txt", "r");
 	while (!feof(file)) {
 		char* name = malloc(20 * sizeof(char));
@@ -25,8 +24,16 @@ int main() {
 		insert(list, name, phone, position, &errorCode);
 		++position;
 	}
-	for (int i = 1; i <= position; ++i) {
+	for (int i = 1; i < position; ++i) {
 		printf("%s - %s\n", getName(list, i), getPhone(list, i));
+	}
+	List* secondList = list;
+	for (int i = 0; i < 2; ++i) {
+		secondList = getNextPosition(secondList);
+	}
+	List* mergedList = mergeSort(list, secondList, 2, 2);
+	for (int i = 1; i <= 4; ++i) {
+		printf("%s - %s\n", getName(mergedList, i), getPhone(mergedList, i));
 	}
 	return 0;
 } 
