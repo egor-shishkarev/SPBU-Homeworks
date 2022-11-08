@@ -23,11 +23,11 @@ int choiceChild(Node* node, const int key) {
 	return node->key > key ? 1 : -1;
 }
 
-int rightOrLeftChild(Node* node) {
+bool isLeftChild(Node* node) {
 	if (node->parent->leftChild == node) {
-		return 1;
+		return true;
 	}
-	return -1;
+	return false;
 }
 
 Tree* createTree(void) {
@@ -39,11 +39,13 @@ Tree* createTree(void) {
 	return tree;
 }
 
-void addElement(Tree* tree, const int key, const char* value) {
+void addElement(Tree* tree, const int key, char* value) {
 	if (tree->root == NULL) {
 		Node* newNode = malloc(sizeof(Node));
 		newNode->key = key;
-		newNode->value = value;
+		char* newValue = calloc(strlen(value) + 1, sizeof(char));
+		strcpy(newValue, value);
+		newNode->value = newValue;
 		newNode->rightChild = NULL;
 		newNode->leftChild = NULL;
 		newNode->parent = NULL;
@@ -63,7 +65,9 @@ void addElement(Tree* tree, const int key, const char* value) {
 		}
 		Node* newNode = malloc(sizeof(Node));
 		newNode->key = key;
-		newNode->value = value;
+		char* newValue = calloc(strlen(value) + 1, sizeof(char));
+		strcpy(newValue, value);
+		newNode->value = newValue;
 		newNode->leftChild = NULL;
 		newNode->rightChild = NULL;
 		newNode->parent = currentNode;
@@ -105,7 +109,7 @@ bool isKeyInTree(Tree* tree, const int key) {
 			currentNode = currentNode->rightChild;
 		}
 		else if (currentNode->key == key) {
-			return tree;
+			return true;
 		}
 	}
 }
@@ -138,7 +142,7 @@ void deleteElement(Tree* tree, const int key) {
 		}
 	}
 	if (currentNode->rightChild == NULL && currentNode->leftChild == NULL) {
-		if (rightOrLeftChild(currentNode) == 1) {
+		if (isLeftChild(currentNode)) {
 			currentNode->parent->leftChild = NULL;
 		} else {
 			currentNode->parent->rightChild = NULL;
@@ -150,8 +154,22 @@ void deleteElement(Tree* tree, const int key) {
 	}
 	Node* replacementNode = theMostRightChild(currentNode);
 	currentNode->key = replacementNode->key;
-	currentNode->value = replacementNode->value;
-	replacementNode->parent->rightChild = replacementNode->leftChild;
+	free(currentNode->value);
+	char* newValue = calloc(strlen(replacementNode->value) + 1, sizeof(char));
+	strcpy(newValue, replacementNode->value);
+	currentNode->value = newValue;
+	if (replacementNode->leftChild != NULL) {
+		replacementNode->parent->rightChild = replacementNode->leftChild;
+	} else {
+		if (isLeftChild(replacementNode)) {
+			replacementNode->parent->leftChild = NULL;
+		} else {
+			replacementNode->parent->rightChild = NULL;
+		}
+	}
+	replacementNode->parent = NULL;
+	free(replacementNode->value);
+	replacementNode->value = NULL;
 	free(replacementNode);
 }
 
@@ -163,6 +181,7 @@ void deleteTreeRecursive(Node* node) {
 	deleteTreeRecursive(node->leftChild);
 	deleteTreeRecursive(node->rightChild);
 
+	free(node->value);
 	node->value = NULL;
 	free(node);
 	node = NULL;

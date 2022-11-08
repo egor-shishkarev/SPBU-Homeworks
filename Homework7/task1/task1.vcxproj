@@ -130,7 +130,9 @@
     <ClCompile Include="task1.c">
       <SDLCheck Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</SDLCheck>
     </ClCompile>
-    <ClCompile Include="tree.c" />
+    <ClCompile Include="tree.c">
+      <SDLCheck Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</SDLCheck>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tree.h" />

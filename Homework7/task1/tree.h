@@ -17,3 +17,4 @@ bool isKeyInTree(Tree* tree, const int key);
 void deleteElement(Tree* tree, const int key);
 void deleteTreeRecursive(Node* node);
 void deleteTree(Tree** tree);
+bool isLeftChild(Node* node);
