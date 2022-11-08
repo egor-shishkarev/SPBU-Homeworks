@@ -18,8 +18,42 @@ int verificationIntScanf(void) {
 	return readValues;
 }
 
+bool test(void) {
+	int errorCode = 0;
+	Tree* tree = createTree(&errorCode);
+	addElement(tree, 8, "A", &errorCode);
+	if (errorCode) {
+		return false;
+	}
+	addElement(tree, 5, "B", &errorCode);
+	if (errorCode) {
+		return false;
+	}
+	addElement(tree, 9, "C", &errorCode);
+	if (errorCode) {
+		return false;
+	}
+	addElement(tree, 1, "D", &errorCode);
+	if (errorCode) {
+		return false;
+	}
+	bool firstTest = strcmp(searchValueFromKey(tree, 5), "B") == 0;
+	deleteElement(tree, 8, &errorCode);
+	if (errorCode) {
+		return false;
+	}
+	bool secondTest = isKeyInTree(tree, 8) == false;
+	deleteTree(&tree);
+	return firstTest && secondTest && tree == NULL;
+}
+
 int main() {
 	setlocale(LC_ALL, ".1251");
+	if (!test()) {
+		printf("Тесты не пройдены!");
+		return -1;
+	}
+	printf("Тесты были пройдены!\n");
 	printf("Данная программа - словарь, который интерактивно работает с ключами и значениями.\n");
 	printf("Введите следующие числа, чтобы выполнить предложенные команды:\n0 - выйти\n1 - добавить значение по ключу в словарь\n2 - \
 получить значение по ключу\n3 - проверить наличие ключа в словаре\n4 - удалить ключ и его значение\n");
@@ -70,7 +104,7 @@ int main() {
 			break; 
 		}
 		default: {
-			printf("Данной команды нет в списке, повторите ввод!");
+			printf("Данной команды нет в списке, повторите ввод!\n");
 			continue;
 		}
 		}

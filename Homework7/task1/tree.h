@@ -25,8 +25,6 @@ bool isKeyInTree(Tree* tree, const int key);
 // Функция удаления элемента из дерева. Если такого ключа нет, ничего не делает.
 void deleteElement(Tree* tree, const int key, int* errorCode);
 // Основной алгоритм удаления дерева с помощью рекурсии.
-void deleteTreeRecursive(Node* node);
-// Начало удаления дерева. Необходима для правильной работы рекурсивного алгоритма.
 void deleteTree(Tree** tree);
 // Возвращает true если переданный узел является левым сыном или false, если является правым сыном.
 bool isLeftChild(Node* node, int* errorCode);

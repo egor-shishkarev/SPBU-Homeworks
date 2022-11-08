@@ -77,7 +77,10 @@ void addElement(Tree* tree, const int key, char* value, int *errorCode) {
 			}
 		}
 		if (currentNode->key == key) {
-			currentNode->value = value;
+			char* newValue = calloc(strlen(value) + 1, sizeof(char));
+			strcpy(newValue, value);
+			free(currentNode->value);
+			currentNode->value = newValue;
 			return;
 		}
 		Node* newNode = malloc(sizeof(Node));
@@ -195,7 +198,12 @@ void deleteElement(Tree* tree, const int key, int *errorCode) {
 	strcpy(newValue, replacementNode->value);
 	currentNode->value = newValue;
 	if (replacementNode->leftChild != NULL) {
-		replacementNode->parent->rightChild = replacementNode->leftChild;
+		if (!isLeftChild(replacementNode, errorCode)) {
+			replacementNode->parent->rightChild = replacementNode->leftChild;
+		} else {
+			currentNode->leftChild = replacementNode->leftChild;
+			replacementNode->leftChild->parent = currentNode;
+		}
 	} else {
 		if (isLeftChild(replacementNode, errorCode) && !errorCode) {
 			replacementNode->parent->leftChild = NULL;
