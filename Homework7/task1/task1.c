@@ -23,7 +23,8 @@ int main() {
 	printf("Данная программа - словарь, который интерактивно работает с ключами и значениями.\n");
 	printf("Введите следующие числа, чтобы выполнить предложенные команды:\n0 - выйти\n1 - добавить значение по ключу в словарь\n2 - \
 получить значение по ключу\n3 - проверить наличие ключа в словаре\n4 - удалить ключ и его значение\n");
-	Tree* tree = createTree();
+	int errorCode = 0;
+	Tree* tree = createTree(&errorCode);
 	while (true) {
 		printf("Введите команду => ");
 		int mode = verificationIntScanf();
@@ -39,7 +40,11 @@ int main() {
 			printf("Введите значение длинной не более %d символов => ", MAX_STRING_SIZE);
 			char value[MAX_STRING_SIZE] = { 0 };
 			gets(value);
-			addElement(tree, key, value);
+			addElement(tree, key, value, &errorCode);
+			if (errorCode) {
+				printf("Произошла ошибка в работе!");
+				return -1;
+			}
 			break;
 		}
 		case 2: {
@@ -57,7 +62,11 @@ int main() {
 		case 4: {
 			printf("Введите ключ, значение для которого хотите удалить => ");
 			const int key = verificationIntScanf();
-			deleteElement(tree, key);
+			deleteElement(tree, key, &errorCode);
+			if (errorCode) {
+				printf("Произошла ошибка в работе!");
+				return -1;
+			}
 			break; 
 		}
 		default: {
