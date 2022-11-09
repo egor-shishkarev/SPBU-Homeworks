@@ -16,28 +16,48 @@ int verificationIntScanf(void) {
 	}
 	return readValues;
 }
-
-void bubbleEvenSort(int* arrayOfElements, const int lengthOfArray) {
-	for (int i = 0 + 1 * (lengthOfArray % 2 != 0); i < lengthOfArray; i += 2) {
-		bool flagOfChanges = true;
-		for (int j = lengthOfArray - 1 * (lengthOfArray % 2 != 0) - 1; j > i; j -= 2) {
-			if (arrayOfElements[j] < arrayOfElements[j - 2]) {
-				const int buffer = arrayOfElements[j];
-				arrayOfElements[j] = arrayOfElements[j - 2];
-				arrayOfElements[j - 2] = buffer;
-				flagOfChanges = true;
+void bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
+	for (int i = 0; i < lengthOfArray; ++i) {
+		bool flagOfChanged = false;
+		for (int j = lengthOfArray - 1; j > i; --j) {
+			if (arrayOfNumbers[j] < arrayOfNumbers[j - 1]) {
+				const int buffer = arrayOfNumbers[j];
+				arrayOfNumbers[j] = arrayOfNumbers[j - 1];
+				arrayOfNumbers[j - 1] = buffer;
+				flagOfChanged = true;
 			}
 		}
-		if (!flagOfChanges) {
+		if (!(flagOfChanged)) {
 			break;
+		}
+	}
+}
+
+void bubbleSortOfEven(int* arrayOfNumbers, const int lengthOfArray) {
+	for (int i = 0; i < lengthOfArray; ++i) {
+		for (int j = lengthOfArray - 1; j > i; --j) {
+			if (arrayOfNumbers[j] % 2 != 0) {
+				continue;
+			}
+			for (int k = j - 1; k >= i; --k) {
+				if (arrayOfNumbers[k] % 2 != 0) {
+					continue;
+				}
+				if (arrayOfNumbers[j] < arrayOfNumbers[k] && arrayOfNumbers[j] % 2 == 0 && arrayOfNumbers[k] % 2 == 0) {
+					const int buffer = arrayOfNumbers[j];
+					arrayOfNumbers[j] = arrayOfNumbers[k];
+					arrayOfNumbers[k] = buffer;
+					break;
+				}
+			}
 		}
 	}
 }
 
 bool test1(void) {
 	int example[8] = { 8, 7, 6, 5, 4, 3, 2, 1 };
-	bubbleEvenSort(example, 8);
-	const int rightArray[8] = { 8, 1, 6, 3, 4, 5, 2, 7 };
+	bubbleSortOfEven(example, 8);
+	const int rightArray[8] = { 2, 7, 4, 5, 6, 3, 8, 1 };
 	for (int i = 0; i < 8; ++i) {
 		if (example[i] != rightArray[i]) {
 			return false;
@@ -48,7 +68,7 @@ bool test1(void) {
 
 bool test2(void) {
 	int example[5] = { 5, 4, 3, 2, 1 };
-	bubbleEvenSort(example, 5);
+	bubbleSortOfEven(example, 5);
 	const int rightArray[5] = { 5, 2, 3, 4, 1 };
 	for (int i = 0; i < 5; ++i) {
 		if (example[i] != rightArray[i]) {
@@ -76,8 +96,8 @@ int main(void) {
 	for (int i = 0; i < numberOfElements; ++i) {
 		arrayOfElements[i] = verificationIntScanf();
 	}
-	bubbleEvenSort(arrayOfElements, numberOfElements);
-	printf("Массив, отсортированный пузырьком только по четным позициям: \n");
+	bubbleSortOfEven(arrayOfElements, numberOfElements);
+	printf("Массив, отсортированный пузырьком только для четных элементов: \n");
 	for (int i = 0; i < numberOfElements; ++i) {
 		printf("%d ", arrayOfElements[i]);
 	}
