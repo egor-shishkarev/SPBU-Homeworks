@@ -27,12 +27,11 @@ int quickSort(int* arrayOfNumbers, int firstIndex, int lastIndex) {
 		} while (left <= right);
 		quickSort(arrayOfNumbers, firstIndex, right);
 		quickSort(arrayOfNumbers, left, lastIndex);
-
 	}
 }
 
 int main() {
-	int arrayOfNumbers[lengthOfArray] = {0};
+	int arrayOfNumbers[lengthOfArray] = { 0 };
 	srand(clock(NULL));
 	for (int i = lengthOfArray / 2; i < lengthOfArray; ++i) {
 		arrayOfNumbers[i] = rand();
