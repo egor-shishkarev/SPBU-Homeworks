@@ -67,11 +67,11 @@ bool fibonacciTest(unsigned long long number) {
 }
 
 bool testCorrectCase() {
-	bool allTestsIsTrue = true;
+	bool allTestsAreTrue = true;
 	for (int i = 1; i < 94; ++i) {
-		allTestsIsTrue *= fibonacciTest(i);
+		allTestsAreTrue *= fibonacciTest(i);
 	}
-	return allTestsIsTrue;
+	return allTestsAreTrue;
 }
 
 bool testIncorrectCase() {
