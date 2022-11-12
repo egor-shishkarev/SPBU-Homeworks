@@ -25,7 +25,7 @@ void insertElement(List* list, const char* value) {
  	if (list->head == NULL) {
 		Node* newNode = malloc(sizeof(Node));
 		list->head = newNode;
-		char* newValue = calloc(strlen(value), sizeof(char));
+		char* newValue = calloc(strlen(value) + 1, sizeof(char));
 		strcpy(newValue, value);
 		newNode->value = newValue;
 		newNode->next = NULL;
@@ -42,7 +42,7 @@ void insertElement(List* list, const char* value) {
 		currentNode = currentNode->next;
 	}
 	Node* newNode = malloc(sizeof(Node));
-	char* newValue = calloc(strlen(value), sizeof(char));
+	char* newValue = calloc(strlen(value) + 1, sizeof(char));
 	strcpy(newValue, value);
 	newNode->value = newValue;
 	newNode->count = 1;
@@ -58,4 +58,23 @@ void printList(List* list) {
 		printf("%s", currentNode->value);
 		currentNode = currentNode->next;
 	}
+}
+
+void deleteListRecursively(Node* node) {
+	if (node == NULL) {
+		return;
+	}
+	if (node->next != NULL) {
+		deleteListRecursively(node->next);
+	}
+	free(node->value);
+	node->value = NULL;
+	free(node);
+
+}
+
+void deleteList(List** list) {
+	deleteListRecursively((*list)->head);
+	free((*list));
+	*list = NULL;
 }

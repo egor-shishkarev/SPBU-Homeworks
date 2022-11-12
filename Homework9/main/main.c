@@ -1,11 +1,10 @@
-﻿//#include "hashTable.h"
-#include "hashTable.h"
+﻿#include "hashTable.h"
 #include <stdio.h>
 #include <locale.h>
 
 int main(void) {
 	setlocale(LC_ALL, ".1251");
-	const int hashSize = 10;
+	const int hashSize = 37;
 	List** hashTable = createTable(hashSize);
 	FILE* file = fopen("text.txt", "r");
  	while (!feof(file)) {
@@ -17,24 +16,32 @@ int main(void) {
 			++currentPosition;
 			currentChar = getc(file);
 		}
+		if (!strcmp(buffer, "")) {
+			free(buffer);
+			continue;
+		}
 		addElement(hashTable, buffer, hashSize);
 		free(buffer);
 	}
 	fclose(file);
+	int* listDepth = calloc(hashSize, sizeof(int));
+	int sumOfDepths = 0;
+	int maxDepth = 0;
 	for (int i = 0; i < hashSize; ++i) {
-		printf("%d-й список\n", i + 1);
+		//printf("%d-й список\n", i + 1);
+		listDepth[i] = depthOfList(hashTable[i]);
+		if (listDepth[i] > maxDepth) {
+			maxDepth = listDepth[i];
+		}
+		sumOfDepths += listDepth[i];
 		printAllElements(hashTable[i]);
 	}
+	printf("Коэффициент заполнения таблицы - %f\n", (float)sumOfDepths / hashSize);
+	printf("Максимальная длина списка - %d\n", maxDepth);
+	printf("Средняя длина списка - %f\n", (float)sumOfDepths / hashSize);
+	for (int i = 0; i < hashSize; ++i) {
+		deleteList(&hashTable[i]);
+	}
+	free((*hashTable));
 	return 0;
 }
-
-/*Посчитать частоты встречаемости слов в тексте с помощью хеш-таблицы. 
-На входе файл с текстом, вывести на консоль все слова, встречающиеся 
-в этом тексте с количеством раз, которое встречается каждое слово. 
-Словом считается последовательность символов, разделённая пробелами, 
-разные словоформы считаются разными словами. Хеш-таблицу реализовать в 
-отдельном модуле, использующем модуль «Список». Подсчитать и вывести 
-также коэффициент заполнения хеш-таблицы, максимальную и среднюю длину списка в сегменте таблицы.
-
-Количество "бесплатных" попыток сдачи — 3.*/
-

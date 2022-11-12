@@ -7,3 +7,4 @@ typedef struct List List;
 List* createList(void);
 void insertElement(List* list, const char* value);
 void printList(List* list);
+void deleteList(List** list);
