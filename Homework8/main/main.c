@@ -64,12 +64,12 @@ int main(void) {
 		int mode = verificationIntScanf();
 		switch (mode) {
 		case 0: {
-			deleteTree(&tree); // Тут без изменений
+			deleteTree(&tree); 
 			printf("Работа окончена!");
 			return 0;
 		}
 		case 1: {
-			printf("Введите ключ => "); // Тут надо поменять(
+			printf("Введите ключ => "); 
 			const int key = verificationIntScanf();
 			printf("Введите значение длинной не более %d символов => ", MAX_STRING_SIZE);
 			char value[MAX_STRING_SIZE] = { 0 };
@@ -82,19 +82,19 @@ int main(void) {
 			break;
 		}
 		case 2: {
-			printf("Введите ключ => "); // Тут всё как было
+			printf("Введите ключ => "); 
 			const int key = verificationIntScanf();
 			printf("Значение по данному ключу - %s\n", searchValueFromKey(tree, key));
 			break;
 		}
 		case 3: {
-			printf("Введите ключ => "); // Аналогично
+			printf("Введите ключ => "); 
 			const int key = verificationIntScanf();
 			printf(isKeyInTree(tree, key) ? "Данный ключ есть в словаре.\n" : "Данного ключа нет в словаре!\n");
 			break;
 		}
 		case 4: {
-			printf("Введите ключ, значение для которого хотите удалить => "); // Тут вроде бы все тоже ок)
+			printf("Введите ключ, значение для которого хотите удалить => "); 
 			const int key = verificationIntScanf();
 			deleteElement(tree, key, &errorCode);
 			if (errorCode) {

@@ -228,7 +228,7 @@ void deleteElement(AVLTree* tree, const int key, int* errorCode) {
 	free(replacementNode);
 }
 
-void deleteTreeRecursive(Node* node) {
+void deleteTreeRecursive(Node* node) { 
 	if (node == NULL) {
 		return;
 	}
