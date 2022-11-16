@@ -100,6 +100,7 @@ void addElement(AVLTree* tree, const int key, char* value, int* errorCode) {
 		}
 		strcpy(newValue, value);
 		newNode->value = newValue;
+		newNode->balance = 0;
 		newNode->leftChild = NULL;
 		newNode->rightChild = NULL;
 		newNode->parent = currentNode;
@@ -108,6 +109,15 @@ void addElement(AVLTree* tree, const int key, char* value, int* errorCode) {
 		}
 		else {
 			currentNode->rightChild = newNode;
+		}
+		newNode->parent->balance += isLeftChild(newNode, errorCode) * (-2) + 1;
+		if (newNode->parent->balance == 0) {
+			return;
+		} else {
+			countingBalance(newNode->parent, errorCode);
+		}
+		if (balance(newNode, tree)->parent == NULL) {
+			tree->root = balance(newNode, tree);
 		}
 	}
 	return;
@@ -251,29 +261,39 @@ void deleteTree(AVLTree** tree) {
 	*tree = NULL;
 }
 
-Node* smallLeftRotate(Node* a) {
+Node* smallLeftRotate(Node* a, AVLTree* tree) {
 	Node* b = a->rightChild;
 	Node* c = b->leftChild;
 	b->leftChild = a;
 	a->rightChild = c;
-	c->parent = a;
+	if (c != NULL) {
+		c->parent = a;
+	}
 	b->parent = a->parent;
 	a->parent = b;
+	if (a == tree->root) {
+		tree->root = b;
+	}
 	return b;
 }
 
-Node* smallRightRotate(Node* a) {
+Node* smallRightRotate(Node* a, AVLTree* tree) {
 	Node* b = a->leftChild;
 	Node* c = b->rightChild;
 	b->rightChild = a;
 	a->leftChild = c;
-	c->parent = a;
+	if (c != NULL) {
+		c->parent = a;
+	}
 	b->parent = a->parent;
 	a->parent = b;
+	if (a == tree->root) {
+		tree->root = b;
+	}
 	return b;
 }
 
-Node* bigLeftRotate(Node* a) {
+Node* bigLeftRotate(Node* a, AVLTree* tree) {
 	Node* b = a->rightChild;
 	Node* c = b->leftChild;
 	a->rightChild = c->leftChild;
@@ -285,10 +305,13 @@ Node* bigLeftRotate(Node* a) {
 	a->parent = c;
 	c->rightChild = b;
 	b->parent = c;
+	if (a == tree->root) {
+		tree->root = c;
+	}
 	return c;
 }
 
-Node* bigRightRotate(Node* a) {
+Node* bigRightRotate(Node* a, AVLTree *tree) {
 	Node* b = a->leftChild;
 	Node* c = b->rightChild;
 	a->leftChild = c->rightChild;
@@ -300,19 +323,40 @@ Node* bigRightRotate(Node* a) {
 	a->parent = c;
 	c->leftChild = b;
 	b->parent = c;
+	if (a == tree->root) {
+		tree->root = c;
+	}
 	return c;
 }
 
-Node* balance(Node* node) {
+Node* balance(Node* node, AVLTree* tree) {
+	if (node == NULL) {
+		return;
+	}
 	if (node->balance == 2) {
 		if (node->rightChild->balance >= 0)
-			return smallLeftRotate(node);
-		return bigLeftRotate(node);
-	}
-	if (node->balance == -2) {
+			return smallLeftRotate(node, tree);
+		return bigLeftRotate(node, tree);
+	} else if (node->balance == -2) {
 		if (node->leftChild->balance <= 0)
-			return smallRightRotate(node);
-		return bigRightRotate(node);
+			return smallRightRotate(node, tree);
+		return bigRightRotate(node, tree);
+	} else {
+		balance(node->parent, tree);
 	}
 	return node;
 }
+
+Node* countingBalance(Node* node, int *errorCode) {
+	if (node->parent == NULL) {
+		return;
+	}
+	if (isLeftChild(node, errorCode)) {
+		--node->parent->balance;
+	} else {
+		++node->parent->balance;
+	}
+	countingBalance(node->parent, errorCode);
+}
+
+

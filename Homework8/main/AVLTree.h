@@ -28,3 +28,6 @@ void deleteElement(AVLTree* tree, const int key, int* errorCode);
 void deleteTree(AVLTree** tree);
 // Возвращает true если переданный узел является левым сыном или false, если является правым сыном.
 bool isLeftChild(Node* node, int* errorCode);
+
+Node* balance(Node* node, AVLTree* tree);
+Node* countingBalance(Node* node, int* errorCode);
