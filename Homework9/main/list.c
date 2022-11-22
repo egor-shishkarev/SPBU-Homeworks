@@ -21,7 +21,7 @@ List* createList(void) {
 	return list;
 }
 
-void insertElement(List* list, const char* value) {
+void insertElement(List* list, const char* value, const int count) {
  	if (list->head == NULL) {
 		Node* newNode = malloc(sizeof(Node));
 		list->head = newNode;
@@ -29,7 +29,7 @@ void insertElement(List* list, const char* value) {
 		strcpy(newValue, value);
 		newNode->value = newValue;
 		newNode->next = NULL;
-		newNode->count = 1;
+		newNode->count = count;
 		list->tail = newNode;
 		return;
 	}
@@ -50,6 +50,10 @@ void insertElement(List* list, const char* value) {
 	newNode->next = NULL;
 	list->tail = newNode;
 	return;
+}
+
+void insertValue(Node* node, const int value) {
+
 }
 
 void printList(List* list) {
@@ -77,4 +81,33 @@ void deleteList(List** list) {
 	deleteListRecursively((*list)->head);
 	free((*list));
 	*list = NULL;
+}
+
+void recursiveErase(Node* node) {
+	if (node != NULL) {
+		recursiveErase(node->next);
+	} else {
+		return;
+	}
+	node->count = 0;
+	node->value = NULL;
+	node->next = NULL;
+	free(node);
+}
+
+void eraseList(List* list) {
+	Node* currentNode = list->head;
+	recursiveErase(currentNode);
+	list->head = NULL;
+}
+
+bool isElementInList(List* list, const char* value) {
+	Node* currentNode = list->head;
+	while (currentNode != NULL) {
+		if (strcmp(currentNode->value, value) == 0) {
+			return true;
+		}
+		currentNode = currentNode->next;
+	}
+	return false;
 }

@@ -4,9 +4,12 @@
 
 int main(void) {
 	setlocale(LC_ALL, ".1251");
-	const int hashSize = 37;
+	int hashSize = 2;
 	List** hashTable = createTable(hashSize);
 	FILE* file = fopen("text.txt", "r");
+	int numberOfElements = 0;
+	int errorCode = 0;
+	List* listOfWords = createList();
  	while (!feof(file)) {
 		char* buffer = calloc(100, sizeof(char));
 		int currentChar = getc(file);
@@ -20,7 +23,21 @@ int main(void) {
 			free(buffer);
 			continue;
 		}
-		addElement(hashTable, buffer, hashSize);
+		bool flagOfExist = false;
+		for (int i = 0; i < hashSize; ++i) {
+			if (isElementInList(hashTable[i], buffer)) {
+				flagOfExist = true;
+				break;
+			}
+		}
+		if (!flagOfExist) {
+			++numberOfElements;
+		}
+		addElement(hashTable, buffer, 1, hashSize);
+		if (hashSize <= numberOfElements) {
+			hashTable = increaseTable(hashTable, hashSize, (int)(1.5 * hashSize), &errorCode);
+			hashSize = (int)(1.5 * numberOfElements);
+		}
 		free(buffer);
 	}
 	fclose(file);
@@ -28,7 +45,7 @@ int main(void) {
 	int sumOfDepths = 0;
 	int maxDepth = 0;
 	for (int i = 0; i < hashSize; ++i) {
-		//printf("%d-й список\n", i + 1);
+		printf("%d-й список\n", i + 1);
 		listDepth[i] = depthOfList(hashTable[i]);
 		if (listDepth[i] > maxDepth) {
 			maxDepth = listDepth[i];

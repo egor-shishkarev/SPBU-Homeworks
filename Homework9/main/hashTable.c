@@ -19,6 +19,40 @@ List** createTable(const int size) {
 	return hashTable;
 }
 
+void deleteTable(List** hashTable, const int hashSize) {
+	for (int i = 0; i < hashSize; ++i) {
+		deleteList(&hashTable[i]);
+	}
+	free((*hashTable));
+}
+
+List** increaseTable(List** hashTable, const int hashSize, const int newSize, int *errorCode) {
+	hashTable = (List**)realloc(hashTable, sizeof(List) * newSize);
+	for (int i = hashSize; i < newSize; ++i) {
+		hashTable[i] = createList();
+	}
+	List** additionalTable = createTable(hashSize);
+	for (int i = 0; i < hashSize; ++i) {
+		Node* currentNode = hashTable[i]->head;
+		while (currentNode != NULL) {
+			addElement(additionalTable, currentNode->value, currentNode->count, hashSize);
+			currentNode = currentNode->next;
+		}
+	}
+	for (int i = 0; i < hashSize; ++i) {
+		eraseList(hashTable[i]);
+	}
+	for (int i = 0; i < hashSize; ++i) {
+		Node* currentNode = additionalTable[i]->head;
+		while (currentNode != NULL) {
+			addElement(hashTable, currentNode->value, currentNode->count, newSize);
+			currentNode = currentNode->next;
+		}
+	}
+	deleteTable(additionalTable, hashSize);
+	return hashTable;
+}
+
 int hashFunction(const char* value, const int hashSize) {
 	const int stringSize = strlen(value);
 	int result = 0;
@@ -30,9 +64,9 @@ int hashFunction(const char* value, const int hashSize) {
 	return result;
 }
 
-void addElement(List** hashTable, const char* value, const int hashSize) {
+void addElement(List** hashTable, const char* value, const int count, const int hashSize) {
 	const int position = hashFunction(value, hashSize);
-	insertElement(hashTable[position], value);
+	insertElement(hashTable[position], value, count);
 }
 
 void printAllElements(List* list) {
@@ -52,3 +86,4 @@ int depthOfList(List* list) {
 	}
 	return depth;
 }
+
