@@ -274,6 +274,7 @@ Node* smallLeftRotate(Node* a, AVLTree* tree) {
 	if (a == tree->root) {
 		tree->root = b;
 	}
+	b->balance = 0;
 	return b;
 }
 
