@@ -53,20 +53,29 @@ List** increaseTable(List** hashTable, const int hashSize, const int newSize, in
 	return hashTable;
 }
 
-int hashFunction(const char* value, const int hashSize) {
+unsigned long long hashFunction(const char* value, const int hashSize) {
 	const int stringSize = strlen(value);
-	int result = 0;
+	unsigned long long result = 0;
 	const int primeNumber = 23;
 	for (int i = 0; i < stringSize; ++i) {
-		result += (int)value[i] * pow(primeNumber, stringSize - i);
+		result += (unsigned long long)value[i] * pow(primeNumber, stringSize - i);
 	}
 	result = abs(result);
 	return result;
 }
 
 void addElement(List** hashTable, const char* value, const int count, const int hashSize) {
-	int position = hashFunction(value, hashSize);
+	unsigned long long position = hashFunction(value, hashSize);
 	position %= hashSize;
+	while (true) {
+		if (hashTable[position]->head == NULL) {
+			break;
+		}
+		if (strcmp(hashTable[position]->head->value, value) == 0) {
+			break;
+		}
+		position = (position + 1) % hashSize;
+	}
 	insertElement(hashTable[position], value, count);
 }
 
