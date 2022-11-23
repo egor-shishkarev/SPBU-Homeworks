@@ -19,28 +19,28 @@ int verificationIntScanf(void) {
 }
 
 bool correctCase(void) {
-	List* list = createList();
+	int errorCode = 0;
+	List* list = createList(&errorCode);
 	for (int i = 0; i < 500000; ++i) {
-		insertElement(list, i);
+		insertElement(list, i, &errorCode);
 	}
 	for (int i = 499999; i >= 0; --i) {
-		insertElement(list, i);
+		insertElement(list, i, &errorCode);
 	}
-	int errorCode = 0;
 	return isSymethric(list, &errorCode) && !errorCode;
 }
 
 bool incorrectCase(void) {
-	List* list = createList();
-	for (int i = 0; i < 100; ++i) {
-		insertElement(list, i);
-	}
-	insertElement(list, 9);
-	insertElement(list, 10);
-	for (int i = 99; i >= 0; --i) {
-		insertElement(list, i);
-	}
 	int errorCode = 0;
+	List* list = createList(&errorCode);
+	for (int i = 0; i < 100; ++i) {
+		insertElement(list, i, &errorCode);
+	}
+	insertElement(list, 9, &errorCode);
+	insertElement(list, 10, &errorCode);
+	for (int i = 99; i >= 0; --i) {
+		insertElement(list, i, &errorCode);
+	}
 	return !isSymethric(list, &errorCode) && !errorCode;
 }
 
@@ -50,15 +50,24 @@ int main(void) {
 		printf("Тесты не были пройдены!");
 		return -1;
 	}
+	printf("Тесты пройдены успешно!\n");
 	FILE* file = fopen("example.txt", "r");
 	int errorCode = 0;
-	List* list = createList();
+	List* list = createList(&errorCode);
+	if (errorCode) {
+		printf("Произошла ошибка при выделении памяти.");
+		return -1;
+	}
 	while (!feof(file)) {
 		const int currentNumber = 0;
 		if (fscanf(file, "%d", &currentNumber) == -1) {
 			break;
 		}
-		insertElement(list, currentNumber);
+		insertElement(list, currentNumber, &errorCode);
+		if (errorCode) {
+			printf("Произошла ошибка при выделении памяти.");
+			return -1;
+		}
 	}
 	fclose(file);
 	bool listIsSymethric = isSymethric(list, &errorCode);
