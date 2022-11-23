@@ -1,6 +1,7 @@
 ﻿#include "binaryTree.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <locale.h>
 
 bool test(void) {
 	int arrayOfNumbers[10] = { 5, 3, 2, 4, 7, 8, 0, 9, 1, 6 };
@@ -14,16 +15,12 @@ bool test(void) {
 }
 
 int main(void) {
-	int errorCode = 0;
-	int arrayOfNumbers[10] = { 1, 6, 3, 8, 2, 5, 4, 7, 9, 0 };
-	for (int i = 0; i < 10; ++i) {
-		printf("%d ", arrayOfNumbers[i]);
+	setlocale(LC_ALL, ".1251");
+	if (!test()) {
+		printf("Тесты не пройдены!");
+		return -1;
 	}
-	binaryTreeSort(arrayOfNumbers, 10);
-	printf("\n");
-	for (int i = 0; i < 10; ++i) {
-		printf("%d ", arrayOfNumbers[i]);
-	}
+	printf("Тесты успешно пройдены, функция сортировки деревом работает!");
 	return 0;
 }
 
