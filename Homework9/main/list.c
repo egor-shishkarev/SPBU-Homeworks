@@ -45,15 +45,11 @@ void insertElement(List* list, const char* value, const int count) {
 	char* newValue = calloc(strlen(value) + 1, sizeof(char));
 	strcpy(newValue, value);
 	newNode->value = newValue;
-	newNode->count = 1;
+	newNode->count = count;
 	list->tail->next = newNode;
 	newNode->next = NULL;
 	list->tail = newNode;
 	return;
-}
-
-void insertValue(Node* node, const int value) {
-
 }
 
 void printList(List* list) {

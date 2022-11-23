@@ -59,13 +59,14 @@ int hashFunction(const char* value, const int hashSize) {
 	const int primeNumber = 23;
 	for (int i = 0; i < stringSize; ++i) {
 		result += (int)value[i] * pow(primeNumber, stringSize - i);
-		result %= hashSize;
 	}
+	result = abs(result);
 	return result;
 }
 
 void addElement(List** hashTable, const char* value, const int count, const int hashSize) {
-	const int position = hashFunction(value, hashSize);
+	int position = hashFunction(value, hashSize);
+	position %= hashSize;
 	insertElement(hashTable[position], value, count);
 }
 
