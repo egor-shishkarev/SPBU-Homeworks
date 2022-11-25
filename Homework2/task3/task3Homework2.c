@@ -65,7 +65,7 @@ bool testCountSort(void) {
             return false;
         }
     }
-    return true * !(errorCode);
+    return true && errorCode == 0;
 }
 
 bool testBubbleSort(void) {
@@ -76,7 +76,7 @@ bool testBubbleSort(void) {
             return false;
         }
     }
-    return true * !(errorCode);
+    return true && errorCode == 0;
 }
 
 bool incorrectCase(void) {
