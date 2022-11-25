@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <locale.h>
 
-#define lengthArray 100000
-#define maxInt 32768
+#define LENGTH_ARRAY 100000
+#define MAX_INT 32768
 
 unsigned int bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
     unsigned int startBubbleSort = clock();
@@ -19,7 +19,7 @@ unsigned int bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
                 flagOfChanged = true;
             }
         }
-        if (!(flagOfChanged)) {
+        if (!flagOfChanged) {
             break;
         }
     }
@@ -29,8 +29,8 @@ unsigned int bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
 
 unsigned int countSort(int arrayOfNumbers[], const int lengthOfArray) {
     unsigned int startCountSort = clock();
-    int arrayForCount[maxInt] = { 0 };
-    int pointerForCountMin = lengthArray;
+    int arrayForCount[MAX_INT] = { 0 };
+    int pointerForCountMin = LENGTH_ARRAY;
     int pointerForCountMax = 0;
     for (int i = 0; i < lengthOfArray; ++i) {
         ++arrayForCount[arrayOfNumbers[i]];
@@ -58,15 +58,15 @@ void copyArray(int firstArray[], const int lengthOfArray, int secondArray[]) {
 int main() {
     setlocale(LC_ALL, ".1251");
     srand(clock());
-    int arrayOfNumbersForBubble[lengthArray] = { 0 };
-    for (int i = 0; i < lengthArray; ++i) {
+    int arrayOfNumbersForBubble[LENGTH_ARRAY] = { 0 };
+    for (int i = 0; i < LENGTH_ARRAY; ++i) {
         arrayOfNumbersForBubble[i] = rand();
     }
-    int arrayOfNumbersForCount[lengthArray] = { 0 };
-    copyArray(arrayOfNumbersForBubble, lengthArray, arrayOfNumbersForCount);
-    unsigned int timeForBubble = bubbleSort(arrayOfNumbersForBubble, lengthArray);
+    int arrayOfNumbersForCount[LENGTH_ARRAY] = { 0 };
+    copyArray(arrayOfNumbersForBubble, LENGTH_ARRAY, arrayOfNumbersForCount);
+    unsigned int timeForBubble = bubbleSort(arrayOfNumbersForBubble, LENGTH_ARRAY);
     printf("Время работы алгоритма сортировки пузырьком => %u мс", timeForBubble);
-    unsigned int timeForCount = countSort(arrayOfNumbersForCount, lengthArray);
+    unsigned int timeForCount = countSort(arrayOfNumbersForCount, LENGTH_ARRAY);
     printf("\nВремя работы алгоритма сортировки подсчетом => %u мс", timeForCount);
     return 0;
 }
