@@ -3,49 +3,45 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define lengthOfArray 20
+#define LENGTH_OF_ARRAY 20
 
-int quickSort(int* arrayOfNumbers, int firstIndex, int lastIndex) {
-	if (firstIndex < lastIndex) {
-		int left = firstIndex;
-		int right = lastIndex;
-		int middle = arrayOfNumbers[(left + right) / 2];
-		do {
-			while (arrayOfNumbers[left] < middle) {
-				++left;
-			}
-			while (arrayOfNumbers[right] > middle) {
-				--right;
-			}
-			if (left <= right) {
-				const int buffer = arrayOfNumbers[left];
-				arrayOfNumbers[left] = arrayOfNumbers[right];
-				arrayOfNumbers[right] = buffer;
-				++left;
-				--right;
-			}
-		} while (left <= right);
-		quickSort(arrayOfNumbers, firstIndex, right);
-		quickSort(arrayOfNumbers, left, lastIndex);
-	}
+int quickSort(int* arrayOfNumbers, const int lengthOfArray) {
+    int left = 0;
+    int right = lengthOfArray - 1;
+    int middle = arrayOfNumbers[(left + right) / 2];
+    do {
+        while (arrayOfNumbers[left] < middle) {
+            ++left;
+        }
+        while (arrayOfNumbers[right] > middle) {
+            --right;
+        }
+        if (left <= right) {
+            const int buffer = arrayOfNumbers[left];
+            arrayOfNumbers[left] = arrayOfNumbers[right];
+            arrayOfNumbers[right] = buffer;
+            ++left;
+            --right;
+        }
+    } while (left <= right);
 }
 
 int main() {
-	int arrayOfNumbers[lengthOfArray] = { 0 };
-	srand(clock(NULL));
-	for (int i = lengthOfArray / 2; i < lengthOfArray; ++i) {
-		arrayOfNumbers[i] = rand();
-	}
-	for (int i = 0; i <= lengthOfArray / 2; ++i) {
-		arrayOfNumbers[i] = rand();
-	}
-	for (int i = 0; i < lengthOfArray; ++i) {
-		printf("%d ", arrayOfNumbers[i]);
-	}
-	quickSort(arrayOfNumbers, 1, lengthOfArray - 1);
-	printf("\n");
-	for (int i = 0; i < lengthOfArray; ++i) {
-		printf("%d ", arrayOfNumbers[i]);
-	}
-	return 0;
+    int arrayOfNumbers[LENGTH_OF_ARRAY] = { 0 };
+    srand(clock(NULL));
+    for (int i = LENGTH_OF_ARRAY / 2; i < LENGTH_OF_ARRAY; ++i) {
+        arrayOfNumbers[i] = rand() % 100;
+    }
+    for (int i = 0; i <= LENGTH_OF_ARRAY / 2; ++i) {
+        arrayOfNumbers[i] = rand() % 100;
+    }
+    for (int i = 0; i < LENGTH_OF_ARRAY; ++i) {
+        printf("%d ", arrayOfNumbers[i]);
+    }
+    quickSort(arrayOfNumbers, LENGTH_OF_ARRAY);
+    printf("\n");
+    for (int i = 0; i < LENGTH_OF_ARRAY; ++i) {
+        printf("%d ", arrayOfNumbers[i]);
+    }
+    return 0;
 }
