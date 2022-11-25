@@ -41,7 +41,7 @@ int countSort(int* arrayOfNumbers, const int lengthOfArray) {
     int currentElement = 0;
     for (int i = 0; i <= maxNumber - minNumber; ++i) {
         while (arrayForCount[i]) {
-            arrayOfNumbers[currentElement] = i;
+            arrayOfNumbers[currentElement] = i + minNumber;
             ++currentElement;
             --arrayForCount[i];
         }
