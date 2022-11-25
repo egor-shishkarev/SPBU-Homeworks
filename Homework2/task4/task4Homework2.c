@@ -5,10 +5,10 @@
 
 #define LENGTH_OF_ARRAY 20
 
-int quickSort(int* arrayOfNumbers, const int lengthOfArray) {
+int quickSort(int* arrayOfNumbers, const int arrayLength) {
     int left = 0;
-    int right = lengthOfArray - 1;
-    int middle = arrayOfNumbers[(left + right) / 2];
+    int right = arrayLength - 1;
+    int middle = arrayOfNumbers[0];
     do {
         while (arrayOfNumbers[left] < middle) {
             ++left;
