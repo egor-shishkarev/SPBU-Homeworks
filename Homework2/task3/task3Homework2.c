@@ -3,12 +3,10 @@
 #include <time.h>
 #include <stdbool.h>
 #include <locale.h>
+#include <malloc.h>
+#include <string.h>
 
-#define LENGTH_ARRAY 100000
-#define MAX_INT 32768
-
-unsigned int bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
-    unsigned int startBubbleSort = clock();
+void bubbleSort(int* arrayOfNumbers, const int lengthOfArray) {
     for (int i = 0; i < lengthOfArray; ++i) {
         bool flagOfChanged = false;
         for (int j = lengthOfArray - 1; j > i; --j) {
@@ -23,50 +21,61 @@ unsigned int bubbleSort(int arrayOfNumbers[], const int lengthOfArray) {
             break;
         }
     }
-    unsigned int endBubbleSort = clock();
-    return endBubbleSort - startBubbleSort;
 }
 
-unsigned int countSort(int arrayOfNumbers[], const int lengthOfArray) {
-    unsigned int startCountSort = clock();
-    int arrayForCount[MAX_INT] = { 0 };
-    int pointerForCountMin = LENGTH_ARRAY;
-    int pointerForCountMax = 0;
+int countSort(int* arrayOfNumbers, const int lengthOfArray) {
+    int maxNumber = INT_MIN;
+    int minNumber = INT_MAX;
     for (int i = 0; i < lengthOfArray; ++i) {
-        ++arrayForCount[arrayOfNumbers[i]];
-        pointerForCountMin = min(pointerForCountMin, arrayOfNumbers[i]);
-        pointerForCountMax = max(pointerForCountMax, arrayOfNumbers[i]);
+        maxNumber = max(maxNumber, arrayOfNumbers[i]);
+        minNumber = min(minNumber, arrayOfNumbers[i]);
+    }
+    int* arrayForCount = calloc(maxNumber - minNumber + 1, sizeof(int));
+    if (arrayForCount == NULL) {
+        printf("Память не была выделена!");
+        return -1;
+    }
+    for (int i = 0; i < lengthOfArray; ++i) {
+        ++arrayForCount[arrayOfNumbers[i] - minNumber];
     }
     int currentElement = 0;
-    for (int i = pointerForCountMin; i <= pointerForCountMax; ++i) {
+    for (int i = 0; i <= maxNumber - minNumber; ++i) {
         while (arrayForCount[i]) {
             arrayOfNumbers[currentElement] = i;
             ++currentElement;
             --arrayForCount[i];
         }
     }
-    unsigned int endCountSort = clock();
-    return endCountSort - startCountSort;
-}
-
-void copyArray(int firstArray[], const int lengthOfArray, int secondArray[]) {
-    for (int i = 0; i < lengthOfArray; ++i) {
-        secondArray[i] = firstArray[i];
-    }
+    free(arrayForCount);
 }
 
 int main() {
     setlocale(LC_ALL, ".1251");
-    srand(clock());
-    int arrayOfNumbersForBubble[LENGTH_ARRAY] = { 0 };
-    for (int i = 0; i < LENGTH_ARRAY; ++i) {
+    srand(time(NULL));
+    const int lengthOfArray = 100000;
+    int* arrayOfNumbersForBubble = calloc(lengthOfArray, sizeof(int));
+    if (arrayOfNumbersForBubble == NULL) {
+        printf("Память не была выделена!");
+        return -1;
+    }
+    for (int i = 0; i < lengthOfArray; ++i) {
         arrayOfNumbersForBubble[i] = rand();
     }
-    int arrayOfNumbersForCount[LENGTH_ARRAY] = { 0 };
-    copyArray(arrayOfNumbersForBubble, LENGTH_ARRAY, arrayOfNumbersForCount);
-    unsigned int timeForBubble = bubbleSort(arrayOfNumbersForBubble, LENGTH_ARRAY);
-    printf("Время работы алгоритма сортировки пузырьком => %u мс", timeForBubble);
-    unsigned int timeForCount = countSort(arrayOfNumbersForCount, LENGTH_ARRAY);
-    printf("\nВремя работы алгоритма сортировки подсчетом => %u мс", timeForCount);
+    int* arrayOfNumbersForCount = calloc(lengthOfArray, sizeof(int));
+    if (arrayOfNumbersForCount == NULL) {
+        printf("Память не была выделена!");
+        return -1;
+    }
+    memcpy(arrayOfNumbersForCount, arrayOfNumbersForBubble, lengthOfArray);
+    unsigned int startBubbleSort = clock();
+    bubbleSort(arrayOfNumbersForBubble, lengthOfArray);
+    unsigned int endBubbleSort = clock();
+    free(arrayOfNumbersForBubble);
+    printf("Время работы алгоритма сортировки пузырьком => %u мс", endBubbleSort - startBubbleSort);
+    unsigned int startCountSort = clock();
+    countSort(arrayOfNumbersForCount, lengthOfArray);
+    unsigned int endCountSort = clock();
+    free(arrayOfNumbersForCount);
+    printf("\nВремя работы алгоритма сортировки подсчетом => %u мс", endCountSort - startCountSort);
     return 0;
 }
