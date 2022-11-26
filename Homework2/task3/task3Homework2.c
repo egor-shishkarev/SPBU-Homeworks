@@ -82,7 +82,7 @@ bool testBubbleSort(void) {
 bool incorrectCase(void) {
     int* arrayOfNumbers = NULL;
     int rightArray[3] = { 1, 2, 3 };
-    return bubbleSort(arrayOfNumbers, 0) && bubbleSort(rightArray, -1) & countSort(arrayOfNumbers, 0) && countSort(rightArray, -1);
+    return bubbleSort(arrayOfNumbers, 0) == -1 && bubbleSort(rightArray, -1) == -1 & countSort(arrayOfNumbers, 0) == -1 && countSort(rightArray, -1) == -1;
 }
 
 int main() {
