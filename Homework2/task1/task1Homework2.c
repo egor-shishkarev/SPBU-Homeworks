@@ -1,6 +1,7 @@
 ﻿#include <stdio.h>
 #include <locale.h>
 #include <stdbool.h>
+#include <string.h>
 
 unsigned long long recursionFibonacci(unsigned long long number) {
 	if (number > 93 || number < 1) {
@@ -82,13 +83,15 @@ bool testEdgeCase() {
 	return fibonacciTest(0) && fibonacciTest(93) && fibonacciTest(94);
 }
 
-int main() {
-	setlocale(LC_ALL, ".1251");
-	if (!(testCorrectCase() && testIncorrectCase() && testEdgeCase())) {
-		printf("Тест провален!");
-		return 1;
+int main(int argc, char* argv[]) {
+	if (argc > 1 && strcmp(argv[1], "-test") == 0) {
+		if (!(testCorrectCase() && testIncorrectCase() && testEdgeCase())) {
+			return 1;
+		}
+		return 0;
 	}
-	printf("Тесты пройдены успешно!\n");
+
+	setlocale(LC_ALL, ".1251");
 	printf("Предупреждение! \nРекурсивный алгоритм работает долго: после 38 числа время выполнения больше одной секунды.\n");
 	printf("Исходя из исследования, разница во времени работы алгоритмов становится заметна на 35 числе.\n");
 	printf("Введите номер числа фиббоначи, которое вы хотите найти (Максимально возможное верно полученное число - 93) => ");

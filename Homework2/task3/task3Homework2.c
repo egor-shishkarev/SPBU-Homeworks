@@ -85,13 +85,14 @@ bool incorrectCase(void) {
     return bubbleSort(arrayOfNumbers, 0) == -1 && bubbleSort(rightArray, -1) == -1 & countSort(arrayOfNumbers, 0) == -1 && countSort(rightArray, -1) == -1;
 }
 
-int main() {
-    setlocale(LC_ALL, ".1251");
-    if (!(testBubbleSort() && testCountSort() && incorrectCase())) {
-        printf("Тесты не были пройдены!");
-        return -1;
+int main(int argc, char* argv[]) {
+    if (argc > 1 && strcmp(argv[1], "-test") == 0) {
+        if (!(testBubbleSort() && testCountSort() && incorrectCase())) {
+            return -1;
+        }
+        return 0;
     }
-    printf("Тесты пройдены успешно!\n");
+    setlocale(LC_ALL, ".1251");
     srand(time(NULL));
     const int lengthOfArray = 10000;
     int* arrayOfNumbersForBubble = calloc(lengthOfArray, sizeof(int));
