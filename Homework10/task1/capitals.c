@@ -36,7 +36,7 @@ int findMinimumLength(int** roadTable, const int numberOfCities ,const int numbe
 
 void nullColumn(int** roadTable, const int numberOfCities, const int numberOfColumn) {
 	for (int i = 0; i < numberOfCities; ++i) {
-		roadTable[numberOfColumn][i] = 0;
+		roadTable[i][numberOfColumn] = 0;
 	}
 }
 
@@ -71,3 +71,12 @@ int findNewSity(int** roadTable, List* list, const int numberOfCities) {
 	return 1;
 }
 
+printRoadTable(int** roadTable, const int countOfCities) {
+	printf("\n");
+	for (int i = 0; i < countOfCities; ++i) {
+		for (int j = 0; j < countOfCities; ++j) {
+			printf("[%d][%d] = %d ", i, j, roadTable[i][j]);
+		}
+		printf("\n");
+	}
+}

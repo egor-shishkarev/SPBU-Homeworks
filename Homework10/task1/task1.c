@@ -76,8 +76,8 @@ int main(void) {
 	while (numberOfRemainingCities > 0) {
 		int currentNumberOfCapitals = countOfCapitals;
 		while (currentNumberOfCapitals > 0) {
-			findNewSity(roadTable, capitals[countOfCapitals - currentNumberOfCapitals], countOfCities);
-			--numberOfRemainingCities; 
+			//printRoadTable(roadTable, countOfCities);
+			numberOfRemainingCities -= findNewSity(roadTable, capitals[countOfCapitals - currentNumberOfCapitals], countOfCities);
 			--currentNumberOfCapitals;
 		}
 	}
