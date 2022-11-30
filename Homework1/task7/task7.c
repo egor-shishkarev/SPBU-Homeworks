@@ -17,26 +17,26 @@ int verificationIntScanf() {
 	return readValues;
 }
 
+int stringInput(const int length) {
+	char* arrayOfElements = (char*)malloc(length);
+	char* additionalPointer = gets(arrayOfElements);
+	if (!additionalPointer) {
+		printf("Введенное значение не было распознано!");
+		return 1;
+	}
+	return arrayOfElements;
+}
+
 int main() {
 	setlocale(LC_ALL, ".1251");
 	printf("Введите длину первой строки => ");
 	const int firstLength = verificationIntScanf() + 1;
 	printf("Введите первую строку => ");
-	char* arrayOfElementsFirst = (char*)malloc(firstLength);
-	char* firstAdditionalPointer = gets(arrayOfElementsFirst);
-	if (!firstAdditionalPointer) {
-		printf("Введенное значение не было распознано!");
-		return 1;
-	}
+	char* arrayOfElementsFirst = stringInput(firstLength);
 	printf("Введите длину второй строки => ");
 	const int secondLength = verificationIntScanf() + 1;
 	printf("Введите вторую строку => ");
-	char* arrayOfElementsSecond = (char*)malloc(secondLength);
-	char* secondAdditionalPointer = gets(arrayOfElementsSecond);
-	if (!secondAdditionalPointer) {
-		printf("Введенное значение не было распознано!");
-		return 1;
-	}
+	char* arrayOfElementsSecond = stringInput(secondLength);
 	int countOfOccurrences = 0;
 	for (int i = 0; i < firstLength - secondLength + 1; ++i) {
 		bool flagOfStringMatches = true;
