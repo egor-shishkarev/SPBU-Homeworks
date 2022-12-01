@@ -40,7 +40,7 @@ int smartQuickSort(int* arrayOfNumbers, int firstIndex, int lastIndex) {
 	if (arrayOfNumbers == NULL || firstIndex > lastIndex || firstIndex < 0 || lastIndex < 0) {
 		return -1;
 	}
-	if ((firstIndex < lastIndex) && (lastIndex - firstIndex + 1) < 10) {
+	if ((firstIndex < lastIndex) && (lastIndex - firstIndex + 1) > 10) {
 		int left = firstIndex;
 		int right = lastIndex;
 		int middle = arrayOfNumbers[(left + right) / 2];
