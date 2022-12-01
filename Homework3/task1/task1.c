@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int verificationIntScanf() {
+int verificationIntScanf(void) {
 	int readValues = 0;
 	while (true) {
 		int correctlyReadValues = scanf("%d", &readValues);
