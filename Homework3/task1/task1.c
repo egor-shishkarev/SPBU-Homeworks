@@ -70,7 +70,7 @@ int smartQuickSort(int* arrayOfNumbers, int firstIndex, int lastIndex) {
 bool testQuickSort(int* rightArray, int* arrayOfNumbers, const int lengthOfArray) {
 	const int result = smartQuickSort(arrayOfNumbers, 0, lengthOfArray - 1);
 	bool allAreTrue = true;
-	for (int i = 0; i < lengthOfArray - 1; ++i) {
+	for (int i = 0; i < lengthOfArray; ++i) {
 		if (rightArray[i] != arrayOfNumbers[i]) {
 			allAreTrue = false;
 			break;
@@ -82,7 +82,7 @@ bool testQuickSort(int* rightArray, int* arrayOfNumbers, const int lengthOfArray
 bool testInsertionSort(int* rightArray, int* arrayOfNumbers, const int lengthOfArray) {
 	const int result = insertionSort(arrayOfNumbers, lengthOfArray);
 	bool allAreTrue = true;
-	for (int i = 0; i < lengthOfArray - 1; ++i) {
+	for (int i = 0; i < lengthOfArray; ++i) {
 		if (rightArray[i] != arrayOfNumbers[i]) {
 			allAreTrue = false;
 			break;
