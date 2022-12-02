@@ -23,15 +23,16 @@ int insertionSort(int* arrayOfNumbers, const int firstIndex, const int lastIndex
     if (arrayOfNumbers == NULL || firstIndex < 0 || lastIndex < 0 || lastIndex < firstIndex) {
         return -1;
     }
-    int currentElement = firstIndex + 1;
-    while (currentElement <= lastIndex) {
+    int sortElement = firstIndex + 1;
+    while (sortElement <= lastIndex) {
+        int currentElement = sortElement;
         while (arrayOfNumbers[currentElement] < arrayOfNumbers[currentElement - 1] && currentElement >= firstIndex + 1) {
             const int buffer = arrayOfNumbers[currentElement - 1];
             arrayOfNumbers[currentElement - 1] = arrayOfNumbers[currentElement];
             arrayOfNumbers[currentElement] = buffer;
             --currentElement;
         }
-        ++currentElement;
+        ++sortElement;
     }
     return 0;
 }
@@ -109,7 +110,7 @@ bool testSmartQuickSortFunction2(void) {
 }
 
 bool testInsertionSortFunction(void) {
-    int arrayOfNumbers[8] = { 5342, 5436, 164, 547, 2751, 63634, 7457, 789 };
+    int arrayOfNumbers[] = { 5342, 5436, 164, 547, 2751, 63634, 7457, 789 };
     int rightArray[8] = { 164, 547, 789, 2751, 5342, 5436, 7457, 63634 };
     return testInsertionSort(rightArray, arrayOfNumbers, 8);
 }
