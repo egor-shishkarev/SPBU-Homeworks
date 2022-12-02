@@ -23,15 +23,16 @@ int insertionSort(int* arrayOfNumbers, const int firstIndex, const int lastIndex
     if (arrayOfNumbers == NULL || firstIndex < 0 || lastIndex < 0 || lastIndex < firstIndex) {
         return -1;
     }
-    int currentElement = firstIndex + 1;
-    while (currentElement <= lastIndex) {
+    int sortElement = firstIndex + 1;
+    while (sortElement <= lastIndex) {
+        int currentElement = sortElement;
         while (arrayOfNumbers[currentElement] < arrayOfNumbers[currentElement - 1] && currentElement >= firstIndex + 1) {
             const int buffer = arrayOfNumbers[currentElement - 1];
             arrayOfNumbers[currentElement - 1] = arrayOfNumbers[currentElement];
             arrayOfNumbers[currentElement] = buffer;
             --currentElement;
         }
-        ++currentElement;
+        ++sortElement;
     }
     return 0;
 }
@@ -76,7 +77,10 @@ bool binarySearch(int* arrayOfNumbers, const int lengthOfArray, const int elemen
         const int middle = (left + right) / 2;
         if (arrayOfNumbers[middle] < elementToSearch) {
             left = middle;
-        } else {
+        } else if (arrayOfNumbers[middle] == elementToSearch) {
+            return true;
+        }
+        else {
             right = middle;
         }
     }
