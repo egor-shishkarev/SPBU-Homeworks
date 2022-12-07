@@ -19,11 +19,11 @@ typedef struct List {
 
 int insert(List* list, int value) {
     if (list == NULL) {
-        return NULL;
+        return -1;
     }
     Node* newNode = malloc(sizeof(Node));
     if (newNode == NULL) {
-        return NULL;
+        return -1;
     }
     newNode->value = value;
     if (list->head == NULL) {
@@ -42,7 +42,6 @@ int insert(List* list, int value) {
         list->b = newNode;
         return 0;
     }
-
     if (value < list->a->value) {
         newNode->next = list->a;
         newNode->previous = list->a->previous;
