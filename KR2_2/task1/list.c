@@ -26,7 +26,6 @@ int insert(List* list, int value) {
         return NULL;
     }
     newNode->value = value;
-
     if (list->head == NULL) {
         list->head = newNode;
         newNode->previous = NULL;
@@ -69,15 +68,25 @@ int insert(List* list, int value) {
 }
 
 int deleteElement(List* list, const int value) {
+    if (list == NULL) {
+        return -1;
+    }
     Node* currentNode = list->head;
     while (currentNode != NULL && currentNode->value != value) {
         currentNode = currentNode->next;
     }
-    if (currentNode != NULL) {
-        currentNode->next->previous = currentNode->previous;
-        currentNode->previous->next = currentNode->next;
-        free(currentNode);
+    if (currentNode == NULL) {
+        return -1;
     }
+    if (currentNode->previous != NULL) {
+        currentNode->previous->next = currentNode->next;
+    } else {
+        list->head = currentNode->next;
+    }
+    if (currentNode->next != NULL) {
+        currentNode->next->previous = currentNode->previous;
+    }
+    free(currentNode);
 }
 
 List* createList(const int a, const int b) {
@@ -110,18 +119,16 @@ void printListInFile(List* list, const char* g) {
     fclose(file);
 }
 
-void printList(List* list) {
-    printf("\n");
-    Node* currentNode = list->head;
-    while (currentNode != NULL) {
-        printf("%d ", currentNode->value);
-        currentNode = currentNode->next;
+void deleteList(List** list) {
+    if (*list == NULL) {
+        free(*list);
+        return;
     }
-}
-
-void deleteList(List* list) {
-    Node* currentNode = list->tail;
+    Node* currentNode = (*list)->head;
     while (currentNode != NULL) {
-
+        deleteElement(*list, currentNode->value);
+        currentNode = (*list)->head;
     }
+    free(*list);
+    *list = NULL;
 }
