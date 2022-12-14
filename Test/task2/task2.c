@@ -7,6 +7,9 @@ int main(void) {
 	insert(list, "b");
 	insert(list, "c");
 	printList(list);
+	printf("\n");
+	addAStrings(list);
+	printList(list);
 	deleteList(&list);
 	return 0;
 }

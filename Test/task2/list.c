@@ -29,6 +29,7 @@ int insert(List* list, char* value) {
     if (list->head == NULL) {
         newNode->next = NULL;
         list->head = newNode;
+        list->tail = newNode;
         return 0;
     }
     Node* currentNode = list->head;
@@ -37,6 +38,7 @@ int insert(List* list, char* value) {
     }
     currentNode->next = newNode;
     newNode->next = NULL;
+    list->tail = newNode;
     return 0;
 }
 
@@ -64,11 +66,18 @@ void deleteList(List** list) {
 List* createList(void) {
     List* temp = malloc(sizeof(List));
     temp->head = NULL;
+    temp->tail = NULL;
     return temp;
 }
 
 void addAStrings(List* list) {
+    Node* currentNode = list->head;
+    insert(list, (char)-1);
+    while (currentNode->value != (char)-1) {
+        if (currentNode->value[0] == 'a') {
 
+        }
+    }
 }
 
 void printList(List* list) {
