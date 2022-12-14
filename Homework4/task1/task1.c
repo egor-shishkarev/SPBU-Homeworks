@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <malloc.h>
 #include <math.h>
-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#include <stdlib.h>
 
 int verificationIntScanf() {
 	int readValues = 0;
@@ -28,7 +28,7 @@ int sumDisplay(const int* result, const int maxBite) {
 	}
 }
 
-long long int additionOfTwoBinary(const long long int first, const long long int second, const maxBite, bool showSum) {
+long long int additionOfTwoBinary(const long long int first, const long long int second, const int maxBite, bool showSum) {
 	if (first > 1073741823 || first < -1073741823 || second > 1073741823 || second < -1073741823 || maxBite < 2) {
 		return NULL;
 	}
@@ -70,31 +70,31 @@ bool testSum(const long long int first, const long long int second, const int bi
 	return additionOfTwoBinary(first, second, bites, false) == first + second;
 }
 
-bool test1() {
+bool test1(void) {
 	long long int firstNumber = 128;
 	long long int secondNumber = 256;
 	return testSum(firstNumber, secondNumber, 3);
 }
 
-bool test2() {
+bool test2(void) {
 	long long int firstNumber = -89;
 	long long int secondNumber = -104;
 	return testSum(firstNumber, secondNumber, 2);
 }
 
-bool test3() {
+bool test3(void) {
 	long long int firstNumber = 1073741823;
 	long long int secondNumber = 142723;
 	return testSum(firstNumber, secondNumber, 5);
 }
 
-bool incorrectCase() {
+bool incorrectCase(void) {
 	long long int firstNumber = 1073741824;
 	long long int secondNumber = -1073741824;
 	return testSum(firstNumber, secondNumber, 5);
 }
 
-int main() {
+int main(void) {
 	setlocale(LC_ALL, ".1251");
 	if (!(test1() && test2() && test3() && incorrectCase())) {
 		printf("Тесты не пройдены!");
@@ -114,7 +114,7 @@ int main() {
 	}
 	long long int biteToFirst = (int)floor(log2(2 * abs(firstNumber) + (firstNumber == 0)) / 8) + 2;
 	long long int biteToSecond = (int)floor(log2(2 * abs(secondNumber) + (secondNumber == 0)) / 8) + 2;
-	long long int maxBite = MAX(biteToFirst, biteToSecond);
+	long long int maxBite = max(biteToFirst, biteToSecond);
 	if (firstNumber < 0) {
 		firstNumber += pow(256, maxBite);
 	}
