@@ -18,5 +18,18 @@
     <ClCompile Include="task1.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="boyerMooreAlgorithm.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="text.txt">
+      <Filter>Исходные файлы</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="boyerMooreAlgorithm.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
