@@ -133,6 +133,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="testFile.txt" />
     <Text Include="text.txt" />
   </ItemGroup>
   <ItemGroup>
