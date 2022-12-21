@@ -6,8 +6,11 @@
 #include <stdlib.h>
 
 typedef struct TDArray TDArray;
-int** createArray(const int lines, const int columns);
-void addElements(int** array, const int lines, const int columns);
+TDArray* createArray(const int lines, const int columns);
+void addElements(TDArray* arrayTD);
 int verificationIntScanf(void);
-void printArray(int** array, const int lines, const int columns);
-int** searchSaddlePoint(int** array, const int lines, const int columns);
+void printArray(TDArray* arrayTD);
+TDArray* searchSaddlePoint(TDArray* arrayTD);
+void freeTDArray(TDArray** arrayTD);
+int getElement(TDArray* arrayTD, const int i, const int j);
+void insertElement(TDArray* arrayTD, const int number, const int i, const int j);

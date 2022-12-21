@@ -1,7 +1,9 @@
 #include "TDArray.h"
 
 typedef struct TDArray {
-    int** array;
+    int* array;
+    int lines;
+    int columns;
 } TDArray;
 
 int verificationIntScanf(void) {
@@ -18,47 +20,53 @@ int verificationIntScanf(void) {
     return readValues;
 }
 
-int** createArray(const int lines, const int columns) {
-    int** array = malloc(lines, sizeof(int*));
-    for (int i = 0; i < lines; ++i) {
-        array[i] = calloc(columns, sizeof(int));
-    }
-    return array;
+TDArray* createArray(const int lines, const int columns) {
+    TDArray* arrayTD = malloc(sizeof(TDArray));
+    arrayTD->columns = columns;
+    arrayTD->lines = lines;
+    arrayTD->array = calloc(lines * columns, sizeof(int));
+    return arrayTD;
 }
 
-void addElements(int** array, const int lines, const int columns) {
+void addElements(TDArray* arrayTD) {
+    const int lines = arrayTD->lines;
+    const int columns = arrayTD->columns;
     for (int i = 0; i < lines; ++i) {
         printf("%d - ая строка: ", i);
         for (int j = 0; j < columns; ++j) {
-            array[i][j] = verificationIntScanf();
+            arrayTD->array[arrayTD->lines * i + j] = verificationIntScanf();
         }
     }
 }
 
-void printArray(int** array, const int lines, const int columns) {
+void printArray(TDArray* arrayTD) {
+    const int lines = arrayTD->lines;
+    const int columns = arrayTD->columns;
     for (int i = 0; i < lines; ++i) {
         for (int j = 0; j < columns; ++j) {
-            printf("%d ", array[i][j]);
+            printf("%d ", arrayTD->array[arrayTD->lines * i + j]);
         }
         printf("\n");
     }
 }
 
-int** searchSaddlePoint(int** array, const int lines, const int columns) {
-    int** result = createArray(lines, columns);
+TDArray* searchSaddlePoint(TDArray* arrayTD) {
+    const int lines = arrayTD->lines;
+    const int columns = arrayTD->columns;
+    TDArray* result = createArray(lines, columns);
     for (int i = 0; i < lines; ++i) {
         int minElement = INT_MAX;
         for (int j = 0; j < columns; ++j) {
-            if (array[i][j] < minElement) {
-                minElement = array[i][j];
+            if (arrayTD->array[arrayTD->lines * i + j] < minElement) {
+                minElement = arrayTD->array[arrayTD->lines * i + j];
             }
         }
         for (int j = 0; j < columns; ++j) {
-            if (array[i][j] == minElement) {
-                result[i][j] = 1;
+            if (arrayTD->array[arrayTD->lines * i + j] == minElement) {
+                result->array[result->lines * i + j] = 1;
                 for (int k = 0; k < lines; ++k) {
-                    if (array[k][j] > array[i][j]) {
-                        result[i][j] *= 0;
+                    if (arrayTD->array[arrayTD->lines * k + j] > arrayTD->array[arrayTD->lines * i + j]) {
+                        result->array[result->lines * i + j] *= 0;
                         break;
                     }
                 }
@@ -66,4 +74,17 @@ int** searchSaddlePoint(int** array, const int lines, const int columns) {
         }
     }
     return result;
+}
+
+void freeTDArray(TDArray** arrayTD) {
+    free((*arrayTD)->array);
+    free((*arrayTD));
+}
+
+int getElement(TDArray* arrayTD, const int i, const int j) {
+    return arrayTD->array[arrayTD->lines * i + j];
+}
+
+void insertElement(TDArray* arrayTD, const int number, const int i, const int j) {
+    arrayTD->array[arrayTD->lines * i + j] = number;
 }

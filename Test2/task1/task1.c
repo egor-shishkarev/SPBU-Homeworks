@@ -3,18 +3,17 @@
 #include <locale.h>
 
 bool test(void) {
-    int** TDArray = calloc(4, sizeof(int*));
+    TDArray* arrayTD = createArray(4, 4);
     for (int i = 0; i < 4; ++i) {
-        TDArray[i] = calloc(4, sizeof(int));
         for (int j = 0; j < 4; ++j) {
-            TDArray[i][j] = 4 * i + j;
+            insertElement(arrayTD, 4 * i + j, i, j);
         }
     }
-    int** result = searchSaddlePoint(TDArray, 4, 4);
-    bool isTrue = result[3][0] == 1;
+    TDArray* result = searchSaddlePoint(arrayTD);
+    bool isTrue = getElement(result, 3, 0) == 1;
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
-            if (TDArray[i][j] == 0 && i != 3 && j != 0) {
+            if (getElement(arrayTD, i, j) == 0 && i != 3 && j != 0) {
                 return false;
             }
         }
@@ -28,19 +27,19 @@ int main(void) {
         printf("Тесты не пройдены!");
         return -1;
     }
-    printf("Тесты пройдены успешно.");
+    printf("Тесты пройдены успешно.\n");
     printf("Введите количество строк и столбцов через Enter => ");
     const int lines = verificationIntScanf();
     const int columns = verificationIntScanf();
-    int** array = createArray(lines, columns);
+    TDArray* arrayTD = createArray(lines, columns);
     printf("Вводите элеметы массива через Enter по строкам: ");
-    addElements(array, lines, columns);
-    int** result = searchSaddlePoint(array, lines, columns);
-    printArray(array, lines, columns);
+    addElements(arrayTD, lines, columns);
+    TDArray* result = searchSaddlePoint(arrayTD, lines, columns);
+    printArray(arrayTD, lines, columns);
     printf("----------------\n");
     printArray(result, lines, columns);
-    free(*array);
-    free(*result);
+    freeTDArray(&arrayTD);
+    freeTDArray(&result);
     return 0;
 }
 
