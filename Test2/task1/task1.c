@@ -18,6 +18,8 @@ bool test(void) {
             }
         }
     }
+    freeTDArray(&arrayTD);
+    freeTDArray(&result);
     return isTrue;
 }
 
@@ -36,15 +38,15 @@ int main(void) {
     addElements(arrayTD, lines, columns);
     TDArray* result = searchSaddlePoint(arrayTD, lines, columns);
     printArray(arrayTD, lines, columns);
-    printf("----------------\n");
-    printArray(result, lines, columns);
     freeTDArray(&arrayTD);
+    printf("Седловые точки находятся на индексах: \n");
+    for (int i = 0; i < lines; ++i) {
+        for (int j = 0; j < columns; ++j) {
+            if (getElement(result, i, j) == 1) {
+                printf("%d - ая строка %d - столбец\n", i + 1, j + 1);
+            }
+        }
+    }
     freeTDArray(&result);
     return 0;
 }
-
-/*Написать программу поиска седловых точек двумерного массива. 
-Седловая точка — это элемент, наименьший в своей строке и наибольший в своем столбце. 
-Если седловых точек несколько, вывести их все. Реализовать АТД двумерного массива 
-(в отдельном модуле), содержащего помимо прочего функции для считывания из консоли, 
-печать и поиск седловых точек.*/
