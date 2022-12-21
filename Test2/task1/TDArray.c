@@ -57,7 +57,7 @@ int** searchSaddlePoint(int** array, const int lines, const int columns) {
             if (array[i][j] == minElement) {
                 result[i][j] = 1;
                 for (int k = 0; k < lines; ++k) {
-                    if (array[k][j] < array[i][j]) {
+                    if (array[k][j] > array[i][j]) {
                         result[i][j] *= 0;
                         break;
                     }
