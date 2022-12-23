@@ -12,13 +12,10 @@ int main(void) {
 	int errorCode = 0;
 	List* listOfWords = createList();
  	while (!feof(file)) {
-		char* buffer = calloc(100, sizeof(char));
-		if (buffer == NULL) {
-			return -1;
-		}
+		char buffer[100] = {0};
 		int currentChar = getc(file);
 		int currentPosition = 0;
-		while (currentChar != 32 && currentChar != -1 && currentChar != 10) {
+		while (currentChar != ' ' && currentChar != -1 && currentChar != 10) {
 			if (currentChar == 46 || currentChar == 44) {
 				currentChar = getc(file);
 				continue;
@@ -31,7 +28,6 @@ int main(void) {
 			currentChar = getc(file);
 		}
 		if (!strcmp(buffer, "")) {
-			free(buffer);
 			continue;
 		}
 		if (!isElementInList(listOfWords, buffer)) {
@@ -43,7 +39,6 @@ int main(void) {
 			hashTable = increaseTable(hashTable, hashSize, (int)ceil(1.2 * numberOfElements), &errorCode);
 			hashSize = (int)ceil(1.2 * numberOfElements);
 		}
-		free(buffer);
 	}
 	fclose(file);
 	int* listDepth = calloc(hashSize, sizeof(int));

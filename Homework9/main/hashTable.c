@@ -1,5 +1,8 @@
 #include "hashTable.h"
 
+#include <string.h>
+#include <math.h>
+
 typedef struct Node {
 	char* value;
 	int count;
