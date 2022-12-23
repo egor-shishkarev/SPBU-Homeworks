@@ -1,11 +1,12 @@
-﻿#include "C:\Users\Егор\source\repos\SPBU-Homeworks\Stack\stackModule.h"
+﻿#include "..\..\Stack\stackModule.h"
 #include <stdio.h>
 #include <locale.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <string.h>
 
-int verificationIntScanf() {
+int verificationIntScanf(void) {
 	int readValues = 0;
 	while (true) {
 		int correctlyReadValues = scanf("%d", &readValues);
@@ -20,43 +21,21 @@ int verificationIntScanf() {
 }
 
 bool isOpenBracket(const char symbol) {
-	const char openBrakets[4] = { "({[" };
-	for (int i = 0; i < 3; ++i) {
-		if (symbol == openBrakets[i]) {
-			return true;
-		}
-	}
-	return false;
+	return strchr("({[", symbol) != NULL;
 }
 
 bool isClosedBracket(const char symbol) {
-	const char closedBrakets[4] = { ")}]" };
-	for (int i = 0; i < 3; ++i) {
-		if (symbol == closedBrakets[i]) {
-			return true;
-		}
-	}
-	return false;
+	return strchr(")}]", symbol) != NULL;
 }
 
 bool conformityOfBrackets(const char openBracket, const char closedBracket) {
-	const char openBrakets[4] = { "({[" };
-	const char closedBrakets[4] = { ")}]" };
-	for (int i = 0; i < 3; ++i) {
-		if (openBracket == openBrakets[i]) {
-			for (int j = 0; j < 3; ++j) {
-				if (closedBracket == closedBrakets[j]) {
-					return i == j;
-				}
-			}
-		}
-	}
-	return false;
+	return strchr("({[", openBracket) == strchr(")}]", closedBracket);
 }
+
 bool parenthesisBalance(const char *arrayOfSymbols, const int lengthOfString, int *errorCode) {
 	Stack* stack = createStack();
 	if (stack == NULL) {
-		printf("Память не была выделена.");
+		*errorCode = -1;
 		return false;
 	}
 	for (int i = 0; i < lengthOfString; ++i) {
@@ -89,12 +68,12 @@ bool correctCase(void) {
 }
 
 bool incorrectCase(void) {
-	const char arrayOfSymbols[5] = { "}(){" };
+	const char arrayOfSymbols[4] = { "{{}" };
 	int errorCode = 0;
-	return !parenthesisBalance(arrayOfSymbols, 4, &errorCode);
+	return !parenthesisBalance(arrayOfSymbols, 3, &errorCode);
 }
 
-int main() {
+int main(void) {
 	setlocale(LC_ALL, ".1251");
 	if (!(correctCase() && incorrectCase())) {
 		printf("Тесты не были пройдены.");
@@ -117,5 +96,6 @@ int main() {
 		return -1;
 	}
 	printf("Выражение %s", result ? "верное" : "неверное");
+	free(arrayOfSymbols);
 	return 0;
 }
