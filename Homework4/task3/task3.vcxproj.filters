@@ -18,7 +18,7 @@
     <ClCompile Include="task3.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="functions.c">
+    <ClCompile Include="phonebook.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -31,7 +31,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="functions.h">
+    <ClInclude Include="phonebook.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>
