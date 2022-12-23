@@ -1,4 +1,3 @@
-#include "smartQuickSort.h"
 #include <stdio.h>
 
 int insertionSort(int* arrayOfNumbers, const int firstIndex, const int lastIndex) {

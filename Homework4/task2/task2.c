@@ -90,24 +90,55 @@ bool incorrectCase(void) {
     return !testMostFrequentlyElement(arrayOfNumbers, 0, 1);
 }
 
+int* readArrayFromFile(const char* path, int* numberOfElements, int* errorCode) {
+    FILE* file = fopen(path, "r");
+    fscanf(file, "%d", numberOfElements);
+    int* arrayOfNumbers = calloc(*numberOfElements, sizeof(int));
+    if (arrayOfNumbers == NULL) {
+        fclose(file);
+        *errorCode = -1;
+        return NULL;
+    }
+    for (int i = 0; i < *numberOfElements; ++i) {
+        fscanf(file, "%d", &arrayOfNumbers[i]);
+    }
+    fclose(file);
+    return arrayOfNumbers;
+}
+
+bool readTest(void) {
+    int numberOfElements = 0;
+    int errorCode = 0;
+    int* arrayFromFile = readArrayFromFile("test.txt", &numberOfElements, &errorCode);
+    int rightArray[] = { 9, 7, 2, 1, 3, 4, 5, 2, 0, 9 };
+    if (!(numberOfElements == 10 && errorCode == 0)) {
+        free(arrayFromFile);
+        return false;
+    }
+    for (int i = 0; i < 10; ++i) {
+        if (arrayFromFile[i] != rightArray[i]) {
+            free(arrayFromFile);
+            return false;
+        }
+    }
+    free(arrayFromFile);
+    return true;
+}
+
 int main(void) {
     setlocale(LC_ALL, ".1251");
-    if (!(correctCase() && incorrectCase() && testInsertionSort() && testQuickSort())) {
+    if (!(correctCase() && incorrectCase() && testInsertionSort() && testQuickSort() && readTest())) {
         printf("Тесты не пройдены!");
         return -1;
     }
     printf("Тесты пройдены!\n");
-    printf("Данная программа находит наиболее часто встречающийся элемент в массиве.");
-    FILE* file = fopen("array.txt", "r");
-    const int numberOfElements = 0;
-    fscanf(file, "%d", &numberOfElements);
-    int* arrayOfNumbers = calloc(numberOfElements, sizeof(int));
-    if (arrayOfNumbers == NULL) {
-        printf("Произошла ошибка, массив не был создан.");
+    printf("Данная программа находит наиболее часто встречающийся элемент в массиве.\n");
+    int numberOfElements = 0;
+    int errorCode = 0;
+    int* arrayOfNumbers = readArrayFromFile("array.txt", &numberOfElements, &errorCode);
+    if (errorCode != 0) {
+        printf("Произошла ошибка при выделении памяти!");
         return -1;
-    }
-    for (int i = 0; i < numberOfElements; ++i) {
-        fscanf(file, "%d", &arrayOfNumbers[i]);
     }
     printf("Созданный массив: \n");
     for (int i = 0; i < numberOfElements; ++i) {
