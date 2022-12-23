@@ -50,10 +50,7 @@ int evaluateExpression(const char postfixExpression[], const int lengthOfExpress
 				push(stack, firstNumber / secondNumber);
 				break;
 			}
-			if (*errorCode) {
-				deleteStack(stack);
-				return -1;
-			}
+
 		}
 	}
 	int result = pop(stack, errorCode);
@@ -102,3 +99,4 @@ int main(void) {
 	printf("Результат вычисления выражения - %d", result);
 	return 0;
 }
+
