@@ -6,8 +6,8 @@
 
 // Структура, содержащая имя и номер телефона 
 typedef struct {
-	char name[MAX_SIZE_NAME];
-	char phone[MAX_SIZE_PHONE];
+    char name[MAX_SIZE_NAME];
+    char phone[MAX_SIZE_PHONE];
 } Phonebook;
 
 // Функция проверки ввода целого числа
@@ -17,13 +17,13 @@ int verificationIntScanf(void);
 int readFile(Phonebook* data, const char* fileName);
 
 // Функция добавляет в массив имена и номера телефонов, которую можно сохранить в файл
-int addNote(Phonebook* data, const int* size);
+int addNote(Phonebook* data, int* size);
 
 // Поиск номера телефона по имени
-char* searchPhone(Phonebook* data, const char* name, const int* size);
+void searchPhone(Phonebook* data, const char* name, const int* size, char* buffer);
 
 // Поиск имени по номеру телефона
-char* searchName(Phonebook* data, const char* phone, const int* size);
+void searchName(Phonebook* data, const char* phone, const int* size, char* buffer);
 
 // Сохранение всех введенных записей в файл
 int saveNotes(Phonebook* data, const char* fileName, const int* size);

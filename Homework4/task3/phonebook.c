@@ -26,7 +26,7 @@ int readFile(Phonebook* data, const char* fileName) {
         fclose(file);
         printf("Файл был создан.\n");
         printf("Так как файл пустой, в нем нет никаких имён.\n");
-        return;
+        return 0;
     }
     int currentElement = 0;
     while (!feof(file) || currentElement <= 100) {
@@ -48,34 +48,37 @@ int readFile(Phonebook* data, const char* fileName) {
 
 int addNote(Phonebook* data, int* size) {
     printf("Введите имя и телефон через пробел => ");
-    while (scanf("%s", data[*size].name) != 1) {};
+    while (scanf("%s", data[*size].name) != 1) {
+    }
     while (!getchar()) {};
     while (scanf("%s", data[*size].phone) != 1) {};
     ++(*size);
 }
 
-char* searchPhone(Phonebook* data, const char* name, const int* size) {
+void searchPhone(Phonebook* data, const char* name, const int* size, char* buffer) {
     int currentIndex = 0;
     while (currentIndex < *size) {
         Phonebook currentNote = data[currentIndex];
-        if (strcmp(name, &currentNote.name) == 0) {
-            return currentNote.phone;
+        if (strcmp(name, currentNote.name) == 0) {
+            strcpy(buffer, currentNote.phone);
+            return;
         }
         ++currentIndex;
     }
-    return "Нет такого имени!\n";
+    buffer = NULL;
 }
 
-char* searchName(Phonebook* data, const char* phone, int* size) {
+void searchName(Phonebook* data, const char* phone, const int* size, char* buffer) {
     int currentIndex = 0;
     while (currentIndex < *size) {
         Phonebook currentNote = data[currentIndex];
-        if (strcmp(phone, &currentNote.phone) == 0) {
-            return currentNote.name;
+        if (strcmp(phone, currentNote.phone) == 0) {
+            strcpy(buffer, currentNote.name);
+            return;
         }
         ++currentIndex;
     }
-    return "Нет такого телефона!\n";
+    buffer = NULL;
 }
 
 int saveNotes(Phonebook* data, const char* fileName, const int* size) {
