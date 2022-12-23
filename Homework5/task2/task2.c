@@ -29,7 +29,12 @@ bool isClosedBracket(const char symbol) {
 }
 
 bool conformityOfBrackets(const char openBracket, const char closedBracket) {
-	return strchr("({[", openBracket) == strchr(")}]", closedBracket);
+	const char brackets[7] = "({[]})";
+	for (int i = 0; 3; ++i) {
+		if (brackets[i] == brackets[6 - i]) {
+			return brackets[i] == brackets[6 - i];
+		}
+	}
 }
 
 bool parenthesisBalance(const char *arrayOfSymbols, const int lengthOfString, int *errorCode) {
@@ -50,10 +55,16 @@ bool parenthesisBalance(const char *arrayOfSymbols, const int lengthOfString, in
 					deleteStack(stack);
 					return false;
 				}
-				continue;
+			} else {
+				*errorCode = push(stack, currentSymbol);
+				if (*errorCode) {
+					deleteStack(stack);
+					return false;
+				}
 			}
-		} else {
-			continue;
+		} else if (isClosedBracket(currentSymbol) && isEmpty(stack)) {
+			*errorCode = -1;
+			return -1;
 		}
 	}
 	bool result = isEmpty(stack);
