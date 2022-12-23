@@ -1,4 +1,4 @@
-﻿#include "C:\Users\Егор\source\repos\SPBU-Homeworks\Stack\stackModule.h"
+﻿#include "..\..\Stack\stackModule.h"
 #include <stdio.h>
 #include <locale.h>
 #include <malloc.h>
@@ -8,27 +8,14 @@
 #define MaxExpressionLength 50
 
 bool isDigit(char symbol) {
-	/*return (int)symbol >= 48 && (int)symbol<=57*/
-	char allDigits[11] = { "0123456789" };
-	for (int i = 0; i < 10; ++i) {
-		if (symbol == allDigits[i]) {
-			return true;
-		}
-	}
-	return false;
+	return symbol >= '0' && symbol <= '9';
 }
 
 bool isOperation(char symbol) {
-	char allOperations[5] = { "-+*/" };
-	for (int i = 0; i < 5; ++i) {
-		if (symbol == allOperations[i]) {
-			return true;
-		}
-	}
-	return false;
+	return strchr("-+*/", symbol) != NULL;
 }
 
-int operationPriority(const char symbol) {
+int operationPriority(const char symbol) {	
 	if (symbol == '+' || symbol == '-') {
 		return 1;
 	} else if (symbol == '*' || symbol == '/') {
@@ -38,7 +25,7 @@ int operationPriority(const char symbol) {
 }
 
 char *conversionFromInfixToPostfix(const char *infixExpression, const int lengthOfString, int *errorCode) {
-	char *postfixExpression = calloc(MaxExpressionLength + 1, sizeof(char)); // char *outputExpressionInPrefixForm = calloc(maxLineSize + 1, sizeof(char));
+	char *postfixExpression = calloc(MaxExpressionLength + 1, sizeof(char)); 
 	Stack* stackForDigits = createStack();
 	Stack* stackForOperations = createStack();
 	if (stackForDigits == NULL || stackForOperations == NULL) {
