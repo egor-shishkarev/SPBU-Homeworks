@@ -15,7 +15,7 @@ bool test(void) {
 	return result == 4;
 }
 
-int main() {
+int main(void) {
 	setlocale(LC_ALL, ".1251");
 	if (!test()) {
 		printf("Тесты не были пройдены!");
@@ -38,7 +38,7 @@ int main() {
 	fclose(file);
 	printf("\n");
 	for (int i = numberOfSymbols - 1; i >= 0; --i) {
-		if ((int)arrayOfSymbols[i] == 32) {
+		if (arrayOfSymbols[i] == ' ') {
 			arrayOfSymbols[i] = '\0';
 		} else {
 			arrayOfSymbols[i + 1] = '\0';

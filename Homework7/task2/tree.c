@@ -14,7 +14,7 @@ typedef struct Tree {
 char* getOperation(char* arrayOfSymbols) {
 	char* newValue = calloc(2, sizeof(char));
 	if (newValue == NULL) {
-		return;
+		return -1;
 	}
 	newValue[0] = arrayOfSymbols[1];
 	return newValue;
@@ -56,6 +56,7 @@ char* getOperand1(char* arrayOfSymbols) {
 		}
 		return operand1; 
 	}
+	return 0;
 }
 
 char* getOperand2(char* arrayOfSymbols) {
@@ -94,6 +95,7 @@ char* getOperand2(char* arrayOfSymbols) {
 		}
 		return operand2; 
 	}
+	return 0;
 }
 
 void addPartToTree(Tree* tree, char* operation, char* operand1, char* operand2, Node* currentNode) {
@@ -119,6 +121,7 @@ void addPartToTree(Tree* tree, char* operation, char* operand1, char* operand2, 
 	if (operand1[0] == '(') {
 		Node* newNode = malloc(sizeof(Node));
 		if (newNode == NULL) {
+			free(newValue);
 			return;
 		}
 		newNode->parent = currentNode;
@@ -130,6 +133,7 @@ void addPartToTree(Tree* tree, char* operation, char* operand1, char* operand2, 
 		strcpy(newValue, operand1);
 		Node* newNode = malloc(sizeof(Node));
 		if (newNode == NULL) {
+			free(newValue);
 			return;
 		}
 		newNode->parent = currentNode;
@@ -169,7 +173,7 @@ void addElementsToTree(Tree* tree, char* arrayOfSymbols) {
 Tree* createParseTree(void) {
 	Tree* tree = malloc(sizeof(Tree));
 	if (tree == NULL) {
-		return -1;
+		return NULL;
 	}
 	tree->root = NULL;
 	return tree;
@@ -184,7 +188,6 @@ void deleteTreeRecursive(Node* node) {
 	deleteTreeRecursive(node->rightChild);
 
 	free(node->value);
-	node->value = NULL;
 	free(node);
 	node = NULL;
 }
@@ -240,36 +243,30 @@ void treePrint(Tree* tree) {
 	 printf(isOperation(tree->root->rightChild->value) ? ")": "");
 }
 
-int calculateResult(Node* node, int* result) {
+int calculateResult(Node* node) {
 	if (isOperation(node->value)) {
 		const char operation = (node->value)[0];
 		switch (operation) {
 		case '+': {
-			*result = calculateResult(node->leftChild, result) + calculateResult(node->rightChild, result);
-			break;
+			return calculateResult(node->leftChild) + calculateResult(node->rightChild);
 		}
 		case '-': {
-			*result = calculateResult(node->leftChild, result) - calculateResult(node->rightChild, result);
-			break;
+			return calculateResult(node->leftChild) - calculateResult(node->rightChild);
 		}
 		case '*': {
-			*result = calculateResult(node->leftChild, result) * calculateResult(node->rightChild, result);
-			break;
+			return calculateResult(node->leftChild) * calculateResult(node->rightChild);
 		}
 		case '/': {
-			*result = calculateResult(node->leftChild, result) / calculateResult(node->rightChild, result);
-			break;
+			return calculateResult(node->leftChild) / calculateResult(node->rightChild);
 		}
 		}
 	}
 	else if (node != NULL) {
 		return charToInt(node->value);
 	}
-	return *result;
+	return 0;
 }
 
 int treeResult(Tree* tree) {
-	int result = 0;
-	calculateResult(tree->root, &result);
-	return result;
+	return calculateResult(tree->root);
 }
