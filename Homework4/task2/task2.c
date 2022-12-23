@@ -22,7 +22,7 @@ int verificationIntScanf(void) {
 
 int maxCountInSortArray(int* arrayOfNumbers, const int lengthOfArray) {
     if (arrayOfNumbers == NULL || lengthOfArray <= 0) {
-        return NULL;
+        return 0;
     }
     int element = arrayOfNumbers[0];
     int countOfElements = 0;
@@ -92,6 +92,9 @@ bool incorrectCase(void) {
 
 int* readArrayFromFile(const char* path, int* numberOfElements, int* errorCode) {
     FILE* file = fopen(path, "r");
+    if (file == NULL) {
+        return NULL;
+    }
     fscanf(file, "%d", numberOfElements);
     int* arrayOfNumbers = calloc(*numberOfElements, sizeof(int));
     if (arrayOfNumbers == NULL) {
@@ -136,6 +139,10 @@ int main(void) {
     int numberOfElements = 0;
     int errorCode = 0;
     int* arrayOfNumbers = readArrayFromFile("array.txt", &numberOfElements, &errorCode);
+    if (arrayOfNumbers == NULL) {
+        printf("Произошла ошибка!");
+        return -1;
+    }
     if (errorCode != 0) {
         printf("Произошла ошибка при выделении памяти!");
         return -1;

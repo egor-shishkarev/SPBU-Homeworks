@@ -1,4 +1,5 @@
-#include <stdio.h>
+#include "smartQuickSort.h"
+#include <stdlib.h>
 
 int insertionSort(int* arrayOfNumbers, const int firstIndex, const int lastIndex) {
     if (arrayOfNumbers == NULL || firstIndex < 0 || lastIndex < 0 || lastIndex < firstIndex) {
