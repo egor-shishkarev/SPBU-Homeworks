@@ -16,8 +16,12 @@ int verificationIntScanf() {
 	}
 	return readValues;
 }
+
 bool test(void) {
 	List* testList = createList();
+	if (testList == NULL) {
+		return false;
+	}
 	const int arrayForValues[4] = { 0, -10, 999, 51 };
 	for (int i = 0; i < 4; ++i) {
 		insert(testList, arrayForValues[i]);
@@ -32,6 +36,7 @@ bool test(void) {
 		}
 		deleteElement(testList, rightArrayForValues[i]);
 	}
+	deleteList(&testList);
 	return allValuesAreTrue;
 }
 

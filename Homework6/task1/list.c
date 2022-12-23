@@ -23,9 +23,8 @@ int insert(List* list, int value) {
     if (temp == NULL) {
         return 1;
     }
-
+    temp->value = value;
     if (list->head == NULL) {
-        temp->value = value;
         temp->previous = NULL;
         temp->next = NULL;
         list->head = temp;
@@ -42,7 +41,6 @@ int insert(List* list, int value) {
     bool isEnd = currentNode->value < value;
 
     if (isEnd) {
-        temp->value = value;
         temp->previous = currentNode;
         temp->next = NULL;
         currentNode->next = temp;
@@ -51,7 +49,6 @@ int insert(List* list, int value) {
     if (currentNode->previous != NULL) {
         currentNode->previous->next = temp;
     }
-    temp->value = value;
     temp->previous = currentNode->previous;
     currentNode->previous = temp;
     temp->next = currentNode;
@@ -66,6 +63,7 @@ int topElement(List* list, int* errorCode) {
         *errorCode = -1;
         return 0;
     }
+    *errorCode = 0;
     return list->head->value;
 }
 
@@ -100,7 +98,6 @@ int deleteElement(List* list, int value) {
 
 void deleteList(List** list) {
     if (*list == NULL) {
-        free(*list);
         return;
     }
     Node* currentNode = (*list)->head;
@@ -113,9 +110,7 @@ void deleteList(List** list) {
 }
 
 List* createList(void) {
-    List* temp = malloc(sizeof(List));
-    temp->head = NULL;
-    return temp;
+    return calloc(1, sizeof(List));
 }
 
 void printList(List* list) {
