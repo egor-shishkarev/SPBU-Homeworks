@@ -1,42 +1,30 @@
-﻿#include "C:\Users\Егор\source\repos\SPBU-Homeworks\Stack\stackModule.h"
+﻿#include "..\..\Stack\stackModule.h"
 #include <stdio.h>
 #include <locale.h>
 #include <malloc.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
-#define MaxExpressionLength 50
+#define MAX_EXPRESSION_LENGTH 50
 
-bool isDigit(char symbol) {
-	char allDigits[11] = { "0123456789" };
-	for (int i = 0; i < 10; ++i) {
-		if (symbol == allDigits[i]) {
-			return true;
-		}
-	}
-	return false;
+bool isDigit(const char symbol) {
+	return symbol >= '0' && symbol <= '9';
 }
 
 bool isOperation(char symbol) {
-	char allOperations[5] = { "-+*/" };
-	for (int i = 0; i < 5; ++i) {
-		if (symbol == allOperations[i]) {
-			return true;
-		}
-	}
-	return false;
+	return strchr("-+*/", symbol) != NULL;
 }
 
-int expressionEvaluation(const char postfixExpression[], const int lengthOfExpression, int *errorCode) {
+int evaluateExpression(const char postfixExpression[], const int lengthOfExpression, int *errorCode) {
 	Stack* stack = createStack();
 	if (stack == NULL) {
-		printf("Стек не был создан.");
+		*errorCode = -1;
 		return -1;
 	}
 	for (int i = 0; i < lengthOfExpression; ++i) {
 		const char currentElement = postfixExpression[i];
 		if (isDigit(currentElement)) {
-			*errorCode = push(stack, (int)currentElement - 48); // единице соответсвует код 49, двойке 50 и т.д.
+			*errorCode = push(stack, currentElement - '0');
 			if (*errorCode) {
 				deleteStack(stack);
 				return -1;
@@ -48,35 +36,23 @@ int expressionEvaluation(const char postfixExpression[], const int lengthOfExpre
 			switch (currentElement) {
 			case '-': {
 				push(stack, firstNumber - secondNumber);
-				if (*errorCode) {
-					deleteStack(stack);
-					return -1;
-				}
 				break;
 			}
 			case '+': {
 				push(stack, firstNumber + secondNumber);
-				if (*errorCode) {
-					deleteStack(stack);
-					return -1;
-				}
 				break;
 			}
 			case '*': {
 				push(stack, firstNumber * secondNumber);
-				if (*errorCode) {
-					deleteStack(stack);
-					return -1;
-				}
 				break;
 			}
 			case '/':
 				push(stack, firstNumber / secondNumber);
-				if (*errorCode) {
-					deleteStack(stack);
-					return -1;
-				}
 				break;
+			}
+			if (*errorCode) {
+				deleteStack(stack);
+				return -1;
 			}
 		}
 	}
@@ -90,13 +66,13 @@ int expressionEvaluation(const char postfixExpression[], const int lengthOfExpre
 }
 
 bool correctCase(void) {
-	char postfixExpression[MaxExpressionLength] = { "96-12+*" };
+	char postfixExpression[MAX_EXPRESSION_LENGTH] = { "96-12+*" };
 	int errorCode = 0;
-	const int result = expressionEvaluation(postfixExpression, 7, &errorCode);
+	const int result = evaluateExpression(postfixExpression, 7, &errorCode);
 	return result == 9;
 }
 
-int main() {
+int main(void) {
 	setlocale(LC_ALL, ".1251");
 	if (!correctCase()) {
 		printf("Тесты были провалены.");
@@ -104,8 +80,8 @@ int main() {
 	}
 	printf("Тесты пройдены успешно.\n");
 	printf("Данная программа позволяет вычислить арифметическое выражение в постфиксной форме.\n\
-Введите не более %d символов в одну строчку в виде '9 8 *' => ", MaxExpressionLength);
-	char postfixExpression[MaxExpressionLength] = { "" };
+Введите не более %d символов в одну строчку в виде '9 8 *' => ", MAX_EXPRESSION_LENGTH);
+	char postfixExpression[MAX_EXPRESSION_LENGTH] = { "" };
 	int currentElement = 0;
 	char currentChar = getchar();
 	while (currentChar != '\n') {
@@ -118,7 +94,7 @@ int main() {
 		currentChar = getchar();
 	}
 	int errorCode = 0;
-	const int result = expressionEvaluation(postfixExpression, currentElement, &errorCode);
+	const int result = evaluateExpression(postfixExpression, currentElement, &errorCode);
 	if (errorCode) {
 		printf("При вычислении возникла ошибка.");
 		return -1;
