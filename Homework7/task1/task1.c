@@ -21,28 +21,36 @@ int verificationIntScanf(void) {
 bool test(void) {
 	int errorCode = 0;
 	Tree* tree = createTree(&errorCode);
+	if (tree == NULL) {
+		return false;
+	}
 	addElement(tree, 8, "A", &errorCode);
 	if (errorCode) {
+		deleteTree(&tree);
 		return false;
 	}
 	addElement(tree, 5, "B", &errorCode);
 	if (errorCode) {
+		deleteTree(&tree);
 		return false;
 	}
 	addElement(tree, 9, "C", &errorCode);
 	if (errorCode) {
+		deleteTree(&tree);
 		return false;
 	}
 	addElement(tree, 1, "D", &errorCode);
 	if (errorCode) {
+		deleteTree(&tree);
 		return false;
 	}
 	bool firstTest = strcmp(searchValueFromKey(tree, 5), "B") == 0;
 	deleteElement(tree, 8, &errorCode);
 	if (errorCode) {
+		deleteTree(&tree);
 		return false;
 	}
-	bool secondTest = isKeyInTree(tree, 8) == false;
+	bool secondTest = !isKeyInTree(tree, 8);
 	deleteTree(&tree);
 	return firstTest && secondTest && tree == NULL;
 }
@@ -84,7 +92,12 @@ int main() {
 		case 2: {
 			printf("Введите ключ => ");
 			const int key = verificationIntScanf();
-			printf("Значение по данному ключу - %s\n", searchValueFromKey(tree, key));
+			char* string = searchValueFromKey(tree, key);
+			if (string == NULL) {
+				printf("Данного элемента нет.");
+			} else {
+				printf("Значение по данному ключу - %s\n", string);
+			}
 			break;
 		}
 		case 3: {

@@ -32,14 +32,11 @@ bool isLeftChild(Node* node, int *errorCode) {
 		*errorCode = -1;
 		return;
 	}
-	if (node->parent->leftChild == node) {
-		return true;
-	}
-	return false;
+	return node->parent->leftChild == node;
 }
 
 Tree* createTree(int *errorCode) {
-	Tree* tree= malloc(sizeof(Tree));
+	Tree* tree = malloc(sizeof(Tree));
 	if (tree == NULL) {
 		*errorCode = -1;
 		return -1;
@@ -105,14 +102,13 @@ void addElement(Tree* tree, const int key, char* value, int *errorCode) {
 			currentNode->rightChild = newNode;
 		}
 	}
-	return;
 }
 
 char* searchValueFromKey(Tree* tree, const int key) {
 	Node* currentNode = tree->root;
 	while (true) {
 		if (currentNode == NULL) {
-			return "NULL";
+			return NULL;
 		}
 		if (currentNode->key > key) {
 			currentNode = currentNode->leftChild;
@@ -172,7 +168,6 @@ void deleteElement(Tree* tree, const int key, int *errorCode) {
 	if (currentNode->rightChild == NULL && currentNode->leftChild == NULL) {
 		if (currentNode == tree->root) {
 			free(currentNode->value);
-			currentNode->value = NULL;
 			free(currentNode);
 			tree->root = NULL;
 			return;
@@ -182,8 +177,6 @@ void deleteElement(Tree* tree, const int key, int *errorCode) {
 		} else {
 			currentNode->parent->rightChild = NULL;
 		}
-		currentNode->key = NULL;
-		currentNode->value = NULL;
 		free(currentNode);
 		return;
 	}
