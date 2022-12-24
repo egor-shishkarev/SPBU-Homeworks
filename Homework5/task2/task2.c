@@ -38,6 +38,10 @@ bool conformityOfBrackets(const char openBracket, const char closedBracket) {
 }
 
 bool parenthesisBalance(const char *arrayOfSymbols, const int lengthOfString, int *errorCode) {
+	if (arrayOfSymbols == NULL) {
+		*errorCode = -1;
+		return false;
+	}
 	Stack* stack = createStack();
 	if (stack == NULL) {
 		*errorCode = -1;
@@ -47,7 +51,11 @@ bool parenthesisBalance(const char *arrayOfSymbols, const int lengthOfString, in
 		const char currentSymbol = arrayOfSymbols[i];
 		if (isOpenBracket(currentSymbol)) {
 			*errorCode = push(stack, currentSymbol);
-		} else if (isClosedBracket(currentSymbol) && !isEmpty(stack)) {
+			if (errorCode) {
+				deleteStack(stack);
+				return false;
+			}
+		} else if (!isEmpty(stack) && isClosedBracket(currentSymbol)) {
 			const char openBracket = top(stack);
 			if (conformityOfBrackets(openBracket, currentSymbol)) {
 				pop(stack, errorCode);
@@ -62,9 +70,10 @@ bool parenthesisBalance(const char *arrayOfSymbols, const int lengthOfString, in
 					return false;
 				}
 			}
-		} else if (isClosedBracket(currentSymbol) && isEmpty(stack)) {
+		} else if (isEmpty(stack) && isClosedBracket(currentSymbol)) {
 			*errorCode = -1;
-			return -1;
+			deleteStack(stack);
+			return false;
 		}
 	}
 	bool result = isEmpty(stack);
