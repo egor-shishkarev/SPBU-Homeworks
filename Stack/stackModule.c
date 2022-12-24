@@ -14,7 +14,6 @@ typedef struct Stack {
 int push(Stack* stack, uncertainType value) {
     Node* temp = malloc(sizeof(Node));
     if (temp == NULL) {
-        printf("Память не была выделена.");
         return -1;
     }
     temp->value = value;
@@ -24,7 +23,7 @@ int push(Stack* stack, uncertainType value) {
     return 0;
 }
 
-int pop(Stack* stack, int* errorCode) {
+uncertainType pop(Stack* stack, int* errorCode) {
     if (isEmpty(stack)) {
         if (errorCode != NULL) {
             *errorCode = -1;
@@ -63,7 +62,7 @@ Stack* createStack() {
     return stack;
 }
 
-int top(Stack* stack) {
+uncertainType top(Stack* stack) {
     return stack->head->value;
 }
 
