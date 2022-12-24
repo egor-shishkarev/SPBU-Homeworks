@@ -58,7 +58,12 @@ char* conversionFromInfixToPostfix(const char *infixExpression, const int length
 			addToString(postfixExpression, symbol, &currentIndex);
 			continue;
 		} else if (symbol == '(') {
-			push(stackForOperations, '(');
+			*errorCode = push(stackForOperations, '(');
+			if (*errorCode == -1) {
+				free(postfixExpression);
+				deleteStack(stackForOperations);
+				return NULL;
+			}
 			continue;
 		} else if (symbol == ')') {
 			while (!isEmpty(stackForOperations) && top(stackForOperations) != '(') {
@@ -87,7 +92,12 @@ char* conversionFromInfixToPostfix(const char *infixExpression, const int length
 					return NULL;
 				}
 			}
-			push(stackForOperations, symbol);
+			*errorCode = push(stackForOperations, symbol);
+			if (*errorCode == -1) {
+				free(postfixExpression);
+				deleteStack(stackForOperations);
+				return NULL;
+			}
 		} else {
 			*errorCode = 1;
 			free(postfixExpression);
