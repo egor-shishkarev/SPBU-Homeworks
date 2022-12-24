@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#define MAX_STRING_SIZE 101
+
 int verificationIntScanf(void) {
     int readValues = 0;
     while (true) {
@@ -22,93 +24,105 @@ bool isDigit(const char symbol) {
     return symbol >= '0' && symbol <= '9';
 }
 
+typedef enum State {
+    start,
+    digits,
+    point,
+    digitsAfterPoint,
+    exponent,
+    exponentSign,
+    digitsAfterExponent,
+    end
+} State;
+
 bool isNumber(const char* string) {
-    int currentState = 0;
+    State currentState = start;
     int currentIndex = -1;
     const int lengthOfString = strlen(string);
     while (currentIndex + 1 <= lengthOfString - 1) {
         ++currentIndex;
         switch (currentState) {
-        case 0: {
+        case start: {
             if (isDigit(string[currentIndex])) {
-                currentState = 1;
-            }
-            else {
-                currentState = 7;
-            }
-            break;
-        }
-        case 1: {
-            if (string[currentIndex] == '.') {
-                currentState = 2;
-            }
-            else if (!isDigit(string[currentIndex])) {
-                currentState = 7;
+                currentState = digits;
+            } else {
+                currentState = end;
             }
             break;
         }
-        case 2: {
+        case digits: {
             if (isDigit(string[currentIndex])) {
-                currentState = 3;
-            }
-            else {
-                currentState = 7;
-            }
-            break;
-        }
-        case 3: {
-            if (string[currentIndex] == 'E') {
-                currentState = 4;
-            }
-            else if (!isDigit(string[currentIndex])) {
-                currentState = 7;
+            } else if (string[currentIndex] == '.') {
+                currentState = point;
+            } else if (string[currentIndex] == 'E') {
+                currentState = exponent;
+            } else {
+                currentState = end;
             }
             break;
         }
-        case 4: {
+        case point: {
+            if (isDigit(string[currentIndex])) {
+                currentState = digitsAfterPoint;
+            } else {
+                currentState = end;
+            }
+            break;
+        }
+        case digitsAfterPoint: {
+            if (isDigit(string[currentIndex])) {
+            } else if (string[currentIndex] == 'E') {
+                currentState = exponent;
+            } else {
+                currentState = end;
+            }
+            break;
+        }
+        case exponent: {
             if (string[currentIndex] == '+' || string[currentIndex] == '-') {
-                currentState = 5;
-            }
-            else {
-                currentState = 7;
+                currentState = exponentSign;
+            } else if (isDigit(string[currentIndex])) {
+                currentState = digitsAfterExponent;
+            } else {
+                currentState = end;
             }
             break;
         }
-        case 5: {
+        case exponentSign: {
             if (isDigit(string[currentIndex])) {
-                currentState = 6;
-            }
-            else {
-                currentState = 7;
-            }
-            break;
-        }
-        case 6: {
-            if (!isDigit(string[currentIndex])) {
-                currentState = 7;
+                currentState = digitsAfterExponent;
+            } else {
+                currentState = end;
             }
             break;
         }
-        case 7: {
+        case digitsAfterExponent: {
+            if (isDigit(string[currentIndex])) {
+            } else {
+                currentState = end;
+            }
+            break;
+        }
+        case end: {
             return false;
-            break;
         }
         }
     }
-    return currentState == 1 || currentState == 3 || currentState == 6;
+    return currentState == digits || currentState == digitsAfterPoint || currentState == digitsAfterExponent;
 }
 
 bool test(void) {
     char* test1 = "2512378371.4E-616";
     char* test2 = "451.133";
     char* test3 = "456";
+    char* test4 = "1E1";
 
     char* uncorrectCase1 = ".1344";
     char* uncorrectCase2 = "27317.+124";
     char* uncorrectCase3 = "1202E";
     char* uncorrectCase4 = "4615.E123";
     char* uncorrectCase5 = "4512ololo.E-4";
-    return isNumber(test1) && isNumber(test2) && isNumber(test3) && !isNumber(uncorrectCase1) && !isNumber(uncorrectCase2) && !isNumber(uncorrectCase3) && \
+    return isNumber(test1) && isNumber(test2) && isNumber(test3) && isNumber(test4) && !isNumber(uncorrectCase1) && !isNumber(uncorrectCase2) && !isNumber(uncorrectCase3) && \
         !isNumber(uncorrectCase4) && !isNumber(uncorrectCase5);
 }
 
@@ -119,13 +133,9 @@ int main(void) {
         return -1;
     }
     printf("Тесты успешно пройдены.\n");
-    printf("Введите максимальное число символов в вашей строке => ");
-    const int length = verificationIntScanf();
-    printf("Введите строку, которую хотите проверить на принадлежность к вещественным числам => ");
-    char* string = calloc(length, sizeof(char));
+    printf("Введите строку длиной не более 100 символов, которую хотите проверить на принадлежность к вещественным числам => ");
+    char string[MAX_STRING_SIZE] = { "" };
     scanf("%s", string);
     printf("%s", isNumber(string) ? "Да" : "Нет");
-    free(string);
     return 0;
-} // 2512378371.E-616
-/* */
+}
