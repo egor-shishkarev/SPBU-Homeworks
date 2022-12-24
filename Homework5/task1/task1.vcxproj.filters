@@ -26,7 +26,7 @@
     <ClInclude Include="..\..\Stack\stackModule.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Stack\typeStack.h">
+    <ClInclude Include="..\..\Stack\stackType.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>

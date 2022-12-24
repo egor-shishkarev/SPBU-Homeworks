@@ -1,3 +1,3 @@
 #pragma once
 
-typedef int uncertainType;
+typedef char uncertainType;
