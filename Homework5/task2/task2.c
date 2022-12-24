@@ -51,7 +51,7 @@ bool parenthesisBalance(const char *arrayOfSymbols, const int lengthOfString, in
 		const char currentSymbol = arrayOfSymbols[i];
 		if (isOpenBracket(currentSymbol)) {
 			*errorCode = push(stack, currentSymbol);
-			if (errorCode) {
+			if (*errorCode) {
 				deleteStack(stack);
 				return false;
 			}
@@ -74,6 +74,10 @@ bool parenthesisBalance(const char *arrayOfSymbols, const int lengthOfString, in
 			*errorCode = -1;
 			deleteStack(stack);
 			return false;
+		} else {
+			*errorCode = -1;
+			deleteStack(stack);
+			return false;
 		}
 	}
 	bool result = isEmpty(stack);
@@ -88,7 +92,7 @@ bool correctCase(void) {
 }
 
 bool incorrectCase(void) {
-	const char arrayOfSymbols[4] = { "{{}" };
+	const char arrayOfSymbols[4] = { "}{}" };
 	int errorCode = 0;
 	return !parenthesisBalance(arrayOfSymbols, 3, &errorCode);
 }

@@ -14,7 +14,6 @@ typedef struct Stack {
 int push(Stack* stack, uncertainType value) {
     Node* temp = malloc(sizeof(Node));
     if (temp == NULL) {
-        printf("Память не была выделена.");
         return -1;
     }
     temp->value = value;

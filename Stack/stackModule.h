@@ -11,11 +11,15 @@ int push(Stack* stack, uncertainType element);
 
 // Функция, позволяющая "вытащить" элемент с верха стека.
 int pop(Stack* stack, int* errorCode);
+
 // Функция проверки стека на отсутствие элементов.
 bool isEmpty(Stack* stack);
+
 // Функция удаления стека и очищения памяти, выделенной под указатель.
 void deleteStack(Stack* stack);
+
 // Функция создания стека.
 Stack* createStack(void);
+
 // Функция получения элемента с верха стека. Не достаёт элемент.
 int top(Stack* stack);
