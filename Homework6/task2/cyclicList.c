@@ -16,13 +16,13 @@ List* createCyclicList(int* errorCode) {
 	List* list = malloc(sizeof(List));
 	if (list == NULL) {
 		*errorCode = -1;
-		return;
+		return NULL;
 	}
 	list->head = NULL;
 	return list;
 }
 
-int insertElement(List* list, const int position, int* errorCode) {
+void insertElement(List* list, const int position, int* errorCode) {
 	if (list == NULL || position <= 0) {
 		*errorCode = -1;
 		return;
@@ -37,8 +37,7 @@ int insertElement(List* list, const int position, int* errorCode) {
 		newNode->next = newNode;
 		newNode->previous = newNode;
 		list->head = newNode;
-	}
-	else {
+	} else {
 		Node* newNode = malloc(sizeof(Node));
 		if (newNode == NULL) {
 			*errorCode = -1;
@@ -52,7 +51,7 @@ int insertElement(List* list, const int position, int* errorCode) {
 	}
 }
 
-int deleteElement(List* list, const int gap, int* errorCode) {
+void deleteElement(List* list, const int gap, int* errorCode) {
 	if (list == NULL || list->head == NULL) {
 		*errorCode = -1;
 		return;
@@ -70,16 +69,24 @@ int deleteElement(List* list, const int gap, int* errorCode) {
 int lastPosition(List* list, int *errorCode) {
 	if (list == NULL || list->head == NULL) {
 		*errorCode = -1;
-		return;
+		return 0;
 	}
 	return list->head->position;
 }
 
 void deleteList(List** list) {
+	if ((*list) == NULL) {
+		return;
+	}
+	if ((*list)->head == NULL) {
+		free((*list));
+		return;
+	}
  	Node* currentNode = (*list)->head;
+	int errorCode = 0;
 	while (currentNode->next != currentNode) {
 		(*list)->head = currentNode->next;
-		deleteElement((*list), 1, currentNode);
+		deleteElement((*list), 1, &errorCode);
 		currentNode = (*list)->head;
 	}
 

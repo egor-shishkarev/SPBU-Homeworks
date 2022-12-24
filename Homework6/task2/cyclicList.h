@@ -7,13 +7,13 @@ typedef struct List List;
 List* createCyclicList(int* errorCode);
 
 // Функция добавления элемента в циклический список
-int insertElement(List* list, const int position, int* errorCode);
+void insertElement(List* list, const int position, int* errorCode);
 
 // Функция удаления элемента из циклического списка
-int deleteElement(List* list, const int gap, int* errorCode);
+void deleteElement(List* list, const int gap, int* errorCode);
 
 // Функция, необходимая для возвращения последнего элемента из списка
 int lastPosition(List* list, int* errorCode);
 
 // Функция для удаления списка
-void deleteList(List* list);
+void deleteList(List** list);
