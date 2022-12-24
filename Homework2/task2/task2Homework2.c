@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <locale.h>
+#include <string.h>
 
 int verificationIntScanf() {
 	int readValues = 0;
@@ -80,13 +81,14 @@ bool edgeCase() {
 	return testExponentiation(45, 0) && testExponentiation(98, 1) && testExponentiation(0, 5);
 }
 
-int main() {
-	setlocale(LC_ALL, ".1251");
-	if (!(correctCase() && incorrectCase() && edgeCase())) {
-		printf("Тесты были провалены, найдите ошибку!");
-		return 1;
+int main(int argc, char* argv[]) {
+	if (argc > 1 && strcmp(argv[1], "-test") == 0) {
+		if (!(correctCase() && incorrectCase() && edgeCase())) {
+			return 1;
+		}
+		return 0;
 	}
-	printf("Тесты успешно пройдены!\n");
+	setlocale(LC_ALL, ".1251");
 	printf("Введите число, которое хотите возвести в степень => ");
 	const long double number = verificationLongDoubleScanf();
 	printf("Введите степень => ");

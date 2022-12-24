@@ -4,6 +4,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include <locale.h>
+#include <string.h>
 
 #define LENGTH_OF_ARRAY 20
 
@@ -44,13 +45,14 @@ bool test(void) {
     return true;
 }
 
-int main() {
-    setlocale(LC_ALL, ".1251");
-    if (!test()) {
-        printf("Тесты не пройдены!");
-        return -1;
+int main(int argc, char* argv[]) {
+    if (argc > 1 && strcmp(argv[1], "-test") == 0) {
+        if (!test()) {
+            return -1;
+        }
+        return 0;
     }
-    printf("Тесты пройдены успешно.\n");
+    setlocale(LC_ALL, ".1251");
     int arrayOfNumbers[LENGTH_OF_ARRAY] = { 0 };
     srand(clock(NULL));
     for (int i = LENGTH_OF_ARRAY / 2; i < LENGTH_OF_ARRAY; ++i) {
