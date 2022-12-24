@@ -15,7 +15,11 @@ bool isOperation(char symbol) {
 	return strchr("-+*/", symbol) != NULL;
 }
 
-int evaluateExpression(const char postfixExpression[], const int lengthOfExpression, int *errorCode) {
+int evaluateExpression(const char* postfixExpression, const int lengthOfExpression, int *errorCode) {
+	if (postfixExpression == NULL) {
+		*errorCode = -1;
+		return -1;
+	}
 	Stack* stack = createStack();
 	if (stack == NULL) {
 		*errorCode = -1;
@@ -29,8 +33,7 @@ int evaluateExpression(const char postfixExpression[], const int lengthOfExpress
 				deleteStack(stack);
 				return -1;
 			}
-		}
-		if (isOperation(currentElement)) {
+		} else if (isOperation(currentElement)) {
 			const int secondNumber = pop(stack, errorCode);
 			if (*errorCode) {
 				deleteStack(stack);
@@ -43,30 +46,37 @@ int evaluateExpression(const char postfixExpression[], const int lengthOfExpress
 			}
 			switch (currentElement) {
 			case '-': {
-				push(stack, firstNumber - secondNumber);
+				*errorCode = push(stack, firstNumber - secondNumber);
 				break;
 			}
 			case '+': {
-				push(stack, firstNumber + secondNumber);
+				*errorCode = push(stack, firstNumber + secondNumber);
 				break;
 			}
 			case '*': {
-				push(stack, firstNumber * secondNumber);
+				*errorCode = push(stack, firstNumber * secondNumber);
 				break;
 			}
 			case '/':
-				push(stack, firstNumber / secondNumber);
+				*errorCode = push(stack, firstNumber / secondNumber);
 				break;
 			}
-
+			if (*errorCode) {
+				deleteStack(stack);
+				return -1;
+			}
+		} else {
+			deleteStack(stack);
+			*errorCode = -3;
+			return -1;
 		}
 	}
 	int result = pop(stack, errorCode);
-	bool empty = isEmpty(stack);
 	if (*errorCode) {
 		deleteStack(stack);
 		return -1;
 	}
+	bool empty = isEmpty(stack);
 	deleteStack(stack);
 	if (empty) {
 		return result;
@@ -76,21 +86,21 @@ int evaluateExpression(const char postfixExpression[], const int lengthOfExpress
 }
 
 bool correctCase(void) {
-	char postfixExpression[MAX_EXPRESSION_LENGTH] = { "96-12+*" };
+	char postfixExpression[] = { "96-12+*" };
 	int errorCode = 0;
 	const int result = evaluateExpression(postfixExpression, 7, &errorCode);
 	return result == 9 && errorCode == 0;
 }
 
 bool incorrectCaseStack(void) {
-	char postfixExpression[MAX_EXPRESSION_LENGTH] = { "-96" };
+	char postfixExpression[] = { "-96" };
 	int errorCode = 0;
 	const int result = evaluateExpression(postfixExpression, 4, &errorCode);
 	return result == -1 && errorCode == -1;
 }
 
 bool incorrectCaseExpression(void) {
-	char postfixExpression[MAX_EXPRESSION_LENGTH] = { "5566++" };
+	char postfixExpression[] = { "5566++" };
 	int errorCode = 0;
 	const int result = evaluateExpression(postfixExpression, 7, &errorCode);
 	return result == -1 && errorCode == -2;
@@ -124,7 +134,11 @@ int main(void) {
 		return -1;
 	}
 	if (errorCode == -2) {
-		printf("Выражение введено неверно! Проверьте перед вводом.");
+		printf("Выражение введено неверно!");
+		return -1;
+	} 
+	if (errorCode == -3) {
+		printf("Был введён недопустимый символ!");
 		return -1;
 	}
 	printf("Результат вычисления выражения - %d", result);
