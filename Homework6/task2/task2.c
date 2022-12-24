@@ -38,7 +38,7 @@ int remainingWarrior(const int numberOfWarriors, const int killEvery, int *error
 	if (*errorCode) {
 		return -1;
 	}
-	deleteList(list);
+	deleteList(&list);
 	return result;
 }
 
@@ -53,7 +53,7 @@ bool incorrectCase(void) {
 	return errorCode != 0;
 }
 
-int main() {
+int main(void) {
 	setlocale(LC_ALL, ".1251");
 	if (!(correctCase() && incorrectCase())) {
 		printf("Тесты не были пройдены!");
@@ -66,7 +66,7 @@ int main() {
 	const int killEvery = verificationIntScanf();
 	int errorCode = 0;
 	const int result = remainingWarrior(numberOfWarriors, killEvery, &errorCode);
-	if (errorCode) {
+	if (errorCode == -1) {
 		printf("Произошла ошибка с выделением памяти!");
 		return errorCode;
 	}

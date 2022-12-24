@@ -75,7 +75,15 @@ int lastPosition(List* list, int *errorCode) {
 	return list->head->position;
 }
 
-void deleteList(List* list) {
-	free(list->head);
-	free(list);
+void deleteList(List** list) {
+ 	Node* currentNode = (*list)->head;
+	while (currentNode->next != currentNode) {
+		(*list)->head = currentNode->next;
+		deleteElement((*list), 1, currentNode);
+		currentNode = (*list)->head;
+	}
+
+	free((*list)->head);
+	free(*list);
+	(*list) = NULL;
 }
