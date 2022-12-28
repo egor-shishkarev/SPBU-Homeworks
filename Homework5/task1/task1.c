@@ -1,0 +1,147 @@
+﻿#include "..\..\Stack\stackModule.h"
+#include <stdio.h>
+#include <locale.h>
+#include <malloc.h>
+#include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
+#define MAX_EXPRESSION_LENGTH 50
+
+bool isDigit(const char symbol) {
+	return symbol >= '0' && symbol <= '9';
+}
+
+bool isOperation(char symbol) {
+	return strchr("-+*/", symbol) != NULL;
+}
+
+int evaluateExpression(const char* postfixExpression, const int lengthOfExpression, int *errorCode) {
+	if (postfixExpression == NULL) {
+		*errorCode = -1;
+		return -1;
+	}
+	Stack* stack = createStack();
+	if (stack == NULL) {
+		*errorCode = -1;
+		return -1;
+	}
+	for (int i = 0; i < lengthOfExpression; ++i) {
+		const char currentElement = postfixExpression[i];
+		if (isDigit(currentElement)) {
+			*errorCode = push(stack, currentElement - '0');
+			if (*errorCode) {
+				deleteStack(stack);
+				return -1;
+			}
+		} else if (isOperation(currentElement)) {
+			const int secondNumber = pop(stack, errorCode);
+			if (*errorCode) {
+				deleteStack(stack);
+				return -1;
+			}
+			const int firstNumber = pop(stack, errorCode);
+			if (*errorCode) {
+				deleteStack(stack);
+				return -1;
+			}
+			switch (currentElement) {
+			case '-': {
+				*errorCode = push(stack, firstNumber - secondNumber);
+				break;
+			}
+			case '+': {
+				*errorCode = push(stack, firstNumber + secondNumber);
+				break;
+			}
+			case '*': {
+				*errorCode = push(stack, firstNumber * secondNumber);
+				break;
+			}
+			case '/':
+				*errorCode = push(stack, firstNumber / secondNumber);
+				break;
+			}
+			if (*errorCode) {
+				deleteStack(stack);
+				return -1;
+			}
+		} else {
+			deleteStack(stack);
+			*errorCode = -3;
+			return -1;
+		}
+	}
+	int result = pop(stack, errorCode);
+	if (*errorCode) {
+		deleteStack(stack);
+		return -1;
+	}
+	bool empty = isEmpty(stack);
+	deleteStack(stack);
+	if (empty) {
+		return result;
+	}
+	*errorCode = -2;
+	return -1;
+}
+
+bool correctCase(void) {
+	char postfixExpression[] = { "96-12+*" };
+	int errorCode = 0;
+	const int result = evaluateExpression(postfixExpression, 7, &errorCode);
+	return result == 9 && errorCode == 0;
+}
+
+bool incorrectCaseStack(void) {
+	char postfixExpression[] = { "-96" };
+	int errorCode = 0;
+	const int result = evaluateExpression(postfixExpression, 4, &errorCode);
+	return result == -1 && errorCode == -1;
+}
+
+bool incorrectCaseExpression(void) {
+	char postfixExpression[] = { "5566++" };
+	int errorCode = 0;
+	const int result = evaluateExpression(postfixExpression, 7, &errorCode);
+	return result == -1 && errorCode == -2;
+}
+
+int main(void) {
+	setlocale(LC_ALL, ".1251");
+	if (!correctCase() && incorrectCaseStack() && incorrectCaseExpression()) {
+		printf("Тесты были провалены.");
+		return -1;
+	}
+	printf("Тесты пройдены успешно.\n");
+	printf("Данная программа позволяет вычислить арифметическое выражение в постфиксной форме.\n\
+Введите не более %d символов в одну строчку в виде '9 8 *' => ", MAX_EXPRESSION_LENGTH);
+	char postfixExpression[MAX_EXPRESSION_LENGTH] = { "" };
+	int currentElement = 0;
+	char currentChar = getchar();
+	while (currentChar != '\n') {
+		if (currentChar == ' ') {
+			currentChar = getchar();
+			continue;
+		}
+		postfixExpression[currentElement] = currentChar;
+		++currentElement;
+		currentChar = getchar();
+	}
+	int errorCode = 0;
+	const int result = evaluateExpression(postfixExpression, currentElement, &errorCode);
+	if (errorCode == -1) {
+		printf("Произошла ошибка со стэком (Создание или попытка взять элемент из пустого стэка)");
+		return -1;
+	}
+	if (errorCode == -2) {
+		printf("Выражение введено неверно!");
+		return -1;
+	} 
+	if (errorCode == -3) {
+		printf("Был введён недопустимый символ!");
+		return -1;
+	}
+	printf("Результат вычисления выражения - %d", result);
+	return 0;
+}
+
