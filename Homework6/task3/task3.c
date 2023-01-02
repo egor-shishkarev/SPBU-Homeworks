@@ -5,7 +5,7 @@
 #include <malloc.h>
 #include <string.h>
 
-int main() {
+int main(void) {
 	setlocale(LC_ALL, ".1251");
 	List* list = createList();
 	int errorCode = 0;
