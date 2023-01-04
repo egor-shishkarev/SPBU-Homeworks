@@ -1,39 +1,40 @@
 ﻿#include "list.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <locale.h>
-#include <malloc.h>
-#include <string.h>
+#include <stdbool.h>
+
+int verificationIntScanf(void) {
+	int readValues = 0;
+	while (true) {
+		int correctlyReadValues = scanf("%d", &readValues);
+		while (getchar() != '\n') {
+		}
+		if (correctlyReadValues == 1) {
+			break;
+		}
+		printf("Ошибка ввода. Введите целочисленное значение!\n");
+	}
+	return readValues;
+}
 
 int main(void) {
 	setlocale(LC_ALL, ".1251");
+	const char* path = "phonebook.txt";
+	printf("Записи находятся в файле %s\n", path);
+	printf("Для сортировки по имени введите 0, для сортировки по телефону введите 1 => ");
+	int mode = verificationIntScanf();
+	while (mode != 0 && mode != 1) {
+		printf("Введено неверное значение, повторите ввод! => ");
+		mode = verificationIntScanf();
+	}
 	List* list = createList();
-	int errorCode = 0;
-	int position = 1;
-	FILE* file = fopen("phonebook.txt", "r");
-	while (!feof(file)) {
-		char* name = malloc(20 * sizeof(char));
-		if (fscanf(file, "%s", name) == 0) {
-			break;
-		}
-		getc(file);
-		char* phone = malloc(20 * sizeof(char));
-		if (fscanf(file, "%s", phone) == 0) {
-			break;
-		}
-		insert(list, name, phone, position, &errorCode);
-		++position;
-	}
-	for (int i = 1; i < position; ++i) {
-		printf("%s - %s\n", getName(list, i), getPhone(list, i));
-	}
-	List* secondList = list;
-	for (int i = 0; i < 2; ++i) {
-		secondList = getNextPosition(secondList);
-	}
-	List* mergedList = mergeSort(list, secondList, 2, 2);
-	for (int i = 1; i <= 4; ++i) {
-		printf("%s - %s\n", getName(mergedList, i), getPhone(mergedList, i));
-	}
+	readFromFile(list, path);
+	List* mergedList = mergeSort(list, mode);
+	printf("Список до сортировки: \n");
+	printList(list);
+	printf("\nСписок после сортировки: \n");
+	printList(mergedList);
+	deleteList(&list, 1);
+	deleteList(&mergedList, 1);
 	return 0;
-} 
+}
