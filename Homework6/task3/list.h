@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #define MAX_NAME_SIZE 20
 #define MAX_PHONE_SIZE 20
 
@@ -9,6 +10,9 @@ typedef enum deleteMode deleteMode;
 // Переменная для выбора сортировки 
 typedef enum sortMode sortMode;
 
+// Структура узла списка. Содержит 4 поля: имя, номер телефона, позицию и указатель на следующий узел.
+typedef struct Node Node;
+
 // Структура список, содержит три поля: голова, хвост и длина
 typedef struct List List;
 
@@ -16,13 +20,25 @@ typedef struct List List;
 void printList(List* list);
 
 // Функция чтения в список записей типа "имя - номер телефона"
-void readFromFile(List* list, const char* path/*, int* errorCode*/);
+void readFromFile(List* list, const char* path, int* errorCode);
 
 // Функция создания списка
-List* createList(void);
+List* createList(int* errorCode);
 
 // Сортировка списка слиянием
-List* mergeSort(List* list/*, int* errorCode*/, sortMode mode);
+List* mergeSort(List* list, sortMode mode, int* errorCode);
 
 // Функция удаления списка
 void deleteList(List** list, deleteMode mode);
+
+// Возвращает голову списка
+Node* headOfList(List* list);
+
+// Функция добавления элемента в список
+void addElement(List* list, char* name, char* phone, const int position, int* errorCode);
+
+// Следующий элемент из списка
+Node* nextElement(Node* node);
+
+// Проверка на соответствие имени и телефона узла
+bool testNode(Node* node, char* name, char* phone);

@@ -1,4 +1,5 @@
 ﻿#include "list.h"
+#include "testFile.h"
 #include <stdio.h>
 #include <locale.h>
 #include <stdbool.h>
@@ -19,6 +20,11 @@ int verificationIntScanf(void) {
 
 int main(void) {
 	setlocale(LC_ALL, ".1251");
+	if (!allTests()) {
+		printf("Тесты не были пройдены!");
+		return -1;
+	}
+	printf("Тесты пройдены успешно!\n");
 	const char* path = "phonebook.txt";
 	printf("Записи находятся в файле %s\n", path);
 	printf("Для сортировки по имени введите 0, для сортировки по телефону введите 1 => ");
@@ -27,9 +33,19 @@ int main(void) {
 		printf("Введено неверное значение, повторите ввод! => ");
 		mode = verificationIntScanf();
 	}
-	List* list = createList();
-	readFromFile(list, path);
-	List* mergedList = mergeSort(list, mode);
+	int errorCode = 0;
+	List* list = createList(&errorCode);
+	if (errorCode == -1) {
+		return -1;
+	}
+	readFromFile(list, path, &errorCode);
+	if (errorCode == -1) {
+		return -1;
+	}
+	List* mergedList = mergeSort(list, mode, &errorCode);
+	if (errorCode == -1) {
+		return -1;
+	}
 	printf("Список до сортировки: \n");
 	printList(list);
 	printf("\nСписок после сортировки: \n");

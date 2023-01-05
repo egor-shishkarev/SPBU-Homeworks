@@ -133,10 +133,17 @@
     <ClCompile Include="task3.c">
       <SDLCheck Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</SDLCheck>
     </ClCompile>
+    <ClCompile Include="testFile.c">
+      <SDLCheck Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</SDLCheck>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="list.h" />
     <ClInclude Include="phonebook.txt" />
+    <ClInclude Include="testFile.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="testFile.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,6 +2,7 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 typedef enum deleteMode {
     erase,
@@ -26,25 +27,30 @@ typedef struct List {
     int length;
 } List;
 
-List* createList(void) {
-    return calloc(1, sizeof(List));
+List* createList(int* errorCode) {
+    List* list = calloc(1, sizeof(List));
+    if (list == NULL) {
+        *errorCode = -1;
+        return NULL;
+    }
+    return list;
 }
 
-void addElement(List* list, char* name, char* phone, const int position) {
+void addElement(List* list, char* name, char* phone, const int position, int* errorCode) {
     if (list == NULL) {
-        //*errorCode = -1;
+        *errorCode = -1;
         return;
     }
     Node* newNode = calloc(1, sizeof(Node));
     if (newNode == NULL) {
-        //*errorCode = -1;
+        *errorCode = -1;
         return;
     }
     newNode->position = position;
     char* newName = calloc(strlen(name) + 1, sizeof(char));
     if (newName == NULL) {
         free(newNode);
-        //*errorCode = -1;
+        *errorCode = -1;
         return;
     }
     strcpy(newName, name);
@@ -53,7 +59,7 @@ void addElement(List* list, char* name, char* phone, const int position) {
     if (newPhone == NULL) {
         free(newNode);
         free(newName);
-        //*errorCode = -1;
+        *errorCode = -1;
         return;
     }
     strcpy(newPhone, phone);
@@ -67,8 +73,15 @@ void addElement(List* list, char* name, char* phone, const int position) {
     }
 }
 
-List* createAdditionalList(List* list, const int left, const int right) {
-    List* additionalList = createList();
+List* createAdditionalList(List* list, const int left, const int right, int* errorCode) {
+    List* additionalList = createList(errorCode);
+    if (*errorCode == -1) {
+        return NULL;
+    }
+    if (list == NULL) {
+        *errorCode = -1;
+        return NULL;
+    }
     Node* currentNode = list->head;
     if (left - right != 0 || currentNode->position != left) {
         while (currentNode->position != left) {
@@ -76,32 +89,64 @@ List* createAdditionalList(List* list, const int left, const int right) {
         }
     }
     for (int i = 0; i < right - left + 1; ++i) {
-        addElement(additionalList, currentNode->name, currentNode->phone, currentNode->position);
+        addElement(additionalList, currentNode->name, currentNode->phone, currentNode->position, errorCode);
+        if (*errorCode == -1) {
+            return NULL;
+        }
         currentNode = currentNode->next;
     }
     return additionalList;
 }
 
-List* mergeLists(List* firstList, List* secondList, sortMode mode) {
-    List* mergedList = createList();
+List* mergeLists(List* firstList, List* secondList, sortMode mode, int* errorCode) {
+    List* mergedList = createList(errorCode);
+    if (mergedList == NULL) {
+        *errorCode = -1;
+        return NULL;
+    }
+    if (*errorCode == -1) {
+        deleteList(&mergedList, erase);
+        return NULL;
+    }
+    if (firstList == NULL || secondList == NULL) {
+        *errorCode = -1;
+        deleteList(&mergedList, erase);
+        return NULL;
+    }
     Node* firstListNode = firstList->head;
     Node* secondListNode = secondList->head;
     while (firstListNode != NULL || secondListNode != NULL) {
         if (firstListNode != NULL) {
             if (secondListNode != NULL) {
                 if ((strcmp(firstListNode->name, secondListNode->name) >= 0 && mode == name) || (strcmp(firstListNode->phone, secondListNode->phone) >= 0 && mode == phone)) {
-                    addElement(mergedList, secondListNode->name, secondListNode->phone, secondListNode->position);
+                    addElement(mergedList, secondListNode->name, secondListNode->phone, secondListNode->position, errorCode);
+                    if (*errorCode == -1) {
+                        deleteList(&mergedList, erase);
+                        return NULL;
+                    }
                     secondListNode = secondListNode->next;
                 } else {
-                    addElement(mergedList, firstListNode->name, firstListNode->phone, firstListNode->position);
+                    addElement(mergedList, firstListNode->name, firstListNode->phone, firstListNode->position, errorCode);
+                    if (*errorCode == -1) {
+                        deleteList(&mergedList, erase);
+                        return NULL;
+                    }
                     firstListNode = firstListNode->next;
                 }
             } else {
-                addElement(mergedList, firstListNode->name, firstListNode->phone, firstListNode->position);
+                addElement(mergedList, firstListNode->name, firstListNode->phone, firstListNode->position, errorCode);
+                if (*errorCode == -1) {
+                    deleteList(&mergedList, erase);
+                    return NULL;
+                }
                 firstListNode = firstListNode->next;
             }
         } else {
-            addElement(mergedList, secondListNode->name, secondListNode->phone, secondListNode->position);
+            addElement(mergedList, secondListNode->name, secondListNode->phone, secondListNode->position, errorCode);
+            if (*errorCode == -1) {
+                deleteList(&mergedList, erase);
+                return NULL;
+            }
             secondListNode = secondListNode->next;
         }
     }
@@ -110,39 +155,106 @@ List* mergeLists(List* firstList, List* secondList, sortMode mode) {
     return mergedList;
 }
 
-List* splitList(List* list, const int leftIndex, const int rightIndex, sortMode mode) {
+List* splitList(List* list, const int leftIndex, const int rightIndex, sortMode mode, int* errorCode) {
+    if (list == NULL) {
+        *errorCode = -1;
+        return NULL;
+    }
     const int middleIndex = (leftIndex + rightIndex) / 2;
     if (rightIndex - leftIndex > 0) {
-        List* firstList = createAdditionalList(list, leftIndex, middleIndex);
-        List* splittedFirstList = splitList(firstList, leftIndex, middleIndex, mode);
-        List* secondList = createAdditionalList(list, middleIndex + 1, rightIndex);
-        List* splittedSecondList = splitList(secondList, middleIndex + 1, rightIndex, mode);
-        List* mergedList = mergeLists(splittedFirstList, splittedSecondList, mode);
+        List* firstList = createAdditionalList(list, leftIndex, middleIndex, errorCode);
+        if (firstList == NULL) {
+            *errorCode = -1;
+            return NULL;
+        } else if (*errorCode == -1) {
+            deleteList(&firstList, erase);
+            return NULL;
+        }
+        List* splittedFirstList = splitList(firstList, leftIndex, middleIndex, mode, errorCode);
+        if (splittedFirstList == NULL) {
+            deleteList(&firstList, erase);
+            *errorCode = -1;
+            return NULL;
+        } else if (*errorCode == -1) {
+            deleteList(&firstList, erase);
+            deleteList(&splittedFirstList, erase);
+            return NULL;
+        }
+        List* secondList = createAdditionalList(list, middleIndex + 1, rightIndex, errorCode);
+        if (secondList == NULL) {
+            deleteList(&firstList, erase);
+            deleteList(&splittedFirstList, erase);
+            *errorCode = -1;
+            return NULL;
+        } else if (*errorCode == -1) {
+            deleteList(&firstList, erase);
+            deleteList(&splittedFirstList, erase);
+            deleteList(&secondList, erase);
+            return NULL;
+        }
+        List* splittedSecondList = splitList(secondList, middleIndex + 1, rightIndex, mode, errorCode);
+        if (splittedSecondList == NULL) {
+            deleteList(&firstList, erase);
+            deleteList(&splittedFirstList, erase);
+            deleteList(&secondList, erase);
+            *errorCode = -1;
+            return NULL;
+        } else if (*errorCode == -1) {
+            deleteList(&firstList, erase);
+            deleteList(&splittedFirstList, erase);
+            deleteList(&secondList, erase);
+            deleteList(&splittedSecondList, erase);
+            return NULL;
+        }
+        List* mergedList = mergeLists(splittedFirstList, splittedSecondList, mode, errorCode);
+        if (mergedList == NULL) {
+            deleteList(&firstList, erase);
+            deleteList(&splittedFirstList, erase);
+            deleteList(&secondList, erase);
+            deleteList(&splittedSecondList, erase);
+            *errorCode = -1;
+            return NULL;
+        } else if (*errorCode == -1) {
+            deleteList(&firstList, erase);
+            deleteList(&splittedFirstList, erase);
+            deleteList(&secondList, erase);
+            deleteList(&splittedSecondList, erase);
+            deleteList(&firstList, erase);
+            return NULL;
+        }
         deleteList(&firstList, erase);
         deleteList(&secondList, erase);
         return mergedList;
     } else {
-        return createAdditionalList(list, leftIndex, rightIndex);
+        List* oneElementList = createAdditionalList(list, leftIndex, rightIndex, errorCode);
+        if (oneElementList == NULL) {
+            *errorCode = -1;
+            return NULL;
+        } else if (*errorCode == -1) {
+            deleteList(&oneElementList, erase);
+            return NULL;
+        }
+        return oneElementList;
     }
 
 }
 
-List* mergeSort(List* list, sortMode mode) {
+List* mergeSort(List* list, sortMode mode, int* errorCode) {
     if (list == NULL || list->head == NULL) {
         return NULL;
     }
-    List* mergedList = splitList(list, 0, list->length - 1, mode);
+    List* mergedList = splitList(list, 0, list->length - 1, mode, errorCode);
     return mergedList;
 }
 
-void readFromFile(List* list, const char* path) {
+void readFromFile(List* list, const char* path, int* errorCode) {
     FILE* file = fopen(path, "r");
     if (file == NULL) {
-        //*errorCode = -1;
+        *errorCode = -1;
         return;
     }
     if (list == NULL) {
-        //*errorCode = -1;
+        *errorCode = -1;
         return;
     }
     while (!feof(file)) {
@@ -154,12 +266,12 @@ void readFromFile(List* list, const char* path) {
         if (fscanf(file, "%s", &phone) == -1) {
             break;
         }
-        addElement(list, name, phone/*, errorCode*/, list->length);
+        addElement(list, name, phone, list->length, errorCode);
         ++list->length;
-        /*if (*errorCode == -1) {
+        if (*errorCode == -1) {
             fclose(file);
             return;
-        }*/
+        }
     }
     fclose(file);
 }
@@ -211,4 +323,19 @@ void deleteList(List** list, deleteMode mode) {
     }
     free((*list));
     (*list) = NULL;
+}
+
+Node* headOfList(List* list) {
+    return list->head;
+}
+
+Node* nextElement(Node* node) {
+    if (node == NULL) {
+        return NULL;
+    }
+    return node->next;
+}
+
+bool testNode(Node* node, char* name, char* phone) {
+    return strcmp(node->name, name) == 0 && strcmp(node->phone, phone) == 0;
 }

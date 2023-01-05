@@ -21,6 +21,9 @@
     <ClCompile Include="list.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="testFile.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="list.h">
@@ -29,5 +32,13 @@
     <ClInclude Include="phonebook.txt">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="testFile.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="testFile.txt">
+      <Filter>Исходные файлы</Filter>
+    </Text>
   </ItemGroup>
 </Project>
