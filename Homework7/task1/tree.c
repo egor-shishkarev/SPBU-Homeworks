@@ -39,13 +39,13 @@ Tree* createTree(int *errorCode) {
 	Tree* tree = malloc(sizeof(Tree));
 	if (tree == NULL) {
 		*errorCode = -1;
-		return -1;
+		return NULL;
 	}
 	tree->root = NULL;
 	return tree;
 }
 
-void addElement(Tree* tree, const int key, char* value, int *errorCode) {
+void addElement(Tree* tree, const int key, const char* value, int *errorCode) {
 	if (tree->root == NULL) {
 		Node* newNode = malloc(sizeof(Node));
 		if (newNode == NULL) {

@@ -1,6 +1,7 @@
 ﻿#include "tree.h"
 #include <stdio.h>
 #include <locale.h>
+#include <stdlib.h>
 
 #define MAX_STRING_SIZE 50
 
@@ -55,7 +56,7 @@ bool test(void) {
 	return firstTest && secondTest && tree == NULL;
 }
 
-int main() {
+int main(void) {
 	setlocale(LC_ALL, ".1251");
 	if (!test()) {
 		printf("Тесты не пройдены!");
