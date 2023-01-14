@@ -9,7 +9,6 @@ typedef struct Node {
 	char* value;
 	struct Node* leftChild;
 	struct Node* rightChild;
-	struct Node* parent;
  } Node;
 
 typedef struct Tree {
@@ -31,15 +30,20 @@ int choiceChild(Node* node, const int key) {
 	return node->key > key ? 1 : -1;
 }
 
-
-// Need to be restructed without parent parameter
-// For example: transmit two nodes
-bool isLeftChild(Node* node, int *errorCode) {
-	if (node == NULL || node->parent == NULL) {
+bool isLeftChild(Node* node, Node* parentNode ,int *errorCode) {
+	if (node == NULL || parentNode == NULL) {
 		*errorCode = -1;
 		return false;
 	}
-	return node->parent->leftChild == node;
+	return parentNode->leftChild == node;
+}
+
+bool isRightChild(Node* node, Node* parentNode, int* errorCode) {
+	if (node == NULL || parentNode == NULL) {
+		*errorCode = -1;
+		return false;
+	}
+	return parentNode->rightChild == node;
 }
 
 Tree* createTree(int *errorCode) {
@@ -69,7 +73,6 @@ void addElement(Tree* tree, const int key, const char* value, int *errorCode) {
 		newNode->value = newValue;
 		newNode->rightChild = NULL;
 		newNode->leftChild = NULL;
-		newNode->parent = NULL;
 		tree->root = newNode;
 	} else {
 		Node* currentNode = tree->root;
@@ -106,7 +109,6 @@ void addElement(Tree* tree, const int key, const char* value, int *errorCode) {
 		newNode->value = newValue;
 		newNode->leftChild = NULL;
 		newNode->rightChild = NULL;
-		newNode->parent = currentNode;
 		if (choiceChild(currentNode, key) == 1) {
 			currentNode->leftChild = newNode;
 		} else {
@@ -149,7 +151,126 @@ Node* theMostRightChild(Node* node) {
 	return currentNode;
 }
 
-void deleteElement(Tree* tree, const int key, int *errorCode) {
+void deleteElement(Tree* tree, const int key, int* errorCode) {
+	Node* currentNode = tree->root;
+
+	// Search for previous node
+	while (true) {
+		if (currentNode == NULL) {
+			return;
+		}
+		if (key > currentNode->key && currentNode->rightChild->key != key) {
+			currentNode = currentNode->rightChild;
+		} else if (key < currentNode->key && currentNode->leftChild->key != key) {
+			currentNode = currentNode->leftChild;
+		} else {
+			break;
+		}
+	}
+
+	// The node, that we need to delete 
+	Node* nodeToDelete = tree->root;
+	if (tree->root->key != key) {
+		if (currentNode->leftChild->key == key) {
+			nodeToDelete = currentNode->leftChild;
+		} else if (currentNode->rightChild == key) {
+			nodeToDelete = currentNode->rightChild;
+		}
+	}
+
+	// There are four cases
+	// No children
+	if (nodeToDelete->leftChild == NULL && nodeToDelete->rightChild == NULL) {
+		if (isLeftChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
+			currentNode->leftChild = NULL;
+		} else if (isRightChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
+			currentNode->rightChild = NULL;
+		} else {
+			tree->root = NULL;
+		}
+		free(nodeToDelete->value);
+		free(nodeToDelete);
+		nodeToDelete = NULL;
+		return;
+	}
+
+	//One left child
+	if (nodeToDelete->leftChild != NULL && nodeToDelete->rightChild == NULL) {
+		if (isLeftChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
+			currentNode->leftChild = nodeToDelete->leftChild;
+			
+		} else if (isRightChild(nodeToDelete, currentNode, errorCode), errorCode != -1) {
+			currentNode->rightChild = nodeToDelete->leftChild;
+		} else {
+			return;
+		}
+		free(nodeToDelete->value);
+		free(nodeToDelete);
+		nodeToDelete = NULL;
+		return;
+	}
+
+	// One right child
+	if (nodeToDelete->leftChild == NULL && nodeToDelete->rightChild != NULL) {
+		if (isLeftChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
+			currentNode->leftChild = nodeToDelete->rightChild;
+		} else if (errorCode != -1) {
+			currentNode->rightChild = nodeToDelete->rightChild;
+		} else {
+			return;
+		}
+		free(nodeToDelete->value);
+		free(nodeToDelete);
+		nodeToDelete = NULL;
+		return;
+	}
+
+	// Two children
+	if (nodeToDelete->leftChild != NULL && nodeToDelete->rightChild != NULL) {
+		Node* replacementNode = theMostRightChild(nodeToDelete);
+		const int replacementKey = replacementNode->key;
+		free(nodeToDelete->value);
+		nodeToDelete->value = calloc(strlen(replacementNode->value) + 1, sizeof(char));
+		if (nodeToDelete->value == NULL) {
+			errorCode = -1;
+			return;
+		}
+		strcpy(nodeToDelete->value, replacementNode->value);
+		deleteElement(tree, replacementNode->key, errorCode);
+		nodeToDelete->key = replacementKey;
+		if (errorCode == -1) {
+			return;
+		}
+	}
+}
+
+void deleteTreeRecursive(Node* node) {
+	if (node == NULL) {
+		return;
+	}
+	deleteTreeRecursive(node->leftChild);
+	deleteTreeRecursive(node->rightChild);
+	free(node->value);
+	free(node);
+	node = NULL;
+}
+
+void deleteTree(Tree** tree) {
+	if ((*tree) == NULL) {
+		return;
+	}
+	if ((*tree)->root == NULL) {
+		free((*tree));
+		tree = NULL;
+		return;
+	}
+	deleteTreeRecursive((*tree)->root);
+	free((*tree));
+	*tree = NULL;
+}
+
+
+/*void deleteElement(Tree* tree, const int key, int *errorCode) {
 	if (!isKeyInTree(tree, key)) {
 		return;
 	}
@@ -207,111 +328,4 @@ void deleteElement(Tree* tree, const int key, int *errorCode) {
 	replacementNode->parent = NULL;
 	free(replacementNode->value);
 	free(replacementNode);
-}
-
-
-void newDeleteElement(Tree* tree, const int key, int* errorCode) {
-	Node* currentNode = tree->root;
-
-	// Search for previous node
-	while (true) {
-		if (currentNode == NULL) {
-			return;
-		}
-		if (key > currentNode->key && currentNode->rightChild->key != key) {
-			currentNode = currentNode->rightChild;
-		} else if (key < currentNode->key && currentNode->leftChild->key != key) {
-			currentNode = currentNode->leftChild;
-		} else {
-			break;
-		}
-	}
-
-	// The node, that we need to delete 
-	Node* nodeToDelete = currentNode->leftChild->key == key ? currentNode->leftChild : currentNode->rightChild;
-
-	// There are four cases
-	// No children
-	if (nodeToDelete->leftChild == NULL && nodeToDelete->rightChild == NULL) {
-		if (isLeftChild(nodeToDelete, errorCode) && errorCode != -1) {
-			currentNode->leftChild = NULL;
-		} else if (errorCode != -1) {
-			currentNode->rightChild = NULL;
-		} else {
-			return;
-		}
-		free(nodeToDelete->value);
-		free(nodeToDelete);
-		nodeToDelete = NULL;
-		return;
-	}
-
-	//One left child
-	if (nodeToDelete->leftChild != NULL && nodeToDelete->rightChild == NULL) {
-		if (isLeftChild(nodeToDelete, errorCode) && errorCode != -1) {
-			currentNode->leftChild = nodeToDelete->leftChild;
-			
-		} else if (errorCode != -1) {
-			currentNode->rightChild = nodeToDelete->leftChild;
-		} else {
-			return;
-		}
-		free(nodeToDelete->value);
-		free(nodeToDelete);
-		nodeToDelete = NULL;
-		return;
-	}
-
-	// One right child
-	if (nodeToDelete->leftChild == NULL && nodeToDelete->rightChild != NULL) {
-		if (isLeftChild(nodeToDelete, errorCode) && errorCode != -1) {
-			currentNode->leftChild = nodeToDelete->rightChild;
-
-		} else if (errorCode != -1) {
-			currentNode->rightChild = nodeToDelete->rightChild;
-		} else {
-			return;
-		}
-		free(nodeToDelete->value);
-		free(nodeToDelete);
-		nodeToDelete = NULL;
-		return;
-	}
-
-	// Two children
-	if (nodeToDelete->leftChild != NULL && nodeToDelete->rightChild != NULL) {
-		Node* ReplacementNode = theMostRightChild(nodeToDelete);
-		nodeToDelete->key = ReplacementNode->key;
-		free(nodeToDelete->value);
-		nodeToDelete->value = ReplacementNode->value;
-		newDeleteElement(tree, ReplacementNode->key, errorCode);
-		if (errorCode == -1) {
-			return;
-		}
-	}
-}
-
-void deleteTreeRecursive(Node* node) {
-	if (node == NULL) {
-		return;
-	}
-	deleteTreeRecursive(node->leftChild);
-	deleteTreeRecursive(node->rightChild);
-	free(node->value);
-	free(node);
-	node = NULL;
-}
-
-void deleteTree(Tree** tree) {
-	if ((*tree) == NULL) {
-		return;
-	}
-	if ((*tree)->root == NULL) {
-		free((*tree));
-		tree = NULL;
-		return;
-	}
-	deleteTreeRecursive((*tree)->root);
-	free((*tree));
-	*tree = NULL;
-}
+}*/
