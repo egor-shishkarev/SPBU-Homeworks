@@ -64,56 +64,53 @@ void addElement(Tree* tree, const int key, const char* value, int *errorCode) {
 			return;
 		}
 		newNode->key = key;
-		char* newValue = calloc(strlen(value) + 1, sizeof(char));
-		if (newValue == NULL) {
+		newNode->value = calloc(strlen(value) + 1, sizeof(char));
+		if (newNode->value == NULL) {
 			*errorCode = -1;
 			return;
 		}
-		strcpy(newValue, value);
-		newNode->value = newValue;
+		strcpy(newNode->value, value);
 		newNode->rightChild = NULL;
 		newNode->leftChild = NULL;
 		tree->root = newNode;
-	} else {
-		Node* currentNode = tree->root;
-		while (true) {
-			if (nodeSearch(currentNode, key, errorCode) != NULL && currentNode->key != key) {
-				currentNode = nodeSearch(currentNode, key, errorCode);
-			} else { 
-				break; 
-			}
-		}
-		if (currentNode->key == key) {
-			char* newValue = calloc(strlen(value) + 1, sizeof(char));
-			if (newValue == NULL) {
-				*errorCode = -1;
-				return;
-			}
-			strcpy(newValue, value);
-			free(currentNode->value);
-			currentNode->value = newValue;
-			return;
-		}
-		Node* newNode = malloc(sizeof(Node));
-		if (newNode == NULL) {
-			*errorCode = -1;
-			return;
-		}
-		newNode->key = key;
-		char* newValue = calloc(strlen(value) + 1, sizeof(char));
-		if (newValue == NULL) {
-			*errorCode = -1;
-			return;
-		}
-		strcpy(newValue, value);
-		newNode->value = newValue;
-		newNode->leftChild = NULL;
-		newNode->rightChild = NULL;
-		if (choiceChild(currentNode, key) == 1) {
-			currentNode->leftChild = newNode;
+		return;
+	}
+	Node* currentNode = tree->root;
+	while (true) {
+		if (nodeSearch(currentNode, key, errorCode) != NULL && currentNode->key != key) {
+			currentNode = nodeSearch(currentNode, key, errorCode);
 		} else {
-			currentNode->rightChild = newNode;
+			break;
 		}
+	}
+	if (currentNode->key == key) {
+		free(currentNode->value);
+		currentNode->value = calloc(strlen(value) + 1, sizeof(char));
+		if (currentNode->value == NULL) {
+			*errorCode = -1;
+			return;
+		}
+		strcpy(currentNode->value, value);
+		return;
+	}
+	Node* newNode = malloc(sizeof(Node));
+	if (newNode == NULL) {
+		*errorCode = -1;
+		return;
+	}
+	newNode->key = key;
+	newNode->value = calloc(strlen(value) + 1, sizeof(char));
+	if (newNode->value == NULL) {
+		*errorCode = -1;
+		return;
+	}
+	strcpy(newNode->value, value);
+	newNode->leftChild = NULL;
+	newNode->rightChild = NULL;
+	if (choiceChild(currentNode, key) == 1) {
+		currentNode->leftChild = newNode;
+	} else {
+		currentNode->rightChild = newNode;
 	}
 }
 
@@ -153,8 +150,6 @@ Node* theMostRightChild(Node* node) {
 
 void deleteElement(Tree* tree, const int key, int* errorCode) {
 	Node* currentNode = tree->root;
-
-	// Search for previous node
 	while (true) {
 		if (currentNode == NULL) {
 			return;
@@ -167,8 +162,6 @@ void deleteElement(Tree* tree, const int key, int* errorCode) {
 			break;
 		}
 	}
-
-	// The node, that we need to delete 
 	Node* nodeToDelete = tree->root;
 	if (tree->root->key != key) {
 		if (currentNode->leftChild->key == key) {
@@ -177,9 +170,6 @@ void deleteElement(Tree* tree, const int key, int* errorCode) {
 			nodeToDelete = currentNode->rightChild;
 		}
 	}
-
-	// There are four cases
-	// No children
 	if (nodeToDelete->leftChild == NULL && nodeToDelete->rightChild == NULL) {
 		if (isLeftChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
 			currentNode->leftChild = NULL;
@@ -193,39 +183,45 @@ void deleteElement(Tree* tree, const int key, int* errorCode) {
 		nodeToDelete = NULL;
 		return;
 	}
-
-	//One left child
 	if (nodeToDelete->leftChild != NULL && nodeToDelete->rightChild == NULL) {
-		if (isLeftChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
-			currentNode->leftChild = nodeToDelete->leftChild;
-			
-		} else if (isRightChild(nodeToDelete, currentNode, errorCode), errorCode != -1) {
-			currentNode->rightChild = nodeToDelete->leftChild;
+		if (nodeToDelete == tree->root) {
+			tree->root = nodeToDelete->leftChild;
+
 		} else {
-			return;
+			if (isLeftChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
+				currentNode->leftChild = nodeToDelete->leftChild;
+			}
+			else if (isRightChild(nodeToDelete, currentNode, errorCode), errorCode != -1) {
+				currentNode->rightChild = nodeToDelete->leftChild;
+			}
+			else {
+				return;
+			}
 		}
 		free(nodeToDelete->value);
 		free(nodeToDelete);
 		nodeToDelete = NULL;
 		return;
 	}
-
-	// One right child
 	if (nodeToDelete->leftChild == NULL && nodeToDelete->rightChild != NULL) {
-		if (isLeftChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
-			currentNode->leftChild = nodeToDelete->rightChild;
-		} else if (errorCode != -1) {
-			currentNode->rightChild = nodeToDelete->rightChild;
+		if (nodeToDelete == tree->root) {
+			tree->root = nodeToDelete->rightChild;
 		} else {
-			return;
+			if (isLeftChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
+				currentNode->leftChild = nodeToDelete->rightChild;
+			}
+			else if (errorCode != -1) {
+				currentNode->rightChild = nodeToDelete->rightChild;
+			}
+			else {
+				return;
+			}
 		}
 		free(nodeToDelete->value);
 		free(nodeToDelete);
 		nodeToDelete = NULL;
 		return;
 	}
-
-	// Two children
 	if (nodeToDelete->leftChild != NULL && nodeToDelete->rightChild != NULL) {
 		Node* replacementNode = theMostRightChild(nodeToDelete);
 		const int replacementKey = replacementNode->key;
@@ -268,64 +264,3 @@ void deleteTree(Tree** tree) {
 	free((*tree));
 	*tree = NULL;
 }
-
-
-/*void deleteElement(Tree* tree, const int key, int *errorCode) {
-	if (!isKeyInTree(tree, key)) {
-		return;
-	}
-	Node* currentNode = tree->root;
-	while (true) {
-		if (currentNode->key > key) {
-			currentNode = currentNode->leftChild;
-		}
-		else if (currentNode->key < key) {
-			currentNode = currentNode->rightChild;
-		}
-		else if (currentNode->key == key) {
-			break;
-		}
-	}
-	if (currentNode->rightChild == NULL && currentNode->leftChild == NULL) {
-		if (currentNode == tree->root) {
-			free(currentNode->value);
-			free(currentNode);
-			tree->root = NULL;
-			return;
-		}
-		if (isLeftChild(currentNode, errorCode) && !errorCode) {
-			currentNode->parent->leftChild = NULL;
-		} else {
-			currentNode->parent->rightChild = NULL;
-		}
-		free(currentNode);
-		return;
-	}
-	Node* replacementNode = theMostRightChild(currentNode);
-	currentNode->key = replacementNode->key;
-	free(currentNode->value);
-	char* newValue = calloc(strlen(replacementNode->value) + 1, sizeof(char));
-	if (newValue == NULL) {
-		*errorCode = -1;
-		return;
-	}
-	strcpy(newValue, replacementNode->value);
-	currentNode->value = newValue;
-	if (replacementNode->leftChild != NULL) {
-		if (!isLeftChild(replacementNode, errorCode)) {
-			replacementNode->parent->rightChild = replacementNode->leftChild;
-		} else {
-			currentNode->leftChild = replacementNode->leftChild;
-			replacementNode->leftChild->parent = currentNode;
-		}
-	} else {
-		if (isLeftChild(replacementNode, errorCode) && !errorCode) {
-			replacementNode->parent->leftChild = NULL;
-		} else {
-			replacementNode->parent->rightChild = NULL;
-		}
-	}
-	replacementNode->parent = NULL;
-	free(replacementNode->value);
-	free(replacementNode);
-}*/
