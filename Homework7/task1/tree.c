@@ -1,4 +1,8 @@
 #include "tree.h"
+#include <stdio.h>
+#include <stdlib.h> 
+#include <string.h>
+#include <malloc.h>
 
 typedef struct Node {
 	int key;
@@ -15,7 +19,7 @@ typedef struct Tree {
 Node* nodeSearch(Node* node, const int key, int *errorCode) {
 	if (node == NULL) {
 		*errorCode = -1;
-		return;
+		return NULL;
 	}
 	if (node->key > key) {
 		return node->leftChild;
@@ -27,10 +31,13 @@ int choiceChild(Node* node, const int key) {
 	return node->key > key ? 1 : -1;
 }
 
+
+// Need to be restructed without parent parameter
+// For example: transmit two nodes
 bool isLeftChild(Node* node, int *errorCode) {
 	if (node == NULL || node->parent == NULL) {
 		*errorCode = -1;
-		return;
+		return false;
 	}
 	return node->parent->leftChild == node;
 }
@@ -75,6 +82,10 @@ void addElement(Tree* tree, const int key, const char* value, int *errorCode) {
 		}
 		if (currentNode->key == key) {
 			char* newValue = calloc(strlen(value) + 1, sizeof(char));
+			if (newValue == NULL) {
+				*errorCode = -1;
+				return;
+			}
 			strcpy(newValue, value);
 			free(currentNode->value);
 			currentNode->value = newValue;
@@ -121,21 +132,10 @@ char* searchValueFromKey(Tree* tree, const int key) {
 }
 
 bool isKeyInTree(Tree* tree, const int key) {
-	Node* currentNode = tree->root;
-	while (true) {
-		if (currentNode == NULL) {
-			return false;
-		}
-		if (currentNode->key > key) {
-			currentNode = currentNode->leftChild;
-		}
-		else if (currentNode->key < key) {
-			currentNode = currentNode->rightChild;
-		}
-		else if (currentNode->key == key) {
-			return true;
-		}
+	if (searchValueFromKey(tree, key) != NULL) {
+		return true;
 	}
+	return false;
 }
 
 Node* theMostRightChild(Node* node) {
@@ -206,20 +206,94 @@ void deleteElement(Tree* tree, const int key, int *errorCode) {
 	}
 	replacementNode->parent = NULL;
 	free(replacementNode->value);
-	replacementNode->value = NULL;
 	free(replacementNode);
+}
+
+
+void newDeleteElement(Tree* tree, const int key, int* errorCode) {
+	Node* currentNode = tree->root;
+
+	// Search for previous node
+	while (true) {
+		if (currentNode == NULL) {
+			return;
+		}
+		if (key > currentNode->key && currentNode->rightChild->key != key) {
+			currentNode = currentNode->rightChild;
+		} else if (key < currentNode->key && currentNode->leftChild->key != key) {
+			currentNode = currentNode->leftChild;
+		} else {
+			break;
+		}
+	}
+
+	// The node, that we need to delete 
+	Node* nodeToDelete = currentNode->leftChild->key == key ? currentNode->leftChild : currentNode->rightChild;
+
+	// There are four cases
+	// No children
+	if (nodeToDelete->leftChild == NULL && nodeToDelete->rightChild == NULL) {
+		if (isLeftChild(nodeToDelete, errorCode) && errorCode != -1) {
+			currentNode->leftChild = NULL;
+		} else if (errorCode != -1) {
+			currentNode->rightChild = NULL;
+		} else {
+			return;
+		}
+		free(nodeToDelete->value);
+		free(nodeToDelete);
+		nodeToDelete = NULL;
+		return;
+	}
+
+	//One left child
+	if (nodeToDelete->leftChild != NULL && nodeToDelete->rightChild == NULL) {
+		if (isLeftChild(nodeToDelete, errorCode) && errorCode != -1) {
+			currentNode->leftChild = nodeToDelete->leftChild;
+			
+		} else if (errorCode != -1) {
+			currentNode->rightChild = nodeToDelete->leftChild;
+		} else {
+			return;
+		}
+		free(nodeToDelete->value);
+		free(nodeToDelete);
+		nodeToDelete = NULL;
+		return;
+	}
+
+	// One right child
+	if (nodeToDelete->leftChild == NULL && nodeToDelete->rightChild != NULL) {
+		if (isLeftChild(nodeToDelete, errorCode) && errorCode != -1) {
+			currentNode->leftChild = nodeToDelete->rightChild;
+
+		}
+		else if (errorCode != -1) {
+			currentNode->rightChild = nodeToDelete->rightChild;
+		}
+		else {
+			return;
+		}
+		free(nodeToDelete->value);
+		free(nodeToDelete);
+		nodeToDelete = NULL;
+		return;
+	}
+
+	// Two children
+	if (nodeToDelete->leftChild != NULL && nodeToDelete->rightChild != NULL) {
+
+	}
+
 }
 
 void deleteTreeRecursive(Node* node) {
 	if (node == NULL) {
 		return;
 	}
-
 	deleteTreeRecursive(node->leftChild);
 	deleteTreeRecursive(node->rightChild);
-
 	free(node->value);
-	node->value = NULL;
 	free(node);
 	node = NULL;
 }
@@ -228,7 +302,12 @@ void deleteTree(Tree** tree) {
 	if ((*tree) == NULL) {
 		return;
 	}
+	if ((*tree)->root == NULL) {
+		free((*tree));
+		tree = NULL;
+		return;
+	}
 	deleteTreeRecursive((*tree)->root);
-	free(*tree);
+	free((*tree));
 	*tree = NULL;
 }

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <locale.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAX_STRING_SIZE 50
 
@@ -26,22 +27,22 @@ bool test(void) {
 		return false;
 	}
 	addElement(tree, 8, "A", &errorCode);
-	if (errorCode) {
+	if (errorCode == -1) {
 		deleteTree(&tree);
 		return false;
 	}
 	addElement(tree, 5, "B", &errorCode);
-	if (errorCode) {
+	if (errorCode == -1) {
 		deleteTree(&tree);
 		return false;
 	}
 	addElement(tree, 9, "C", &errorCode);
-	if (errorCode) {
+	if (errorCode == -1) {
 		deleteTree(&tree);
 		return false;
 	}
 	addElement(tree, 1, "D", &errorCode);
-	if (errorCode) {
+	if (errorCode == -1) {
 		deleteTree(&tree);
 		return false;
 	}
@@ -86,6 +87,7 @@ int main(void) {
 			addElement(tree, key, value, &errorCode);
 			if (errorCode) {
 				printf("Произошла ошибка в работе!");
+				deleteTree(&tree);
 				return -1;
 			}
 			break;
@@ -113,6 +115,7 @@ int main(void) {
 			deleteElement(tree, key, &errorCode);
 			if (errorCode) {
 				printf("Произошла ошибка в работе!");
+				deleteTree(&tree);
 				return -1;
 			}
 			break; 
