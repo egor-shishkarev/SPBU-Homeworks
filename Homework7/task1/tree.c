@@ -267,11 +267,9 @@ void newDeleteElement(Tree* tree, const int key, int* errorCode) {
 		if (isLeftChild(nodeToDelete, errorCode) && errorCode != -1) {
 			currentNode->leftChild = nodeToDelete->rightChild;
 
-		}
-		else if (errorCode != -1) {
+		} else if (errorCode != -1) {
 			currentNode->rightChild = nodeToDelete->rightChild;
-		}
-		else {
+		} else {
 			return;
 		}
 		free(nodeToDelete->value);
@@ -282,9 +280,15 @@ void newDeleteElement(Tree* tree, const int key, int* errorCode) {
 
 	// Two children
 	if (nodeToDelete->leftChild != NULL && nodeToDelete->rightChild != NULL) {
-
+		Node* ReplacementNode = theMostRightChild(nodeToDelete);
+		nodeToDelete->key = ReplacementNode->key;
+		free(nodeToDelete->value);
+		nodeToDelete->value = ReplacementNode->value;
+		newDeleteElement(tree, ReplacementNode->key, errorCode);
+		if (errorCode == -1) {
+			return;
+		}
 	}
-
 }
 
 void deleteTreeRecursive(Node* node) {
