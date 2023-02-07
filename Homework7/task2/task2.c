@@ -3,16 +3,16 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <stdbool.h>
 
 #define MAX_SIZE_OF_STRING 50
 
 bool test(void) {
-	const char expression[14] = "(* (+ 1 1) 2)";
 	Tree* tree = createParseTree();
-	addElementsToTree(tree, expression);
+	readFileToTree("test.txt", tree);
 	const int result = treeResult(tree);
 	deleteTree(&tree);
-	return result == 4;
+	return result == 3;
 }
 
 int main(void) {
@@ -26,7 +26,7 @@ int main(void) {
 	printf("Дерево разбора хранится в файле '%s'", fileName);
 	FILE* file = fopen(fileName, "r");
 	int numberOfSymbols = 0;
-	char arrayOfSymbols[MAX_SIZE_OF_STRING] = {0};
+	char arrayOfSymbols[MAX_SIZE_OF_STRING] = { 0 };
 	while (!feof(file)) {
 		int symbol = getc(file);
 		if (symbol == -1) {
@@ -40,7 +40,8 @@ int main(void) {
 	for (int i = numberOfSymbols - 1; i >= 0; --i) {
 		if (arrayOfSymbols[i] == ' ') {
 			arrayOfSymbols[i] = '\0';
-		} else {
+		}
+		else {
 			arrayOfSymbols[i + 1] = '\0';
 			break;
 		}
@@ -50,7 +51,7 @@ int main(void) {
 	}
 	printf("\nОбход по дереву: \n");
 	Tree* tree = createParseTree();
-	addElementsToTree(tree, arrayOfSymbols);
+	readFileToTree(fileName, tree);
 	treePrint(tree);
 	printf("\nРезультат обхода дерева - %d", treeResult(tree));
 	deleteTree(&tree);

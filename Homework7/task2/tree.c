@@ -1,181 +1,129 @@
 #include "tree.h"
+#include <stdbool.h>
+#include <stdio.h>
+#include <malloc.h>
+#include <string.h>
+
+#define MAX_NUMBER_SIZE 5
 
 typedef struct Node {
 	char* value;
 	struct Node* leftChild;
 	struct Node* rightChild;
-	struct Node* parent;
 } Node;
 
 typedef struct Tree {
 	Node* root;
 } Tree;
 
-char* getOperation(char* arrayOfSymbols) {
-	char* newValue = calloc(2, sizeof(char));
-	if (newValue == NULL) {
-		return -1;
-	}
-	newValue[0] = arrayOfSymbols[1];
-	return newValue;
-}
-
-char* getOperand1(char* arrayOfSymbols) {
-	int numberOfOpenBrackets = 0;
-	int numberOfClosedBrackets = 0;
-	const int lengthOfString = strlen(arrayOfSymbols);
-	for (int i = 0; i < lengthOfString; ++i) {
-		if (arrayOfSymbols[i] == '(') { 
-			++numberOfOpenBrackets;
-		}
-		else if (arrayOfSymbols[i] == ')') {
-			++numberOfClosedBrackets;
-		}
-		if (numberOfOpenBrackets == numberOfClosedBrackets + 1 && numberOfOpenBrackets > 1) {
-			char* operand1 = calloc(i - 3 + 2, sizeof(char));
-			if (operand1 == NULL) {
-				return -1;
-			}
-			for (int j = 2; j < i; ++j) {
-				operand1[j - 2] = arrayOfSymbols[j + 1];
-			}
-			return operand1;
-		}
-	}
-	if (numberOfClosedBrackets == numberOfOpenBrackets) {
-		int currentPosition = 3;
-		while (arrayOfSymbols[currentPosition] != ' ') {
-			++currentPosition;
-		}
-		char* operand1 = calloc(currentPosition - 3 + 1, sizeof(char));
-		if (operand1 == NULL) {
-			return -1;
-		}
-		for (int i = 3; i < currentPosition; ++i) {
-			operand1[i - 3] = arrayOfSymbols[i];
-		}
-		return operand1; 
-	}
-	return 0;
-}
-
-char* getOperand2(char* arrayOfSymbols) {
-	int numberOfOpenBrackets = 0;
-	int numberOfClosedBrackets = 0;
-	int lengthOfString = strlen(arrayOfSymbols);
-	for (int i = 0; i < lengthOfString; ++i) {
-		if (arrayOfSymbols[i] == '(') {
-			++numberOfOpenBrackets;
-		}
-		else if (arrayOfSymbols[i] == ')') {
-			++numberOfClosedBrackets;
-		}
-		if (numberOfOpenBrackets == numberOfClosedBrackets + 1 && numberOfOpenBrackets > 1) {
-			char* operand2 = calloc(lengthOfString - i - 2, sizeof(char));
-			if (operand2 == NULL) {
-				return -1;
-			}
-			for (int k = i + 2; k < lengthOfString - 1; ++k) {
-				operand2[k - i - 2] = arrayOfSymbols[k];
-			}
-			return operand2;
-		}
-	}
-	if (numberOfClosedBrackets == numberOfOpenBrackets) {
-		int currentPosition = 3;
-		while (arrayOfSymbols[currentPosition] != ' ') {
-			++currentPosition;
-		}
-		char* operand2 = calloc(lengthOfString - 1 - currentPosition, sizeof(char));
-		if (operand2 == NULL) {
-			return -1;
-		}
-		for (int i = currentPosition + 1; i < lengthOfString - 1; ++i) {
-			operand2[i - currentPosition - 1] = arrayOfSymbols[i];
-		}
-		return operand2; 
-	}
-	return 0;
-}
-
-void addPartToTree(Tree* tree, char* operation, char* operand1, char* operand2, Node* currentNode) {
-	if (currentNode == NULL) {
-		Node* newNode = malloc(sizeof(Node));
-		if (newNode == NULL) {
-			return;
-		}
-		if (currentNode == tree->root) {
-			tree->root = newNode;
-			newNode->parent = NULL;
-		}
-		newNode->leftChild = NULL;
-		newNode->rightChild = NULL;
-		currentNode = newNode;
-	}
-	char* newValue = calloc(2, sizeof(char));
-	if (newValue == NULL) {
+void addToTreeRecursion(FILE* file, Node* node, int* errorCode) {
+	getc(file);
+	char* operator = calloc(2, sizeof(char));
+	if (operator == NULL) {
+		*errorCode = -1;
 		return;
 	}
-	strcpy(newValue, operation);
-	currentNode->value = newValue;
-	if (operand1[0] == '(') {
-		Node* newNode = malloc(sizeof(Node));
-		if (newNode == NULL) {
-			free(newValue);
+	operator[0] = getc(file);
+	node->value = operator;
+	getc(file);
+	char* nextSymbol = calloc(2, sizeof(char));
+	nextSymbol[0] = (char)getc(file);
+	if (nextSymbol[0] == '(') {
+		ungetc(nextSymbol[0], file);
+		Node* newLeftNode = calloc(1, sizeof(Node));
+		if (newLeftNode == NULL) {
+			free(operator);
+			free(nextSymbol);
+			*errorCode = -1;
 			return;
 		}
-		newNode->parent = currentNode;
-		currentNode->leftChild = newNode;
-		addPartToTree(tree, getOperation(operand1), getOperand1(operand1), getOperand2(operand1), newNode);
+		node->leftChild = newLeftNode;
+		addToTreeRecursion(file, newLeftNode, errorCode);
+		if (*errorCode == -1) {
+			free(newLeftNode);
+			free(operator);
+			free(nextSymbol);
+			return;
+		}
+	} else {
+		ungetc(nextSymbol[0], file);
+		node->leftChild = calloc(1, sizeof(Node));
+		if (node->leftChild == NULL) {
+			*errorCode = -1;
+			return;
+		}
+		node->leftChild->value = calloc(MAX_NUMBER_SIZE + 1, sizeof(char));
+		if (node->leftChild->value == NULL) {
+			free(node->leftChild);
+			*errorCode = -1;
+			return;
+		}
+		fscanf(file, "%s", node->leftChild->value);
 	}
-	else {
-		char* newValue = calloc(strlen(operand1) + 1, sizeof(char));
-		strcpy(newValue, operand1);
-		Node* newNode = malloc(sizeof(Node));
-		if (newNode == NULL) {
-			free(newValue);
+	getc(file);
+	nextSymbol[0] = (char)getc(file);
+	if (nextSymbol[0] == '(') {
+		ungetc(nextSymbol[0], file);
+		Node* newRightNode = calloc(1, sizeof(Node));
+		if (newRightNode == NULL) {
+			free(operator);
+			free(nextSymbol);
+			*errorCode = -1;
 			return;
 		}
-		newNode->parent = currentNode;
-		newNode->leftChild = NULL;
-		newNode->rightChild = NULL;
-		newNode->value = newValue;
-		currentNode->leftChild = newNode;
-	}
-	if (operand2[0] == '(') {
-		Node* newNode = malloc(sizeof(Node));
-		if (newNode == NULL) {
+		node->rightChild = newRightNode;
+		addToTreeRecursion(file, newRightNode, errorCode);
+		if (*errorCode == -1) {
+			free(newRightNode);
+			free(operator);
+			free(nextSymbol);
 			return;
 		}
-		newNode->parent = currentNode;
-		currentNode->rightChild = newNode;
-		addPartToTree(tree, getOperation(operand2), getOperand1(operand2), getOperand2(operand2), newNode);
-	}
-	else {
-		char* newValue = calloc(strlen(operand2) + 1, sizeof(char));
-		strcpy(newValue, operand2);
-		Node* newNode = malloc(sizeof(Node));
-		if (newNode == NULL) {
+	} else {
+		ungetc(nextSymbol[0], file);
+		node->rightChild = calloc(1, sizeof(Node));
+		if (node->rightChild == NULL) {
+			free(operator);
+			free(nextSymbol);
+			*errorCode = -1;
 			return;
 		}
-		newNode->parent = currentNode;
-		newNode->leftChild = NULL;
-		newNode->rightChild = NULL;
-		newNode->value = newValue;
-		currentNode->rightChild = newNode;
+		node->rightChild->value = calloc(MAX_NUMBER_SIZE + 1, sizeof(char));
+		if (node->rightChild->value == NULL) {
+			free(node->rightChild);
+			free(operator);
+			free(nextSymbol);
+			*errorCode = -1;
+			return;
+		}
+		fscanf(file, "%[^)]", node->rightChild->value);
+		getc(file);
 	}
 }
 
-void addElementsToTree(Tree* tree, char* arrayOfSymbols) {
-	addPartToTree(tree, getOperation(arrayOfSymbols), getOperand1(arrayOfSymbols), getOperand2(arrayOfSymbols), tree->root);
+int readFileToTree(const char* fileName, Tree* tree) {
+	FILE* file = fopen(fileName, "r");
+	if (file == NULL) {
+		return -1;
+	}
+	tree->root = malloc(sizeof(Node));
+	if (tree->root == NULL) {
+		fclose(file);
+		return -1;
+	}
+	int errorCode = 0;
+	addToTreeRecursion(file, tree->root, &errorCode);
+	if (errorCode == -1) {
+		fclose(file);
+		deleteTree(&tree);
+		return -1;
+	}
+	fclose(file);
+	return 0;
 }
 
 Tree* createParseTree(void) {
-	Tree* tree = malloc(sizeof(Tree));
-	if (tree == NULL) {
-		return NULL;
-	}
-	tree->root = NULL;
+	Tree* tree = calloc(1, sizeof(Tree));
 	return tree;
 }
 
@@ -183,10 +131,8 @@ void deleteTreeRecursive(Node* node) {
 	if (node == NULL) {
 		return;
 	}
-
 	deleteTreeRecursive(node->leftChild);
 	deleteTreeRecursive(node->rightChild);
-
 	free(node->value);
 	free(node);
 	node = NULL;
@@ -196,12 +142,17 @@ void deleteTree(Tree** tree) {
 	if ((*tree) == NULL) {
 		return;
 	}
+	if ((*tree)->root == NULL) {
+		free((*tree));
+		*tree = NULL;
+		return;
+	}
 	deleteTreeRecursive((*tree)->root);
-	free(*tree);
+	free((*tree));
 	*tree = NULL;
 }
 
-long long int charToInt(char* number) {
+int charToInt(char* number) {
 	int currentPosition = 0;
 	int result = 0;
 	if (number[0] == '-') {
@@ -209,7 +160,7 @@ long long int charToInt(char* number) {
 	}
 	while (number[currentPosition] != '\0') {
 		result *= 10;
-		result += (int)number[currentPosition] - 48;
+		result += number[currentPosition] - '0';
 		++currentPosition;
 	}
 	return result - 2 * result * (number[0] == '-');
@@ -222,25 +173,22 @@ bool isOperation(char* arrayOfSymbols) {
 void treeTraversal(Node* node) {
 	if (isOperation(node->value)) {
 		printf("(%s ", node->value);
-	}
-	else {
+	} else {
 		printf("%s ", node->value);
 	}
-
 	if (node->leftChild != NULL) {
 		treeTraversal(node->leftChild);
 	}
 	if (node->rightChild != NULL) {
 		treeTraversal(node->rightChild);
 	}
-	if (node->rightChild == NULL && node->parent->rightChild == node) {
+	if (node->rightChild != NULL && node->leftChild != NULL) {
 		printf(") ");
 	}
 }
 
 void treePrint(Tree* tree) {
-	 treeTraversal(tree->root);
-	 printf(isOperation(tree->root->rightChild->value) ? ")": "");
+	treeTraversal(tree->root);
 }
 
 int calculateResult(Node* node) {
@@ -260,8 +208,7 @@ int calculateResult(Node* node) {
 			return calculateResult(node->leftChild) / calculateResult(node->rightChild);
 		}
 		}
-	}
-	else if (node != NULL) {
+	} else if (node != NULL) {
 		return charToInt(node->value);
 	}
 	return 0;
