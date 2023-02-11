@@ -39,7 +39,7 @@ bool readFromFileTest(void) {
 }
 
 bool mergeSortTest(void) {
-	int* errorCode = 0;
+	int errorCode = 0;
 	List* list = createList(&errorCode);
 	if (errorCode == -1) {
 		return false;
