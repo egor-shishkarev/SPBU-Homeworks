@@ -166,14 +166,14 @@ void deleteElement(Tree* tree, const int key, int* errorCode) {
 	if (tree->root->key != key) {
 		if (currentNode->leftChild->key == key) {
 			nodeToDelete = currentNode->leftChild;
-		} else if (currentNode->rightChild == key) {
+		} else if (currentNode->rightChild->key == key) {
 			nodeToDelete = currentNode->rightChild;
 		}
 	}
 	if (nodeToDelete->leftChild == NULL && nodeToDelete->rightChild == NULL) {
-		if (isLeftChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
+		if (isLeftChild(nodeToDelete, currentNode, errorCode) && *errorCode != -1) {
 			currentNode->leftChild = NULL;
-		} else if (isRightChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
+		} else if (isRightChild(nodeToDelete, currentNode, errorCode) && *errorCode != -1) {
 			currentNode->rightChild = NULL;
 		} else {
 			tree->root = NULL;
@@ -188,10 +188,10 @@ void deleteElement(Tree* tree, const int key, int* errorCode) {
 			tree->root = nodeToDelete->leftChild;
 
 		} else {
-			if (isLeftChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
+			if (isLeftChild(nodeToDelete, currentNode, errorCode) && *errorCode != -1) {
 				currentNode->leftChild = nodeToDelete->leftChild;
 			}
-			else if (isRightChild(nodeToDelete, currentNode, errorCode), errorCode != -1) {
+			else if (isRightChild(nodeToDelete, currentNode, errorCode), *errorCode != -1) {
 				currentNode->rightChild = nodeToDelete->leftChild;
 			}
 			else {
@@ -207,10 +207,10 @@ void deleteElement(Tree* tree, const int key, int* errorCode) {
 		if (nodeToDelete == tree->root) {
 			tree->root = nodeToDelete->rightChild;
 		} else {
-			if (isLeftChild(nodeToDelete, currentNode, errorCode) && errorCode != -1) {
+			if (isLeftChild(nodeToDelete, currentNode, errorCode) && *errorCode != -1) {
 				currentNode->leftChild = nodeToDelete->rightChild;
 			}
-			else if (errorCode != -1) {
+			else if (*errorCode != -1) {
 				currentNode->rightChild = nodeToDelete->rightChild;
 			}
 			else {
@@ -228,13 +228,13 @@ void deleteElement(Tree* tree, const int key, int* errorCode) {
 		free(nodeToDelete->value);
 		nodeToDelete->value = calloc(strlen(replacementNode->value) + 1, sizeof(char));
 		if (nodeToDelete->value == NULL) {
-			errorCode = -1;
+			*errorCode = -1;
 			return;
 		}
 		strcpy(nodeToDelete->value, replacementNode->value);
 		deleteElement(tree, replacementNode->key, errorCode);
 		nodeToDelete->key = replacementKey;
-		if (errorCode == -1) {
+		if (*errorCode == -1) {
 			return;
 		}
 	}
