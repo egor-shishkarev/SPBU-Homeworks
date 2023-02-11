@@ -30,9 +30,9 @@ void printBinary(const short* binaryNumber, const unsigned int size) {
     printf("\n");
 }
 
-void binaryRepresentation(int number, short* repressentation, const unsigned int size) {
+void binaryRepresentation(int number, short* representation, const unsigned int size) {
     for (int i = size - 1; i >= 0; --i) {
-        repressentation[i] = (short)(number & 1);
+        representation[i] = (short)(number & 1);
         number = number >> 1;
     }
 }
@@ -56,9 +56,9 @@ int decimalRepresentation(short* binaryNumber, const unsigned int size) {
     return sum;
 }
 
-bool correspondenceTest(const short* binaryNumber, const short* right, const unsigned int size) {
+bool correspondenceTest(const short* binaryNumber, const short* rightNumber, const unsigned int size) {
     for (int i = 0; i < size; ++i) {
-        if (binaryNumber[i] != right[i]) {
+        if (binaryNumber[i] != rightNumber[i]) {
             return false;
         }
     }
@@ -105,7 +105,7 @@ int main(void) {
         return -1;
     }
     printf("Тесты успешно пройдены!\n");
-    printf("Введите два целых числа => ");
+    printf("Введите два целых числа через Enter => ");
     const int firstNumber = verificationIntScanf();
     short firstBinary[BINARY_SIZE] = { 0 };
     binaryRepresentation(firstNumber, firstBinary, BINARY_SIZE);
