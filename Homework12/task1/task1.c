@@ -117,13 +117,13 @@ bool test(void) {
     char* test3 = "456";
     char* test4 = "1E1";
 
-    char* uncorrectCase1 = ".1344";
-    char* uncorrectCase2 = "27317.+124";
-    char* uncorrectCase3 = "1202E";
-    char* uncorrectCase4 = "4615.E123";
-    char* uncorrectCase5 = "4512ololo.E-4";
-    return isNumber(test1) && isNumber(test2) && isNumber(test3) && isNumber(test4) && !isNumber(uncorrectCase1) && !isNumber(uncorrectCase2) && !isNumber(uncorrectCase3) && \
-        !isNumber(uncorrectCase4) && !isNumber(uncorrectCase5);
+    char* incorrectCase1 = ".1344";
+    char* incorrectCase2 = "27317.+124";
+    char* incorrectCase3 = "1202E";
+    char* incorrectCase4 = "4615.E123";
+    char* incorrectCase5 = "4512ololo.E-4";
+    return isNumber(test1) && isNumber(test2) && isNumber(test3) && isNumber(test4) && !isNumber(incorrectCase1) && !isNumber(incorrectCase2) && !isNumber(incorrectCase3) && \
+        !isNumber(incorrectCase4) && !isNumber(incorrectCase5);
 }
 
 int main(void) {
