@@ -1,6 +1,9 @@
 #include "boyerMooreAlgorithm.h"
+#include <stdio.h>
+#include <string.h>
+#include <malloc.h>
 
-int* createArrayOfPrefixFunction(char* string, int* errorCode) {
+int* createArrayOfPrefixFunction(const char* string, int* errorCode) {
     int* offset = calloc(strlen(string), sizeof(int));
     if (offset == NULL) {
         *errorCode = -1;
@@ -25,11 +28,11 @@ int* createArrayOfPrefixFunction(char* string, int* errorCode) {
     return offset;
 }
 
-int findString(char* text, char* string, int* offset) {
+int findString(const char* text,const char* string, int* offset) {
     int textIndex = 0;
     int offsetIndex = 0;
-    const int lengthOfText = strlen(text);
-    const int lengthOfString = strlen(string);
+    const int lengthOfText = (int)strlen(text);
+    const int lengthOfString = (int)strlen(string);
     while (textIndex < lengthOfText) {
         if (text[textIndex] == string[offsetIndex]) {
             ++textIndex;
@@ -48,4 +51,5 @@ int findString(char* text, char* string, int* offset) {
             }
         }
     }
+    return -1;
 }

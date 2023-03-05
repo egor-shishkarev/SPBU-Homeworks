@@ -3,6 +3,8 @@
 #include <malloc.h>
 #include <locale.h>
 #include <stdbool.h>
+#include <string.h>
+
 #define MAX_SIZE_OF_STRING 1000
 
 int verificationIntScanf(void) {
@@ -11,10 +13,10 @@ int verificationIntScanf(void) {
         int correctlyReadValues = scanf("%d", &readValues);
         while (getchar() != '\n') {
         }
-        if (correctlyReadValues == 1) {
+        if (correctlyReadValues == 1 && readValues > 0) {
             break;
         }
-        printf("Было введено нецелочисленное значение! \n");
+        printf("Было введено нецелочисленное или неположительное значение! \n");
     }
     return readValues;
 }
@@ -43,10 +45,11 @@ int* findIndex(const char* path, const char* stringToFind) {
             result[1] = index;
             return result;
         }
+        free(buffer);
         ++currentLine;
     }
     fclose(file);
-    result[0] = 0;
+    free(offset);
     return result;
 }
 
@@ -55,17 +58,17 @@ bool test(void) {
     int* test2 = findIndex("testFile.txt", "lo");
     int* test3 = findIndex("testFile.txt", "d");
     int* test4 = findIndex("testFile.txt", "gjsnk");
-    int* uncorrectTest = findIndex("testFile.txt", "boyer");
-    bool noNullTest = test1 != NULL && test2 != NULL && test3 != NULL && test4 != NULL && uncorrectTest != NULL;
+    int* incorrectTest = findIndex("testFile.txt", "boyer");
+    bool noNullTest = test1 != NULL && test2 != NULL && test3 != NULL && test4 != NULL && incorrectTest != NULL;
     if (!noNullTest) {
         return false;
     }
-    bool result = test1[0] == 3 && test1[1] == 1 && test2[0] == 2 && test2[1] == 2 && test3[0] == 5 && test3[1] == 4 && test4[0] == 6 && test4[1] == 9 && uncorrectTest[0] == 0;
+    bool result = test1[0] == 3 && test1[1] == 1 && test2[0] == 2 && test2[1] == 2 && test3[0] == 5 && test3[1] == 4 && test4[0] == 6 && test4[1] == 9 && incorrectTest[0] == 0;
     free(test1);
     free(test2);
     free(test3);
     free(test4);
-    free(uncorrectTest);
+    free(incorrectTest);
     return result;
 }
 

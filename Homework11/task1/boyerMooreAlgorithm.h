@@ -1,10 +1,8 @@
 #pragma once
 
-#include <stdio.h>
-#include <string.h>
-#include <malloc.h>
-// ‘ункци€ вохвращает указатель на массив значений, 
+// ‘ункци€ возвращает указатель на массив значений, 
 // по которым нужно сдвигатьс€ при сравнении строк.
-int* createArrayOfPrefixFunction(char* string, int* errorCode);
+int* createArrayOfPrefixFunction(const char* string, int* errorCode);
+
 // ¬овзращает индекс первого совпадени€ строки в тексте.
-int findString(char* text, char* string, int* offset);
+int findString(const char* text, const char* string, int* offset);
