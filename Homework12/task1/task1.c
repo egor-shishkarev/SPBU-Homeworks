@@ -52,6 +52,7 @@ bool isNumber(const char* string) {
         }
         case digits: {
             if (isDigit(string[currentIndex])) {
+                currentState = digits;
             } else if (string[currentIndex] == '.') {
                 currentState = point;
             } else if (string[currentIndex] == 'E') {
@@ -71,6 +72,7 @@ bool isNumber(const char* string) {
         }
         case digitsAfterPoint: {
             if (isDigit(string[currentIndex])) {
+                currentState = digitsAfterPoint;
             } else if (string[currentIndex] == 'E') {
                 currentState = exponent;
             } else {
@@ -98,6 +100,7 @@ bool isNumber(const char* string) {
         }
         case digitsAfterExponent: {
             if (isDigit(string[currentIndex])) {
+                currentState = digitsAfterExponent;
             } else {
                 currentState = end;
             }
@@ -122,8 +125,8 @@ bool test(void) {
     char* incorrectCase3 = "1202E";
     char* incorrectCase4 = "4615.E123";
     char* incorrectCase5 = "4512ololo.E-4";
-    return isNumber(test1) && isNumber(test2) && isNumber(test3) && isNumber(test4) && !isNumber(incorrectCase1) && !isNumber(incorrectCase2) && !isNumber(incorrectCase3) && \
-        !isNumber(incorrectCase4) && !isNumber(incorrectCase5);
+    return isNumber(test1) && isNumber(test2) && isNumber(test3) && isNumber(test4) && !isNumber(incorrectCase1) && !isNumber(incorrectCase2) && 
+        !isNumber(incorrectCase3) && !isNumber(incorrectCase4) && !isNumber(incorrectCase5);
 }
 
 int main(void) {
