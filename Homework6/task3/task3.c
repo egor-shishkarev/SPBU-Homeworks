@@ -34,11 +34,10 @@ int main(void) {
 		mode = verificationIntScanf();
 	}
 	int errorCode = 0;
-	List* list = createList(&errorCode);
+	List* list = readFromFile(path, &errorCode);
 	if (errorCode == -1) {
 		return -1;
 	}
-	readFromFile(list, path, &errorCode);
 	if (errorCode == -1) {
 		return -1;
 	}

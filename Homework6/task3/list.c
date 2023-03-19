@@ -4,16 +4,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-typedef enum deleteMode {
-    erase,
-    delete
-} deleteMode;
-
-typedef enum sortMode {
-    name,
-    phone
-} sortMode;
-
 typedef struct Node {
     char* name;
     char* phone;
@@ -98,7 +88,17 @@ List* createAdditionalList(List* list, const int left, const int right, int* err
     return additionalList;
 }
 
-List* mergeLists(List* firstList, List* secondList, sortMode mode, int* errorCode) {
+bool nodeComparison(Node* firstNode, Node* secondNode, SortMode mode) {
+    if (mode == name && strcmp(firstNode->name, secondNode->name) >= 0) {
+        return true;
+    } else if (strcmp(firstNode->phone, secondNode->phone) >= 0 && mode == phone) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+List* mergeLists(List* firstList, List* secondList, SortMode mode, int* errorCode) {
     List* mergedList = createList(errorCode);
     if (mergedList == NULL) {
         *errorCode = -1;
@@ -118,7 +118,7 @@ List* mergeLists(List* firstList, List* secondList, sortMode mode, int* errorCod
     while (firstListNode != NULL || secondListNode != NULL) {
         if (firstListNode != NULL) {
             if (secondListNode != NULL) {
-                if ((strcmp(firstListNode->name, secondListNode->name) >= 0 && mode == name) || (strcmp(firstListNode->phone, secondListNode->phone) >= 0 && mode == phone)) {
+                if (nodeComparison(firstListNode, secondListNode, mode)) {
                     addElement(mergedList, secondListNode->name, secondListNode->phone, secondListNode->position, errorCode);
                     if (*errorCode == -1) {
                         deleteList(&mergedList, erase);
@@ -155,7 +155,7 @@ List* mergeLists(List* firstList, List* secondList, sortMode mode, int* errorCod
     return mergedList;
 }
 
-List* splitList(List* list, const int leftIndex, const int rightIndex, sortMode mode, int* errorCode) {
+List* recursivePartOfMergeSort(List* list, const int leftIndex, const int rightIndex, SortMode mode, int* errorCode) {
     if (list == NULL) {
         *errorCode = -1;
         return NULL;
@@ -170,7 +170,7 @@ List* splitList(List* list, const int leftIndex, const int rightIndex, sortMode 
             deleteList(&firstList, erase);
             return NULL;
         }
-        List* splittedFirstList = splitList(firstList, leftIndex, middleIndex, mode, errorCode);
+        List* splittedFirstList = recursivePartOfMergeSort(firstList, leftIndex, middleIndex, mode, errorCode);
         if (splittedFirstList == NULL) {
             deleteList(&firstList, erase);
             *errorCode = -1;
@@ -192,7 +192,7 @@ List* splitList(List* list, const int leftIndex, const int rightIndex, sortMode 
             deleteList(&secondList, erase);
             return NULL;
         }
-        List* splittedSecondList = splitList(secondList, middleIndex + 1, rightIndex, mode, errorCode);
+        List* splittedSecondList = recursivePartOfMergeSort(secondList, middleIndex + 1, rightIndex, mode, errorCode);
         if (splittedSecondList == NULL) {
             deleteList(&firstList, erase);
             deleteList(&splittedFirstList, erase);
@@ -236,26 +236,25 @@ List* splitList(List* list, const int leftIndex, const int rightIndex, sortMode 
         }
         return oneElementList;
     }
-
 }
 
-List* mergeSort(List* list, sortMode mode, int* errorCode) {
+List* mergeSort(List* list, SortMode mode, int* errorCode) {
     if (list == NULL || list->head == NULL) {
         return NULL;
     }
-    List* mergedList = splitList(list, 0, list->length - 1, mode, errorCode);
+    List* mergedList = recursivePartOfMergeSort(list, 0, list->length - 1, mode, errorCode);
     return mergedList;
 }
 
-void readFromFile(List* list, const char* path, int* errorCode) {
+List* readFromFile(const char* path, int* errorCode) {
     FILE* file = fopen(path, "r");
     if (file == NULL) {
         *errorCode = -1;
-        return;
+        return NULL;
     }
-    if (list == NULL) {
-        *errorCode = -1;
-        return;
+    List* list = createList(errorCode);
+    if (*errorCode == -1) {
+        return NULL;
     }
     while (!feof(file)) {
         char name[MAX_NAME_SIZE] = { "" };
@@ -270,10 +269,11 @@ void readFromFile(List* list, const char* path, int* errorCode) {
         ++list->length;
         if (*errorCode == -1) {
             fclose(file);
-            return;
+            return NULL;
         }
     }
     fclose(file);
+    return list;
 }
 
 void printList(List* list) {
@@ -288,7 +288,7 @@ void printList(List* list) {
     }
 }
 
-void deleteElement(List* list, Node* node, deleteMode mode) {
+void deleteElement(List* list, Node* node, DeleteMode mode) {
     Node* currentNode = list->head;
     if (currentNode != node) {
         while (currentNode->next != node) {
@@ -309,11 +309,11 @@ void deleteElement(List* list, Node* node, deleteMode mode) {
     free(node);
 }
 
-void deleteList(List** list, deleteMode mode) {
+void deleteList(List** list, DeleteMode mode) {
     if ((*list) == NULL) {
         return;
     } else if ((*list)->head == NULL) {
-        free((*list));
+        free(*list);
         return;
     }
     Node* currentNode = (*list)->head;
@@ -321,8 +321,8 @@ void deleteList(List** list, deleteMode mode) {
         deleteElement((*list), currentNode, mode);
         currentNode = (*list)->head;
     }
-    free((*list));
-    (*list) = NULL;
+    free(*list);
+    *list = NULL;
 }
 
 Node* headOfList(List* list) {
