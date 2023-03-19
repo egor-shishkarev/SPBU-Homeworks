@@ -75,11 +75,11 @@ int lastPosition(List* list, int *errorCode) {
 }
 
 void deleteList(List** list) {
-    if ((*list) == NULL) {
+    if (*list == NULL) {
         return;
     }
     if ((*list)->head == NULL) {
-        free((*list));
+        free(*list);
         return;
     }
     Node* currentNode = (*list)->head;
