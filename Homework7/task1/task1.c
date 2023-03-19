@@ -82,7 +82,7 @@ int main(void) {
 			printf("Введите ключ => ");
 			const int key = verificationIntScanf();
 			printf("Введите значение длинной не более %d символов => ", MAX_STRING_SIZE);
-			char value[MAX_STRING_SIZE] = { 0 };
+			char value[MAX_STRING_SIZE + 1] = { 0 };
 			gets(value);
 			addElement(tree, key, value, &errorCode);
 			if (errorCode) {

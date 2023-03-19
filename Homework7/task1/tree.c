@@ -66,6 +66,7 @@ void addElement(Tree* tree, const int key, const char* value, int *errorCode) {
 		newNode->key = key;
 		newNode->value = calloc(strlen(value) + 1, sizeof(char));
 		if (newNode->value == NULL) {
+			free(newNode);
 			*errorCode = -1;
 			return;
 		}
@@ -84,6 +85,11 @@ void addElement(Tree* tree, const int key, const char* value, int *errorCode) {
 		}
 	}
 	if (currentNode->key == key) {
+		char* newValue = calloc(strlen(value) + 1, sizeof(char));
+		if (newValue == NULL) {
+			*errorCode = -1;
+			return;
+		}
 		free(currentNode->value);
 		currentNode->value = calloc(strlen(value) + 1, sizeof(char));
 		if (currentNode->value == NULL) {
@@ -101,6 +107,7 @@ void addElement(Tree* tree, const int key, const char* value, int *errorCode) {
 	newNode->key = key;
 	newNode->value = calloc(strlen(value) + 1, sizeof(char));
 	if (newNode->value == NULL) {
+		free(newNode);
 		*errorCode = -1;
 		return;
 	}
@@ -131,10 +138,7 @@ char* searchValueFromKey(Tree* tree, const int key) {
 }
 
 bool isKeyInTree(Tree* tree, const int key) {
-	if (searchValueFromKey(tree, key) != NULL) {
-		return true;
-	}
-	return false;
+	return searchValueFromKey(tree, key) != NULL;
 }
 
 Node* theMostRightChild(Node* node) {
@@ -240,27 +244,27 @@ void deleteElement(Tree* tree, const int key, int* errorCode) {
 	}
 }
 
-void deleteTreeRecursive(Node* node) {
-	if (node == NULL) {
+void deleteTreeRecursive(Node** node) {
+	if ((*node) == NULL) {
 		return;
 	}
-	deleteTreeRecursive(node->leftChild);
-	deleteTreeRecursive(node->rightChild);
-	free(node->value);
-	free(node);
-	node = NULL;
+	deleteTreeRecursive(&((*node)->leftChild));
+	deleteTreeRecursive(&((*node)->rightChild));
+	free((*node)->value);
+	free(*node);
+	*node = NULL;
 }
 
 void deleteTree(Tree** tree) {
-	if ((*tree) == NULL) {
+	if (*tree == NULL) {
 		return;
 	}
 	if ((*tree)->root == NULL) {
-		free((*tree));
-		tree = NULL;
+		free(*tree);
+		*tree = NULL;
 		return;
 	}
-	deleteTreeRecursive((*tree)->root);
-	free((*tree));
+	deleteTreeRecursive(&((*tree)->root));
+	free(*tree);
 	*tree = NULL;
 }
