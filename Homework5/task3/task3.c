@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+
 #define MAX_EXPRESSION_LENGTH 50
 
 bool isDigit(char symbol) {
@@ -31,13 +32,13 @@ void addToString(char* string, const char symbol, int* currentIndex) {
 	++(*currentIndex);
 }
 
-
-char* conversionFromInfixToPostfix(const char *infixExpression, const int lengthOfString, int *errorCode) {
+char* conversionFromInfixToPostfix(const char *infixExpression, int *errorCode) {
 	if (infixExpression == NULL) {
 		*errorCode = -1;
 		return NULL;
 	}
-	char *postfixExpression = calloc(2 * MAX_EXPRESSION_LENGTH + 1, sizeof(char));
+	const int lengthOfString = strlen(infixExpression);
+	char *postfixExpression = calloc(2 * strlen(infixExpression) + 1, sizeof(char));
 	if (postfixExpression == NULL) {
 		*errorCode = -1;
 		return NULL;
@@ -128,31 +129,31 @@ bool test(void) {
 	char firstExpression[] = "(1+1)*2";
 	char secondExpression[] = "1+2/3-8*(9*7+6*4)-4";
 	char firstIncorrectExpression[] = "(1+2*3";
-	char secondIncorrectexpression[] = "(1+A)/2";
+	char secondIncorrectExpression[] = "(1+A)/2";
 
 	char firstRightAnswer[] = "1 1 + 2 * ";
 	char secondRightAnswer[] = "1 2 3 / + 8 9 7 * 6 4 * + * - 4 - ";
 
 	int errorCode = 0;
-	char* firstAnswer = conversionFromInfixToPostfix(firstExpression, (int)strlen(firstExpression), &errorCode);
+	char* firstAnswer = conversionFromInfixToPostfix(firstExpression, &errorCode);
 	if (errorCode) {
 		return false;
 	}
-	char* secondAnswer = conversionFromInfixToPostfix(secondExpression, (int)strlen(secondExpression), &errorCode);
+	char* secondAnswer = conversionFromInfixToPostfix(secondExpression, &errorCode);
 	if (errorCode) {
 		return false;
 	}
 
 	int firstErrorCode = 0;
-	char* thirdAnswer = conversionFromInfixToPostfix(firstIncorrectExpression, (int)strlen(firstIncorrectExpression), &firstErrorCode);
+	char* thirdAnswer = conversionFromInfixToPostfix(firstIncorrectExpression, &firstErrorCode);
 
 	int secondErrorCode = 0;
-	char* fourthAnswer = conversionFromInfixToPostfix(secondIncorrectexpression, (int)strlen(secondIncorrectexpression), &secondErrorCode);
+	char* fourthAnswer = conversionFromInfixToPostfix(secondIncorrectExpression, &secondErrorCode);
 	
 	int errorCodeForNull = 0;
 
 	bool result = !strcmp(firstAnswer, firstRightAnswer) && !strcmp(secondAnswer, secondRightAnswer) && thirdAnswer == NULL && firstErrorCode == 1 \
-		&& fourthAnswer == NULL && secondErrorCode == 1 && conversionFromInfixToPostfix(NULL, 0, &errorCodeForNull) == NULL && errorCodeForNull == -1;
+		&& fourthAnswer == NULL && secondErrorCode == 1 && conversionFromInfixToPostfix(NULL, &errorCodeForNull) == NULL && errorCodeForNull == -1;
 	
 	free(firstAnswer);
 	free(secondAnswer);
@@ -184,7 +185,7 @@ int main(void) {
 		currentChar = getchar();
 	}
 	int errorCode = 0;
-	char *postfixExpression = conversionFromInfixToPostfix(infixExpression, currentElement, &errorCode);
+	char *postfixExpression = conversionFromInfixToPostfix(infixExpression, &errorCode);
 	if (errorCode == 1) {
 		printf("\nВыражение введено неверно! Проверьте допустимые символы и соответствие скобок.\n");
 		return -1;
