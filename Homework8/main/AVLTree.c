@@ -1,363 +1,325 @@
-#include "AVLTree.h"
+#include <malloc.h>
+#include <string.h>
+#include <stdbool.h>
 
 typedef struct Node {
-	int key;
-	char* value;
-	int balance;
-	struct Node* leftChild;
-	struct Node* rightChild;
-	struct Node* parent;
+    char* key;
+    char* value;
+    int balance;
+    struct Node* leftChild;
+    struct Node* rightChild;
 } Node;
 
 typedef struct AVLTree {
-	Node* root;
+    Node* root;
 } AVLTree;
 
-Node* nodeSearch(Node* node, const int key, int* errorCode) {
-	if (node == NULL) {
-		*errorCode = -1;
-		return;
-	}
-	if (node->key > key) {
-		return node->leftChild;
-	}
-	return node->rightChild;
+AVLTree* createTree(void) {
+    return calloc(1, sizeof(AVLTree));
 }
 
-int choiceChild(Node* node, const int key) {
-	return node->key > key ? 1 : -1;
-}
-
-bool isLeftChild(Node* node, int* errorCode) {
-	if (node == NULL || node->parent == NULL) {
-		*errorCode = -1;
-		return;
-	}
-	if (node->parent->leftChild == node) {
-		return true;
-	}
-	return false;
-}
-
-AVLTree* createTree(int* errorCode) {
-	AVLTree* tree = malloc(sizeof(AVLTree));
-	if (tree == NULL) {
-		*errorCode = -1;
-		return -1;
-	}
-	tree->root = NULL;
-	return tree;
-}
-
-void addElement(AVLTree* tree, const int key, char* value, int* errorCode) {
-	if (tree->root == NULL) {
-		Node* newNode = malloc(sizeof(Node));
-		if (newNode == NULL) {
-			*errorCode = -1;
-			return;
-		}
-		newNode->key = key;
-		newNode->balance = 0;
-		char* newValue = calloc(strlen(value) + 1, sizeof(char));
-		if (newValue == NULL) {
-			*errorCode = -1;
-			return;
-		}
-		strcpy(newValue, value);
-		newNode->value = newValue;
-		newNode->rightChild = NULL;
-		newNode->leftChild = NULL;
-		newNode->parent = NULL;
-		tree->root = newNode;
-	}
-	else {
-		Node* currentNode = tree->root;
-		while (true) {
-			if (nodeSearch(currentNode, key, errorCode) != NULL && currentNode->key != key) {
-				currentNode = nodeSearch(currentNode, key, errorCode);
-			}
-			else {
-				break;
-			}
-		}
-		if (currentNode->key == key) {
-			char* newValue = calloc(strlen(value) + 1, sizeof(char));
-			strcpy(newValue, value);
-			free(currentNode->value);
-			currentNode->value = newValue;
-			return;
-		}
-		Node* newNode = malloc(sizeof(Node));
-		if (newNode == NULL) {
-			*errorCode = -1;
-			return;
-		}
-		newNode->key = key;
-		char* newValue = calloc(strlen(value) + 1, sizeof(char));
-		if (newValue == NULL) {
-			*errorCode = -1;
-			return;
-		}
-		strcpy(newValue, value);
-		newNode->value = newValue;
-		newNode->balance = 0;
-		newNode->leftChild = NULL;
-		newNode->rightChild = NULL;
-		newNode->parent = currentNode;
-		if (choiceChild(currentNode, key) == 1) {
-			currentNode->leftChild = newNode;
-		}
-		else {
-			currentNode->rightChild = newNode;
-		}
-		newNode->parent->balance += isLeftChild(newNode, errorCode) * (-2) + 1;
-		if (newNode->parent->balance == 0) {
-			return;
-		} else {
-			countingBalance(newNode->parent, errorCode);
-		}
-		if (balance(newNode, tree)->parent == NULL) {
-			tree->root = balance(newNode, tree);
-		}
-	}
-	return;
-}
-
-char* searchValueFromKey(AVLTree* tree, const int key) {
-	Node* currentNode = tree->root;
-	while (true) {
-		if (currentNode == NULL) {
-			return "NULL";
-		}
-		if (currentNode->key > key) {
-			currentNode = currentNode->leftChild;
-		}
-		else if (currentNode->key < key) {
-			currentNode = currentNode->rightChild;
-		}
-		else if (currentNode->key == key) {
-			return currentNode->value;
-		}
-	}
-}
-
-bool isKeyInTree(AVLTree* tree, const int key) {
-	Node* currentNode = tree->root;
-	while (true) {
-		if (currentNode == NULL) {
-			return false;
-		}
-		if (currentNode->key > key) {
-			currentNode = currentNode->leftChild;
-		}
-		else if (currentNode->key < key) {
-			currentNode = currentNode->rightChild;
-		}
-		else if (currentNode->key == key) {
-			return true;
-		}
-	}
-}
-
-Node* theMostRightChild(Node* node) {
-	Node* currentNode = node;
-	if (currentNode->leftChild != NULL) {
-		currentNode = currentNode->leftChild;
-	}
-	while (currentNode->rightChild != NULL) {
-		currentNode = currentNode->rightChild;
-	}
-	return currentNode;
-}
-
-void deleteElement(AVLTree* tree, const int key, int* errorCode) {
-	if (!isKeyInTree(tree, key)) {
-		return;
-	}
-	Node* currentNode = tree->root;
-	while (true) {
-		if (currentNode->key > key) {
-			currentNode = currentNode->leftChild;
-		}
-		else if (currentNode->key < key) {
-			currentNode = currentNode->rightChild;
-		}
-		else if (currentNode->key == key) {
-			break;
-		}
-	}
-	if (currentNode->rightChild == NULL && currentNode->leftChild == NULL) {
-		if (currentNode == tree->root) {
-			free(currentNode->value);
-			currentNode->value = NULL;
-			free(currentNode);
-			tree->root = NULL;
-			return;
-		}
-		if (isLeftChild(currentNode, errorCode) && !errorCode) {
-			currentNode->parent->leftChild = NULL;
-		}
-		else {
-			currentNode->parent->rightChild = NULL;
-		}
-		currentNode->key = NULL;
-		currentNode->value = NULL;
-		free(currentNode);
-		return;
-	}
-	Node* replacementNode = theMostRightChild(currentNode);
-	currentNode->key = replacementNode->key;
-	free(currentNode->value);
-	char* newValue = calloc(strlen(replacementNode->value) + 1, sizeof(char));
-	if (newValue == NULL) {
-		*errorCode = -1;
-		return;
-	}
-	strcpy(newValue, replacementNode->value);
-	currentNode->value = newValue;
-	if (replacementNode->leftChild != NULL) {
-		if (!isLeftChild(replacementNode, errorCode)) {
-			replacementNode->parent->rightChild = replacementNode->leftChild;
-		}
-		else {
-			currentNode->leftChild = replacementNode->leftChild;
-			replacementNode->leftChild->parent = currentNode;
-		}
-	}
-	else {
-		if (isLeftChild(replacementNode, errorCode) && !errorCode) {
-			replacementNode->parent->leftChild = NULL;
-		}
-		else {
-			replacementNode->parent->rightChild = NULL;
-		}
-	}
-	replacementNode->parent = NULL;
-	free(replacementNode->value);
-	replacementNode->value = NULL;
-	free(replacementNode);
-}
-
-void deleteTreeRecursive(Node* node) { 
-	if (node == NULL) {
-		return;
-	}
-
-	deleteTreeRecursive(node->leftChild);
-	deleteTreeRecursive(node->rightChild);
-
-	free(node->value);
-	node->value = NULL;
-	free(node);
-	node = NULL;
+void deleteTreeRecursion(Node* node) {
+    if (node == NULL) {
+        return;
+    }
+    deleteTreeRecursion(node->leftChild);
+    deleteTreeRecursion(node->rightChild);
+    free(node->key);
+    free(node->value);
+    free(node);
 }
 
 void deleteTree(AVLTree** tree) {
-	if ((*tree) == NULL) {
-		return;
-	}
-	deleteTreeRecursive((*tree)->root);
-	free(*tree);
-	*tree = NULL;
+    if (*tree == NULL) {
+        return;
+    }
+    if ((*tree)->root == NULL) {
+        free(*tree);
+        return;
+    }
+    deleteTreeRecursion((*tree)->root);
+    free(*tree);
+    *tree = NULL;
 }
 
-Node* smallLeftRotate(Node* a, AVLTree* tree) {
-	Node* b = a->rightChild;
-	Node* c = b->leftChild;
-	b->leftChild = a;
-	a->rightChild = c;
-	if (c != NULL) {
-		c->parent = a;
-	}
-	b->parent = a->parent;
-	a->parent = b;
-	if (a == tree->root) {
-		tree->root = b;
-	}
-	b->balance = 0;
-	return b;
+Node* createNode(const char* key, const char* value, int* errorCode) {
+    Node* newNode = calloc(1, sizeof(Node));
+    if (newNode == NULL) {
+        *errorCode = -1;
+        return NULL;
+    }
+    newNode->key = calloc(strlen(key) + 1, sizeof(char));
+    if (newNode->key == NULL) {
+        free(newNode);
+        *errorCode = -1;
+        return NULL;
+    }
+    strcpy(newNode->key, key);
+    newNode->value = calloc(strlen(value) + 1, sizeof(char));
+    if (newNode->value == NULL) {
+        free(newNode->key);
+        free(newNode);
+        *errorCode = -1;
+        return NULL;
+    }
+    strcpy(newNode->value, value);
+    return newNode;
 }
 
-Node* smallRightRotate(Node* a, AVLTree* tree) {
-	Node* b = a->leftChild;
-	Node* c = b->rightChild;
-	b->rightChild = a;
-	a->leftChild = c;
-	if (c != NULL) {
-		c->parent = a;
-	}
-	b->parent = a->parent;
-	a->parent = b;
-	if (a == tree->root) {
-		tree->root = b;
-	}
-	return b;
+Node* leftRotate(Node* currentNode) {
+    Node* rightNode = currentNode->rightChild;
+    Node* leftGrandson = rightNode->leftChild;
+    rightNode->leftChild = currentNode;
+    currentNode->rightChild = leftGrandson;
+    if (rightNode->balance != 0) {
+        currentNode->balance = 0;
+        rightNode->balance = 0;
+    }
+    else {
+        currentNode->balance = 1;
+        rightNode->balance = -1;
+    }
+    return rightNode;
 }
 
-Node* bigLeftRotate(Node* a, AVLTree* tree) {
-	Node* b = a->rightChild;
-	Node* c = b->leftChild;
-	a->rightChild = c->leftChild;
-	c->leftChild->parent = a;
-	b->leftChild = c->rightChild;
-	c->rightChild->parent = b;
-	c->parent = a->parent;
-	c->leftChild = a;
-	a->parent = c;
-	c->rightChild = b;
-	b->parent = c;
-	if (a == tree->root) {
-		tree->root = c;
-	}
-	return c;
+Node* bigLeftRotate(Node* currrentNode) {
+    Node* rightNode = currrentNode->rightChild;
+    Node* leftGrandson = rightNode->leftChild;
+    Node* leftGrandGrandson = leftGrandson->leftChild;
+    Node* rightGrandGrandson = leftGrandson->rightChild;
+    leftGrandson->rightChild = rightNode;
+    leftGrandson->leftChild = currrentNode;
+    currrentNode->rightChild = leftGrandGrandson;
+    rightNode->leftChild = rightGrandGrandson;
+    if (leftGrandson->balance == 1) {
+        currrentNode->balance = -1;
+        rightNode->balance = 0;
+    }
+    else if (leftGrandson->balance == -1) {
+        currrentNode->balance = 0;
+        rightNode->balance = 1;
+    }
+    else {
+        currrentNode->balance = 0;
+        rightNode->balance = 0;
+    }
+    leftGrandson->balance = 0;
+    return leftGrandson;
 }
 
-Node* bigRightRotate(Node* a, AVLTree *tree) {
-	Node* b = a->leftChild;
-	Node* c = b->rightChild;
-	a->leftChild = c->rightChild;
-	c->rightChild->parent = a;
-	b->rightChild = c->leftChild;
-	c->leftChild->parent = b;
-	c->parent = a->parent;
-	c->rightChild = a;
-	a->parent = c;
-	c->leftChild = b;
-	b->parent = c;
-	if (a == tree->root) {
-		tree->root = c;
-	}
-	return c;
+Node* rightRotate(Node* currentNode) {
+    Node* leftNode = currentNode->leftChild;
+    Node* rightGrandson = leftNode->rightChild;
+    leftNode->rightChild = currentNode;
+    currentNode->leftChild = rightGrandson;
+    if (leftNode->balance != 0) {
+        currentNode->balance = 0;
+        leftNode->balance = 0;
+    }
+    else {
+        currentNode->balance = -1;
+        leftNode->balance = 1;
+    }
+    return leftNode;
 }
 
-Node* balance(Node* node, AVLTree* tree) {
-	if (node == NULL) {
-		return;
-	}
-	if (node->balance == 2) {
-		if (node->rightChild->balance >= 0)
-			return smallLeftRotate(node, tree);
-		return bigLeftRotate(node, tree);
-	} else if (node->balance == -2) {
-		if (node->leftChild->balance <= 0)
-			return smallRightRotate(node, tree);
-		return bigRightRotate(node, tree);
-	} else {
-		balance(node->parent, tree);
-	}
-	return node;
-}
-
-Node* countingBalance(Node* node, int *errorCode) {
-	if (node->parent == NULL) {
-		return;
-	}
-	if (isLeftChild(node, errorCode)) {
-		--node->parent->balance;
-	} else {
-		++node->parent->balance;
-	}
-	countingBalance(node->parent, errorCode);
+Node* bigRightRotate(Node* currentNode) {
+    Node* leftNode = currentNode->leftChild;
+    Node* rightGrandson = leftNode->rightChild;
+    Node* leftGrandGrandson = rightGrandson->leftChild;
+    Node* rightGrandGrandson = rightGrandson->rightChild;
+    rightGrandson->leftChild = leftNode;
+    rightGrandson->rightChild = currentNode;
+    leftNode->rightChild = leftGrandGrandson;
+    currentNode->leftChild = rightGrandGrandson;
+    if (rightGrandson->balance == 1) {
+        currentNode->balance = 0;
+        leftNode->balance = 1;
+    }
+    else if (rightGrandson->balance == -1) {
+        currentNode->balance = -1;
+        leftNode->balance = 0;
+    }
+    else {
+        currentNode->balance = 0;
+        leftNode->balance = 0;
+    }
+    rightGrandson->balance = 0;
+    return rightGrandson;
 }
 
 
+Node* balance(Node* node) {
+    if (node->balance == 2) {
+        if (node->rightChild->balance >= 0) {
+            return leftRotate(node);
+        }
+        return bigLeftRotate(node);
+    }
+    if (node->balance == -2) {
+        if (node->leftChild->balance <= 0) {
+            return rightRotate(node);
+        }
+        return bigRightRotate(node);
+    }
+    return node;
+}
+
+Node* insert(Node* node, const char* key, const char* value, int* errorCode) {
+    if (node == NULL) {
+        *errorCode = -1;
+        return NULL;
+    }
+    int direction = 0;
+    if (strcmp(key, node->key) < 0) {
+        if (node->leftChild != NULL) {
+            node->leftChild = insert(node->leftChild, key, value, errorCode);
+        } else {
+            Node* newNode = createNode(key, value, errorCode);
+            if (*errorCode == -1) {
+                return NULL;
+            }
+            node->leftChild = newNode;
+        }
+        direction = -1;
+    } else if (strcmp(key, node->key) > 0) {
+        if (node->rightChild != NULL) {
+            node->rightChild = insert(node->rightChild, key, value, errorCode);
+        } else {
+            Node* newNode = createNode(key, value, errorCode);
+            if (*errorCode == -1) {
+                return NULL;
+            }
+            node->rightChild = newNode;
+        }
+        direction = 1;
+    } else {
+        free(node->value);
+        node->value = calloc(strlen(value) + 1, sizeof(char));
+        if (node->value == NULL) {
+            *errorCode = -1;
+            return;
+        }
+        strcpy(node->value, value);
+    }
+    node->balance = node->balance + direction;
+    return balance(node);
+}
+
+void addElement(AVLTree* tree, const char* key, const char* value, int* errorCode) {
+    if (tree == NULL) {
+        *errorCode = -1;
+        return;
+    }
+    Node* currentNode = tree->root;
+    if (currentNode == NULL) {
+        Node* newNode = createNode(key, value, errorCode);
+        if (*errorCode == -1) {
+            return;
+        }
+        tree->root = newNode;
+        return;
+    }
+    tree->root = insert(currentNode, key, value, errorCode);
+}
+
+char* searchValueFromKey(AVLTree* tree, const char* key) {
+    Node* currentNode = tree->root;
+    while (currentNode != NULL) {
+        if (strcmp(key, currentNode->key) < 0) {
+            currentNode = currentNode->leftChild;
+        } else if (strcmp(key, currentNode->key) > 0) {
+            currentNode = currentNode->rightChild;
+        } else if (strcmp(key, currentNode->key) == 0) {
+            return currentNode->value;
+        }
+    }
+    return NULL;
+}
+
+bool isKeyInTree(AVLTree* tree, const char* key) {
+    Node* currentNode = tree->root;
+    while (currentNode != NULL) {
+        if (strcmp(key, currentNode->key) < 0) {
+            currentNode = currentNode->leftChild;
+        } else if (strcmp(key, currentNode->key) > 0) {
+            currentNode = currentNode->rightChild;
+        } else if (strcmp(key, currentNode->key) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+Node* theMostRightChild(Node* node) {
+    Node* currentNode = node;
+    if (currentNode->leftChild != NULL) {
+        currentNode = currentNode->leftChild;
+    }
+    while (currentNode->rightChild != NULL) {
+        currentNode = currentNode->rightChild;
+    }
+    return currentNode;
+}
+
+Node* deleteNode(Node* currentNode, const char* key, int* errorCode) {
+    if (currentNode == NULL) {
+        return currentNode;
+    }
+    int direction = 0;
+    if (strcmp(key, currentNode->key) < 0) {
+        currentNode->leftChild = deleteNode(currentNode->leftChild, key, errorCode);
+        direction = -1;
+    } else if (strcmp(key, currentNode->key) > 0) {
+        currentNode->rightChild = deleteNode(currentNode->rightChild, key, errorCode);
+        direction = 1;
+    } else {
+        if (currentNode->rightChild == NULL || currentNode->leftChild == NULL) {
+            Node* child = currentNode->rightChild != NULL ? currentNode->rightChild : currentNode->leftChild;
+            if (child == NULL) {
+                free(currentNode->key);
+                free(currentNode->value);
+                free(currentNode);
+                currentNode = NULL;
+            } else {
+                free(currentNode->key);
+                free(currentNode->value);
+                memcpy(currentNode, child, sizeof(Node));
+                free(child);
+            }
+        } else {
+            Node* additionalNode = theMostRightChild(currentNode);
+            char* newKey = calloc(strlen(additionalNode->key) + 1, sizeof(char));
+            if (newKey == NULL) {
+                *errorCode = -1;
+                return currentNode;
+            }
+            char* newValue = calloc(strlen(additionalNode->value) + 1, sizeof(char));
+            if (newValue == NULL) {
+                *errorCode = -1;
+                free(newKey);
+                return currentNode;
+            }
+            strcpy(newKey, additionalNode->key);
+            strcpy(newValue, additionalNode->value);
+            currentNode->value = newValue;
+            Node* newNode = currentNode;
+            currentNode = deleteNode(currentNode, additionalNode->key, errorCode);
+            newNode->key = newKey;
+        }
+    }
+    if (currentNode != NULL) {
+        currentNode->balance = currentNode->balance - direction;
+        return balance(currentNode);
+    }
+    return currentNode;
+}
+
+void deleteElement(AVLTree* tree, const char* key, int* errorCode) {
+    if (tree == NULL) {
+        *errorCode = -1;
+        return;
+    }
+    *errorCode = 0;
+    tree->root = deleteNode(tree->root, key, errorCode);
+}
