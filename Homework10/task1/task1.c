@@ -19,68 +19,56 @@ int verificationIntScanf(void) {
 	return readValues;
 }
 
-int main(void) {
-	setlocale(LC_ALL, ".1251");
-	FILE* file = fopen("states.txt", "r");
+bool test(void) {
 	int countOfCities = 0;
-	fscanf(file, "%d", &countOfCities);
 	int countOfRoads = 0;
-	fscanf(file, "%d", &countOfRoads);
-	int** roadTable = (int** )calloc(countOfCities, sizeof(int*));
-	if (roadTable == NULL) {
-		printf("Память не была выделена.");
-		return -1;
-	}
-	for (int i = 0; i < countOfCities; ++i) {
-		roadTable[i] = (int*)calloc(countOfCities, sizeof(int));
-		if (roadTable[i] == NULL) {
-			printf("Память не была выделена.");
-			return -1;
+	FILE* file = fopen("test.txt", "r");
+	int** roadTable = readFromFileToTable(file, &countOfCities, &countOfRoads);
+	int table[25] = { 0, 0, 0, 1, 5, 
+					  0, 0, 3, 0, 4, 
+					  0, 3, 0, 0, 2, 
+					  1, 0, 0, 0, 0, 
+					  5, 4, 2, 0, 0 };
+	for (int i = 0; i < 5; ++i) {
+		for (int j = 0; j < 5; ++j) {
+			if (roadTable[i][j] != table[5 * i + j]) {
+				return false;
+			}
 		}
-	}
-	int numberOfEnterRoads = 0;
-	while (true) {
-		if (numberOfEnterRoads == countOfRoads) {
-			break;
-		}
-		int firstNumberOfCity = 0;
-		int secondNumberOfCity = 0;
-		fscanf(file, "%d", &firstNumberOfCity);
-		fscanf(file, "%d", &secondNumberOfCity);
-		if (firstNumberOfCity > secondNumberOfCity) {
-			firstNumberOfCity = firstNumberOfCity ^ secondNumberOfCity;
-			secondNumberOfCity = firstNumberOfCity ^ secondNumberOfCity;
-			firstNumberOfCity = firstNumberOfCity ^ secondNumberOfCity;
-		}
-		int lengthOfRoad = 0;
-		fscanf(file, "%d", &lengthOfRoad);
-		if (secondNumberOfCity > countOfCities) {
-			printf("Такого города нет! Проверьте файл.\n");
-			return -1;
-		}
-		roadTable[firstNumberOfCity - 1][secondNumberOfCity - 1] = lengthOfRoad;
-		roadTable[secondNumberOfCity - 1][firstNumberOfCity - 1] = lengthOfRoad;
-		++numberOfEnterRoads;
 	}
 	int countOfCapitals = 0;
 	fscanf(file, "%d", &countOfCapitals);
-	List** capitals = calloc(countOfCapitals, sizeof(List*));
+	List** capitals = distributeCitiesByCapitals(file, roadTable, countOfCities, countOfCapitals);
+	int firstCapital[2] = { 5, 2 };
+	int secondCapital[1] = { 1 };
+	bool firstTest = listElement(capitals[0], 0) == 3 && listElement(capitals[0], 1) == firstCapital[0] && listElement(capitals[0], 2) == firstCapital[1];
+	bool secondTest = listElement(capitals[1], 0) == 4 && listElement(capitals[1], 1) == secondCapital[0];
+	bool result = firstTest && secondTest;
+	for (int i = 0; i < countOfCities; ++i) {
+		free(roadTable[i]);
+	}
+	free(roadTable);
 	for (int i = 0; i < countOfCapitals; ++i) {
-		capitals[i] = createList();
-		int numberOfCapital = 0;
-		fscanf(file, "%d", &numberOfCapital);
-		insertElement(capitals[i], numberOfCapital - 1);
+		deleteList(&capitals[i]);
 	}
-	nullAllRoadsBetweenCapitals(roadTable, countOfCapitals, capitals);
-	int numberOfRemainingCities = countOfCities - countOfCapitals;
-	while (numberOfRemainingCities > 0) {
-		int currentNumberOfCapitals = countOfCapitals;
-		while (currentNumberOfCapitals > 0) {
-			//printRoadTable(roadTable, countOfCities);
-			numberOfRemainingCities -= findNewSity(roadTable, capitals[countOfCapitals - currentNumberOfCapitals], countOfCities);
-			--currentNumberOfCapitals;
-		}
+	free(capitals);
+	return result;
+}
+
+int main(void) {
+	setlocale(LC_ALL, ".1251");
+	if (!test()) {
+		printf("Тесты не были пройдены!");
+		return -1;
 	}
+	printf("Тесты пройдены успешно!\n");
+	int countOfCities = 0;
+	int countOfRoads = 0;
+	FILE* file = fopen("states.txt", "r");
+	int** roadTable = readFromFileToTable(file, &countOfCities, &countOfRoads);
+	int countOfCapitals = 0;
+	fscanf(file, "%d", &countOfCapitals);
+	List** capitals = distributeCitiesByCapitals(file, roadTable, countOfCities, countOfCapitals);
 	printf("Список столиц и городов их государства: \n");
 	for (int i = 0; i < countOfCapitals; ++i) {
 		printList(capitals[i]);
@@ -91,7 +79,7 @@ int main(void) {
 	}
 	free(roadTable);
 	for (int i = 0; i < countOfCapitals; ++i) {
-		deleteList(capitals[i]);
+		deleteList(&capitals[i]);
 	}
 	free(capitals);
 	return 0;

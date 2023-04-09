@@ -29,6 +29,9 @@
     <Text Include="states.txt">
       <Filter>Исходные файлы</Filter>
     </Text>
+    <Text Include="test.txt">
+      <Filter>Исходные файлы</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="list.h">

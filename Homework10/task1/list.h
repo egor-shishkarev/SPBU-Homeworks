@@ -1,6 +1,9 @@
 #pragma once
 
-// Сруткура список, позволящая добавлять новые города.
+// Структура узел - элемент списка.
+typedef struct Node Node;
+
+// Структура список, позволящая добавлять новые города.
 typedef struct List List;
 
 // Функция, создающая новый список.
@@ -14,4 +17,7 @@ void printList(List* list);
 
 // Функция, удаляющая список.
 void deleteList(List** list);
+
+// Возвращает элемент из списка по индексу.
+int listElement(List* list, int position);
 

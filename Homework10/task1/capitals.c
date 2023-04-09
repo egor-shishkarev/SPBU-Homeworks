@@ -14,6 +14,71 @@ typedef struct List {
 	Node* tail;
 } List;
 
+int** readFromFileToTable(FILE* file, int* countOfCities, int* countOfRoads) {
+	fscanf(file, "%d", countOfCities);
+	fscanf(file, "%d", countOfRoads);
+	int** roadTable = (int**)calloc(*countOfCities, sizeof(int*));
+	if (roadTable == NULL) {
+		printf("Память не была выделена.");
+		return -1;
+	}
+	for (int i = 0; i < *countOfCities; ++i) {
+		roadTable[i] = (int*)calloc(*countOfCities, sizeof(int));
+		if (roadTable[i] == NULL) {
+			for (int j = 0; j < i; ++j) {
+				free(roadTable[j]);
+			}
+			printf("Память не была выделена.");
+			return -1;
+		}
+	}
+	int numberOfEnterRoads = 0;
+	while (true) {
+		if (numberOfEnterRoads == *countOfRoads) {
+			break;
+		}
+		int firstNumberOfCity = 0;
+		int secondNumberOfCity = 0;
+		fscanf(file, "%d", &firstNumberOfCity);
+		fscanf(file, "%d", &secondNumberOfCity);
+		if (firstNumberOfCity > secondNumberOfCity) {
+			firstNumberOfCity = firstNumberOfCity ^ secondNumberOfCity;
+			secondNumberOfCity = firstNumberOfCity ^ secondNumberOfCity;
+			firstNumberOfCity = firstNumberOfCity ^ secondNumberOfCity;
+		}
+		int lengthOfRoad = 0;
+		fscanf(file, "%d", &lengthOfRoad);
+		if (secondNumberOfCity > *countOfCities) {
+			printf("Такого города нет! Проверьте файл.\n");
+			return -1;
+		}
+		roadTable[firstNumberOfCity - 1][secondNumberOfCity - 1] = lengthOfRoad;
+		roadTable[secondNumberOfCity - 1][firstNumberOfCity - 1] = lengthOfRoad;
+		++numberOfEnterRoads;
+	}
+	return roadTable;
+}
+
+List** distributeCitiesByCapitals(FILE* file, int** roadTable, int countOfCities, int countOfCapitals) {
+	List** capitals = calloc(countOfCapitals, sizeof(List*));
+	for (int i = 0; i < countOfCapitals; ++i) {
+		capitals[i] = createList();
+		int numberOfCapital = 0;
+		fscanf(file, "%d", &numberOfCapital);
+		insertElement(capitals[i], numberOfCapital - 1);
+	}
+	nullAllRoadsBetweenCapitals(roadTable, countOfCapitals, capitals);
+	int numberOfRemainingCities = countOfCities - countOfCapitals;
+	while (numberOfRemainingCities > 0) {
+		int currentNumberOfCapitals = countOfCapitals;
+		while (currentNumberOfCapitals > 0) {
+			numberOfRemainingCities -= findNewSity(roadTable, capitals[countOfCapitals - currentNumberOfCapitals], countOfCities);
+			--currentNumberOfCapitals;
+		}
+	}
+	return capitals;
+}
+
 void nullAllRoadsBetweenCapitals(int** roadTable, const int numberOfCapitals, List** capitals) {
 	for (int i = 0; i < numberOfCapitals; ++i) {
 		for (int j = i + 1; j < numberOfCapitals; ++j) {
@@ -41,7 +106,6 @@ void nullColumn(int** roadTable, const int numberOfCities, const int numberOfCol
 		roadTable[i][numberOfColumn] = 0;
 	}
 }
-
 
 int findNewSity(int** roadTable, List* list, const int numberOfCities) {
 	int currentMinimum = INT_MAX;

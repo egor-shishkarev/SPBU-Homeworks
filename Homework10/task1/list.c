@@ -15,13 +15,7 @@ typedef struct List {
 } List;
 
 List* createList(void) {
-	List* list = malloc(sizeof(List));
-	if (list == NULL) {
-		return -1;
-	}
-	list->head = NULL;
-	list->tail = NULL;
-	return list;
+	return calloc(1, sizeof(List));
 }
 
 void insertElement(List* list, const int number) {
@@ -67,4 +61,12 @@ void deleteList(List** list) {
 	deleteListRecursively((*list)->head);
 	free(*list);
 	*list = NULL;
+}
+
+int listElement(List* list, int position) {
+	Node* currentNode = list->head;
+	for (int i = 0; i < position; ++i) {
+		currentNode = currentNode->next;
+	}
+	return currentNode->number + 1;
 }

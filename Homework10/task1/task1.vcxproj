@@ -127,7 +127,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="capitals.c" />
+    <ClCompile Include="capitals.c">
+      <SDLCheck Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</SDLCheck>
+    </ClCompile>
     <ClCompile Include="list.c" />
     <ClCompile Include="task1.c">
       <SDLCheck Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</SDLCheck>
@@ -135,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="states.txt" />
+    <Text Include="test.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="capitals.h" />
