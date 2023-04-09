@@ -245,7 +245,7 @@ void deleteElement(Tree* tree, const int key, int* errorCode) {
 }
 
 void deleteTreeRecursive(Node** node) {
-	if ((*node) == NULL) {
+	if (*node == NULL) {
 		return;
 	}
 	deleteTreeRecursive(&((*node)->leftChild));
