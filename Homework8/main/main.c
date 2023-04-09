@@ -22,27 +22,32 @@ bool test(void) {
 	int errorCode = 0;
 	AVLTree* tree = createTree(&errorCode);
 	addElement(tree, 8, "A", &errorCode);
-	if (errorCode) {
+	if (errorCode == -1) {
+		deleteTree(&tree);
 		return false;
 	}
 	addElement(tree, 5, "B", &errorCode);
-	if (errorCode) {
+	if (errorCode == -1) {
+		deleteTree(&tree);
 		return false;
 	}
 	addElement(tree, 9, "C", &errorCode);
-	if (errorCode) {
+	if (errorCode == -1) {
+		deleteTree(&tree);
 		return false;
 	}
 	addElement(tree, 1, "D", &errorCode);
-	if (errorCode) {
+	if (errorCode == -1) {
+		deleteTree(&tree);
 		return false;
 	}
 	bool firstTest = strcmp(searchValueFromKey(tree, 5), "B") == 0;
 	deleteElement(tree, 8, &errorCode);
-	if (errorCode) {
+	if (errorCode == -1) {
+		deleteTree(&tree);
 		return false;
 	}
-	bool secondTest = isKeyInTree(tree, 8) == false;
+	bool secondTest = !isKeyInTree(tree, 8);
 	deleteTree(&tree);
 	return firstTest && secondTest && tree == NULL;
 }
