@@ -252,7 +252,6 @@ void deleteTreeRecursive(Node** node) {
 	deleteTreeRecursive(&((*node)->rightChild));
 	free((*node)->value);
 	free(*node);
-	*node = NULL;
 }
 
 void deleteTree(Tree** tree) {
