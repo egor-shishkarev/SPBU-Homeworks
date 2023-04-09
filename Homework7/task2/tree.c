@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define MAX_NUMBER_SIZE 5
 
@@ -24,7 +25,6 @@ void addToTreeRecursion(FILE* file, Node* node, int* errorCode) {
 		return;
 	}
 	operator[0] = getc(file);
-	node->value = operator;
 	getc(file);
 	char* nextSymbol = calloc(2, sizeof(char));
 	nextSymbol[0] = (char)getc(file);
@@ -37,6 +37,7 @@ void addToTreeRecursion(FILE* file, Node* node, int* errorCode) {
 			*errorCode = -1;
 			return;
 		}
+		node->value = operator;
 		node->leftChild = newLeftNode;
 		addToTreeRecursion(file, newLeftNode, errorCode);
 		if (*errorCode == -1) {
@@ -96,34 +97,34 @@ void addToTreeRecursion(FILE* file, Node* node, int* errorCode) {
 			*errorCode = -1;
 			return;
 		}
+		node->value = operator;
 		fscanf(file, "%[^)]", node->rightChild->value);
 		getc(file);
 	}
 }
 
-int readFileToTree(const char* fileName, Tree* tree) {
+Tree* readFileToTree(const char* fileName) {
 	FILE* file = fopen(fileName, "r");
 	if (file == NULL) {
-		return -1;
+		return NULL;
+	}
+	Tree* tree = calloc(1, sizeof(Tree));
+	if (tree == NULL) {
+		return NULL;
 	}
 	tree->root = malloc(sizeof(Node));
 	if (tree->root == NULL) {
 		fclose(file);
-		return -1;
+		return NULL;
 	}
 	int errorCode = 0;
 	addToTreeRecursion(file, tree->root, &errorCode);
 	if (errorCode == -1) {
 		fclose(file);
 		deleteTree(&tree);
-		return -1;
+		return NULL;
 	}
 	fclose(file);
-	return 0;
-}
-
-Tree* createParseTree(void) {
-	Tree* tree = calloc(1, sizeof(Tree));
 	return tree;
 }
 
@@ -139,31 +140,17 @@ void deleteTreeRecursive(Node* node) {
 }
 
 void deleteTree(Tree** tree) {
-	if ((*tree) == NULL) {
+	if (*tree == NULL) {
 		return;
 	}
 	if ((*tree)->root == NULL) {
-		free((*tree));
+		free(*tree);
 		*tree = NULL;
 		return;
 	}
 	deleteTreeRecursive((*tree)->root);
-	free((*tree));
+	free(*tree);
 	*tree = NULL;
-}
-
-int charToInt(char* number) {
-	int currentPosition = 0;
-	int result = 0;
-	if (number[0] == '-') {
-		currentPosition = 1;
-	}
-	while (number[currentPosition] != '\0') {
-		result *= 10;
-		result += number[currentPosition] - '0';
-		++currentPosition;
-	}
-	return result - 2 * result * (number[0] == '-');
 }
 
 bool isOperation(char* arrayOfSymbols) {
@@ -209,7 +196,7 @@ int calculateResult(Node* node) {
 		}
 		}
 	} else if (node != NULL) {
-		return charToInt(node->value);
+		return atoi(node->value);
 	}
 	return 0;
 }

@@ -8,8 +8,10 @@
 #define MAX_SIZE_OF_STRING 50
 
 bool test(void) {
-	Tree* tree = createParseTree();
-	readFileToTree("test.txt", tree);
+	Tree* tree = readFileToTree("test.txt");
+	if (tree == NULL) {
+		return false;
+	}
 	const int result = treeResult(tree);
 	deleteTree(&tree);
 	return result == 3;
@@ -50,8 +52,7 @@ int main(void) {
 		printf("%c", arrayOfSymbols[i]);
 	}
 	printf("\nОбход по дереву: \n");
-	Tree* tree = createParseTree();
-	readFileToTree(fileName, tree);
+	Tree* tree = readFileToTree(fileName);
 	treePrint(tree);
 	printf("\nРезультат обхода дерева - %d", treeResult(tree));
 	deleteTree(&tree);
