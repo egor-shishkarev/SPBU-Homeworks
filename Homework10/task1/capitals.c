@@ -1,6 +1,8 @@
 #include "list.h"
 #include "capitals.h"
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stdio.h>
 
 typedef struct Node {
 	int number;
@@ -23,7 +25,7 @@ void nullAllRoadsBetweenCapitals(int** roadTable, const int numberOfCapitals, Li
 	}
 }
 
-int findMinimumLength(int** roadTable, const int numberOfCities ,const int numberOfCity, int* currentMinimum, const int newCity) {
+int findMinimumLength(int** roadTable, const int numberOfCities, const int numberOfCity, int* currentMinimum, const int newCity) {
 	int currentCity = newCity;
 	for (int i = 0; i < numberOfCities; ++i) {
 		if (roadTable[numberOfCity][i] < *currentMinimum && roadTable[numberOfCity][i] != 0) {
@@ -67,11 +69,10 @@ int findNewSity(int** roadTable, List* list, const int numberOfCities) {
 		}
 		firstElement = firstElement->next;
 	}
-
 	return 1;
 }
 
-printRoadTable(int** roadTable, const int countOfCities) {
+void printRoadTable(int** roadTable, const int countOfCities) {
 	printf("\n");
 	for (int i = 0; i < countOfCities; ++i) {
 		for (int j = 0; j < countOfCities; ++j) {

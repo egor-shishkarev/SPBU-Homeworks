@@ -1,4 +1,8 @@
 #include "list.h"
+#include <stdio.h>
+#include <malloc.h>
+#include <string.h>
+#include <stdbool.h>
 
 typedef struct Node {
 	int number;
@@ -34,7 +38,6 @@ void insertElement(List* list, const int number) {
 	list->tail->next = newNode;
 	newNode->next = NULL;
 	list->tail = newNode;
-	return;
 }
 
 void printList(List* list) {
@@ -58,12 +61,10 @@ void deleteListRecursively(Node* node) {
 		deleteListRecursively(node->next);
 	}
 	free(node);
-
 }
 
-void deleteList(List* list) {
-	deleteListRecursively(list->head);
-	free(list);
-	list = NULL;
+void deleteList(List** list) {
+	deleteListRecursively((*list)->head);
+	free(*list);
+	*list = NULL;
 }
-
