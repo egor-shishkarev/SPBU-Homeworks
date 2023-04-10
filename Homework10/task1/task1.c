@@ -39,10 +39,10 @@ bool test(void) {
 	int countOfCapitals = 0;
 	fscanf(file, "%d", &countOfCapitals);
 	List** capitals = distributeCitiesByCapitals(file, roadTable, countOfCities, countOfCapitals);
-	int firstCapital[2] = { 5, 2 };
-	int secondCapital[1] = { 1 };
-	bool firstTest = listElement(capitals[0], 0) == 3 && listElement(capitals[0], 1) == firstCapital[0] && listElement(capitals[0], 2) == firstCapital[1];
-	bool secondTest = listElement(capitals[1], 0) == 4 && listElement(capitals[1], 1) == secondCapital[0];
+	int firstCapital[3] = { 3, 5, 2 };
+	int secondCapital[2] = { 4, 1 };
+	bool firstTest = listElement(capitals[0], 0) == firstCapital[0] && listElement(capitals[0], 1) == firstCapital[1] && listElement(capitals[0], 2) == firstCapital[2];
+	bool secondTest = listElement(capitals[1], 0) == secondCapital[0] && listElement(capitals[1], 1) == secondCapital[1];
 	bool result = firstTest && secondTest;
 	for (int i = 0; i < countOfCities; ++i) {
 		free(roadTable[i]);
