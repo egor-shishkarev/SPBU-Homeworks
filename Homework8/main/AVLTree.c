@@ -14,8 +14,12 @@ typedef struct AVLTree {
     Node* root;
 } AVLTree;
 
-AVLTree* createTree(void) {
-    return calloc(1, sizeof(AVLTree));
+AVLTree* createTree(int* errorCode) {
+    AVLTree* tree = calloc(1, sizeof(AVLTree));
+    if (tree == NULL) {
+        *errorCode = -1;
+    }
+    return tree;
 }
 
 void deleteTreeRecursion(Node* node) {
@@ -148,7 +152,6 @@ Node* bigRightRotate(Node* currentNode) {
     return rightGrandson;
 }
 
-
 Node* balance(Node* node) {
     if (node->balance == 2) {
         if (node->rightChild->balance >= 0) {
@@ -198,7 +201,7 @@ Node* insert(Node* node, const char* key, const char* value, int* errorCode) {
         node->value = calloc(strlen(value) + 1, sizeof(char));
         if (node->value == NULL) {
             *errorCode = -1;
-            return;
+            return NULL;
         }
         strcpy(node->value, value);
     }
@@ -238,17 +241,7 @@ char* searchValueFromKey(AVLTree* tree, const char* key) {
 }
 
 bool isKeyInTree(AVLTree* tree, const char* key) {
-    Node* currentNode = tree->root;
-    while (currentNode != NULL) {
-        if (strcmp(key, currentNode->key) < 0) {
-            currentNode = currentNode->leftChild;
-        } else if (strcmp(key, currentNode->key) > 0) {
-            currentNode = currentNode->rightChild;
-        } else if (strcmp(key, currentNode->key) == 0) {
-            return true;
-        }
-    }
-    return false;
+    return searchValueFromKey(tree, key) != NULL;
 }
 
 Node* theMostRightChild(Node* node) {

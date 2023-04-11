@@ -9,7 +9,7 @@
 typedef struct AVLTree AVLTree;
 
 // Функция создания АВЛ-дерева.
-AVLTree* createTree(void);
+AVLTree* createTree(int* errorCode);
 
 // Функция удаления дерева.
 void deleteTree(AVLTree** tree);

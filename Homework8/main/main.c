@@ -8,7 +8,7 @@
 int verificationIntScanf(void) {
     int readValues = 0;
     while (true) {
-        int correctlyReadValues = scanf("%d", &readValues);
+        int correctlyReadValues = scanf_s("%d", &readValues);
         while (getchar() != '\n') {
         }
         if (correctlyReadValues == 1) {
@@ -64,7 +64,7 @@ int main(void) {
     printf("Введите следующие числа, чтобы выполнить предложенные команды:\n0 - выйти\n1 - добавить значение по ключу в словарь\n2 - \
 получить значение по ключу\n3 - проверить наличие ключа в словаре\n4 - удалить ключ и его значение\n");
     int errorCode = 0;
-    AVLTree* tree = createTree();
+    AVLTree* tree = createTree(&errorCode);
     while (true) {
         printf("Введите команду => ");
         int mode = verificationIntScanf();
@@ -77,10 +77,10 @@ int main(void) {
         case 1: {
             printf("Введите ключ => "); 
             char key[MAX_KEY_SIZE] = { 0 };
-            gets(key);
+            gets_s(key, MAX_KEY_SIZE);
             printf("Введите значение длинной не более %d символов => ", MAX_STRING_SIZE);
             char value[MAX_STRING_SIZE] = { 0 };
-            gets(value);
+            gets_s(key, MAX_STRING_SIZE);
             addElement(tree, key, value, &errorCode);
             if (errorCode == -1) {
                 printf("Произошла ошибка в работе!");
@@ -91,7 +91,7 @@ int main(void) {
         case 2: {
             printf("Введите ключ => "); 
             char key[MAX_KEY_SIZE] = { 0 };
-            gets(key);
+            gets_s(key, MAX_KEY_SIZE);
             char* value = searchValueFromKey(tree, key);
             if (value == NULL) {
                 printf("Данного ключа нет в дереве!\n");
@@ -103,14 +103,14 @@ int main(void) {
         case 3: {
             printf("Введите ключ => "); 
             char key[MAX_KEY_SIZE] = { 0 };
-            gets(key);
+            gets_s(key, MAX_KEY_SIZE);
             printf(isKeyInTree(tree, key) ? "Данный ключ есть в словаре.\n" : "Данного ключа нет в словаре!\n");
             break;
         }
         case 4: {
             printf("Введите ключ, значение для которого хотите удалить => "); 
             char key[MAX_KEY_SIZE] = { 0 };
-            gets(key);
+            gets_s(key, MAX_KEY_SIZE);
             deleteElement(tree, key, &errorCode);
             if (errorCode == -1) {
                 printf("Произошла ошибка в работе!");
