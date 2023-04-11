@@ -32,4 +32,9 @@
       <Filter>Исходные файлы</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="script.bat">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
+  </ItemGroup>
 </Project>
