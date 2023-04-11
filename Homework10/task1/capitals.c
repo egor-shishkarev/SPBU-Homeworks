@@ -20,7 +20,7 @@ int** readFromFileToTable(FILE* file, int* countOfCities, int* countOfRoads) {
 	int** roadTable = (int**)calloc(*countOfCities, sizeof(int*));
 	if (roadTable == NULL) {
 		printf("Память не была выделена.");
-		return -1;
+		return NULL;
 	}
 	for (int i = 0; i < *countOfCities; ++i) {
 		roadTable[i] = (int*)calloc(*countOfCities, sizeof(int));
@@ -29,7 +29,7 @@ int** readFromFileToTable(FILE* file, int* countOfCities, int* countOfRoads) {
 				free(roadTable[j]);
 			}
 			printf("Память не была выделена.");
-			return -1;
+			return NULL;
 		}
 	}
 	int numberOfEnterRoads = 0;
@@ -50,7 +50,7 @@ int** readFromFileToTable(FILE* file, int* countOfCities, int* countOfRoads) {
 		fscanf(file, "%d", &lengthOfRoad);
 		if (secondNumberOfCity > *countOfCities) {
 			printf("Такого города нет! Проверьте файл.\n");
-			return -1;
+			return NULL;
 		}
 		roadTable[firstNumberOfCity - 1][secondNumberOfCity - 1] = lengthOfRoad;
 		roadTable[secondNumberOfCity - 1][firstNumberOfCity - 1] = lengthOfRoad;
@@ -59,24 +59,10 @@ int** readFromFileToTable(FILE* file, int* countOfCities, int* countOfRoads) {
 	return roadTable;
 }
 
-List** distributeCitiesByCapitals(FILE* file, int** roadTable, int countOfCities, int countOfCapitals) {
-	List** capitals = calloc(countOfCapitals, sizeof(List*));
-	for (int i = 0; i < countOfCapitals; ++i) {
-		capitals[i] = createList();
-		int numberOfCapital = 0;
-		fscanf(file, "%d", &numberOfCapital);
-		insertElement(capitals[i], numberOfCapital - 1);
+void nullColumn(int** roadTable, const int numberOfCities, const int numberOfColumn) {
+	for (int i = 0; i < numberOfCities; ++i) {
+		roadTable[i][numberOfColumn] = 0;
 	}
-	nullAllRoadsBetweenCapitals(roadTable, countOfCapitals, capitals);
-	int numberOfRemainingCities = countOfCities - countOfCapitals;
-	while (numberOfRemainingCities > 0) {
-		int currentNumberOfCapitals = countOfCapitals;
-		while (currentNumberOfCapitals > 0) {
-			numberOfRemainingCities -= findNewSity(roadTable, capitals[countOfCapitals - currentNumberOfCapitals], countOfCities);
-			--currentNumberOfCapitals;
-		}
-	}
-	return capitals;
 }
 
 void nullAllRoadsBetweenCapitals(int** roadTable, const int numberOfCapitals, List** capitals) {
@@ -101,13 +87,7 @@ int findMinimumLength(int** roadTable, const int numberOfCities, const int numbe
 	return currentCity;
 }
 
-void nullColumn(int** roadTable, const int numberOfCities, const int numberOfColumn) {
-	for (int i = 0; i < numberOfCities; ++i) {
-		roadTable[i][numberOfColumn] = 0;
-	}
-}
-
-int findNewSity(int** roadTable, List* list, const int numberOfCities) {
+int findNewCity(int** roadTable, List* list, const int numberOfCities) {
 	int currentMinimum = INT_MAX;
 	Node* currentNode = list->head;
 	int newSity = list->tail->number;
@@ -134,6 +114,26 @@ int findNewSity(int** roadTable, List* list, const int numberOfCities) {
 		firstElement = firstElement->next;
 	}
 	return 1;
+}
+
+List** distributeCitiesByCapitals(FILE* file, int** roadTable, int countOfCities, int countOfCapitals) {
+	List** capitals = calloc(countOfCapitals, sizeof(List*));
+	for (int i = 0; i < countOfCapitals; ++i) {
+		capitals[i] = createList();
+		int numberOfCapital = 0;
+		fscanf(file, "%d", &numberOfCapital);
+		insertElement(capitals[i], numberOfCapital - 1);
+	}
+	nullAllRoadsBetweenCapitals(roadTable, countOfCapitals, capitals);
+	int numberOfRemainingCities = countOfCities - countOfCapitals;
+	while (numberOfRemainingCities > 0) {
+		int currentNumberOfCapitals = countOfCapitals;
+		while (currentNumberOfCapitals > 0) {
+			numberOfRemainingCities -= findNewCity(roadTable, capitals[countOfCapitals - currentNumberOfCapitals], countOfCities);
+			--currentNumberOfCapitals;
+		}
+	}
+	return capitals;
 }
 
 void printRoadTable(int** roadTable, const int countOfCities) {
