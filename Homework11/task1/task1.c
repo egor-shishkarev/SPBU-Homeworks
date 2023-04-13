@@ -23,6 +23,9 @@ int verificationIntScanf(void) {
 
 int* findIndex(const char* path, const char* stringToFind) {
     int* result = calloc(2, sizeof(int));
+    if (result == NULL) {
+        return NULL;
+    }
     int errorCode = 0;
     int* offset = createArrayOfPrefixFunction(stringToFind, &errorCode);
     if (errorCode == -1) {
@@ -31,21 +34,18 @@ int* findIndex(const char* path, const char* stringToFind) {
     FILE* file = fopen(path, "r");
     int currentLine = 1;
     while (!feof(file)) {
-        char* buffer = calloc(MAX_SIZE_OF_STRING, sizeof(char));
+        char buffer[MAX_SIZE_OF_STRING] = "";
         if (fgets(buffer, MAX_SIZE_OF_STRING, file) == 0) {
-            free(buffer);
             break;
         }
         const int index = findString(buffer, stringToFind, offset);
         if (index < strlen(buffer)) {
-            free(buffer);
             fclose(file);
             free(offset);
             result[0] = currentLine;
             result[1] = index;
             return result;
         }
-        free(buffer);
         ++currentLine;
     }
     fclose(file);
